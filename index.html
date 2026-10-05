@@ -335,7 +335,7 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   text-transform: uppercase;
   color: var(--text-dim);
   font-weight: 700;
-  margin: 24px 0 10px;
+  margin: 16px 0 8px;
 }
 .sublabel { font-size: 12px; color: var(--text-dim); line-height: 1.5; font-weight: 500; }
 
@@ -475,51 +475,251 @@ body.player-active .mini-header { display: none; }
   min-height: 0;
 }
 
-.selector-label {
-  font-size: 10px;
-  letter-spacing: 1.5px;
+/* Nouveau sélecteur playlist : petit et discret */
+.playlist-selector-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 auto;
+  border-radius: 100px;
+  transition: background 0.15s;
+}
+.playlist-selector-btn:active { background: var(--line); }
+.playlist-selector-icon {
+  color: var(--accent);
+  font-size: 15px;
+}
+.playlist-selector-name {
+  color: var(--text-strong);
+}
+.playlist-selector-arrow {
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 700;
+}
+/* Wrapper pour sélecteur playlist : select natif par-dessus le bouton */
+.playlist-selector-wrap {
+  position: relative;
+  display: inline-flex;
+  align-self: center;
+  margin: 0 auto;
+}
+.playlist-overlay-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 16px;
+  z-index: 2;
+}
+
+/* Compteur session central */
+.session-counter-wrap {
+  text-align: center;
+  margin-top: 4px;
+}
+.session-counter-value {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.session-counter-label {
+  font-size: 11px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--text-dim);
-  text-align: center;
-  margin-bottom: 8px;
+  margin-top: 6px;
 }
-.group-selector {
-  width: 100%;
-  background: var(--card-bg);
-  border: 2px solid var(--accent);
-  border-radius: 16px;
-  padding: 16px 44px 16px 20px;
-  color: var(--text-strong);
-  font-family: inherit;
-  font-size: 16px;
+.last-session-label {
+  font-family: 'Nunito', sans-serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-top: 8px;
+}
+.last-session-label em {
+  font-style: italic;
+  color: var(--accent);
   font-weight: 700;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 6px 24px var(--accent-glow);
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 20px center;
 }
 
-/* support button floating */
-.support-btn-float {
+/* Boutons session */
+.session-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 18px;
+}
+.session-btn {
+  flex: 1;
+  max-width: 160px;
   background: transparent;
-  color: var(--accent);
-  border: 1.5px solid var(--accent);
-  padding: 10px 18px;
+  border: 1.5px solid var(--line);
+  color: var(--text-strong);
+  padding: 11px 18px;
   border-radius: 100px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   letter-spacing: 0.5px;
-  width: 100%;
-  margin-top: 10px;
+  transition: all 0.15s;
 }
-.support-btn-float:active { opacity: 0.7; }
+.session-btn.pause {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.session-btn.resume {
+  background: var(--accent);
+  color: var(--btn-text);
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+.session-btn.end {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.session-btn:active { transform: scale(0.97); }
+
+/* Mini bouton settings en haut discret (coin haut droit) */
+.player-settings-mini {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  transition: color 0.15s;
+}
+.player-settings-mini:active {
+  color: var(--accent);
+}
+
+/* Player main : centre vertical propre */
+.player-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 0;
+}
+
+/* Ko-fi support card - design chic */
+.kofi-card {
+  position: relative;
+  width: 100%;
+  border: none;
+  border-radius: 20px;
+  padding: 0;
+  background: var(--bg-solid);
+  cursor: pointer;
+  overflow: hidden;
+  margin-bottom: 14px;
+  text-align: left;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.3s;
+  box-shadow: 0 10px 30px var(--accent-glow);
+}
+.kofi-card:active { transform: scale(0.98); }
+.kofi-card-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+  opacity: 0.95;
+  transition: background 0.3s;
+}
+.kofi-card-bg::before {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 60%; height: 180%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%);
+  pointer-events: none;
+}
+.kofi-card-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -60%; left: -10%;
+  width: 50%; height: 150%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+  pointer-events: none;
+}
+.kofi-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  color: #fff;
+}
+.kofi-icon {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  animation: heartBeat 1.8s ease-in-out infinite;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.12); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+}
+.kofi-text {
+  flex: 1;
+  min-width: 0;
+}
+.kofi-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 3px;
+  letter-spacing: -0.2px;
+}
+.kofi-sub {
+  font-size: 12px;
+  opacity: 0.95;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.kofi-arrow {
+  font-size: 22px;
+  font-weight: 300;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
 
 .now-playing {
   text-align: center;
@@ -704,35 +904,120 @@ body.player-active .mini-header { display: none; }
   opacity: 1;
 }
 
+/* Header "Playlists" + bouton + */
+.list-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.list-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-strong);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+.icon-add-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--accent-glow);
+  transition: transform 0.1s;
+}
+.icon-add-btn:active { transform: scale(0.9); }
+
 .group-section {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+  background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
 }
 .group-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding: 0 4px;
+  gap: 10px;
+  padding: 14px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.group-header:active { background: var(--line); }
+.group-chevron {
+  color: var(--text-dim);
+  flex-shrink: 0;
+  transition: transform 0.25s;
+}
+.group-section.collapsed .group-chevron {
+  transform: rotate(-90deg);
+}
+.group-info {
+  flex: 1;
+  min-width: 0;
 }
 .group-name {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-strong);
+  line-height: 1.2;
 }
 .group-count {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-faint);
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  margin-top: 2px;
 }
-.group-actions-btn {
+.group-add-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.group-add-btn:active {
+  background: var(--accent);
+  color: var(--btn-text);
+}
+.group-settings-btn {
   background: none;
   border: none;
   color: var(--text-dim);
-  font-size: 18px;
+  font-size: 17px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+.group-content {
+  padding: 0 10px 10px;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.group-section.collapsed .group-content {
+  max-height: 0;
+  padding-bottom: 0;
+}
+.playlist-empty-hint {
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-faint);
+  font-style: italic;
 }
 
 .aff-row {
@@ -893,16 +1178,56 @@ input[type="range"]::-moz-range-thumb {
   border-color: var(--accent);
 }
 
-/* THEME PICKER */
+/* AMBIANCE PICKER (dans la bottom sheet du Player) */
+.ambiance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ambiance-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  padding: 10px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+}
+.ambiance-btn::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amb-color, var(--accent));
+  box-shadow: 0 0 8px var(--amb-color, var(--accent));
+  opacity: 0.9;
+}
+.ambiance-btn.active {
+  background: var(--amb-color, var(--accent));
+  color: #fff;
+  border-color: var(--amb-color, var(--accent));
+}
+.ambiance-btn.active::before { opacity: 0; }
+
+/* THEME PICKER — compact pour laisser voir le bouton soutenir */
 .theme-picker {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
 }
 .theme-chip {
   position: relative;
-  border-radius: 14px;
-  padding: 14px 10px 10px;
+  border-radius: 10px;
+  padding: 8px 4px 6px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
@@ -910,14 +1235,14 @@ input[type="range"]::-moz-range-thumb {
 }
 .theme-chip.active { border-color: var(--text-strong); }
 .theme-chip-orb {
-  width: 36px; height: 36px;
+  width: 22px; height: 22px;
   border-radius: 50%;
-  margin: 0 auto 8px;
+  margin: 0 auto 4px;
 }
 .theme-chip-name {
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   color: inherit;
 }
@@ -1359,8 +1684,8 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 18px;
-  padding-top: 16px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
 }
 .dark-toggle-labels {
@@ -1521,6 +1846,13 @@ input[type="range"]::-moz-range-thumb {
   text-align: center;
   gap: 28px;
   padding: 20px 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+.ob-content.ob-fading {
+  opacity: 0;
+  transform: translateY(10px);
 }
 .ob-visual {
   width: 160px;
@@ -1721,6 +2053,11 @@ const TRANSLATIONS = {
     total: 'Total',
     session: 'Session',
     total_affs: 'Total depuis le début',
+    session_affs: 'affirmations cette session',
+    session_pause: 'Pause',
+    session_resume: 'Reprendre',
+    session_end: 'Terminer',
+    last_session: 'Dernière session :',
     challenge_started_on: 'Commencé le {d}',
     // List
     list_eyebrow: 'Ta bibliothèque',
@@ -1732,6 +2069,10 @@ const TRANSLATIONS = {
     action_new_aff_sub: 'Ta phrase, ta voix',
     action_new_group_title: 'Nouvelle playlist',
     action_new_group_sub: 'Classe tes affirmations',
+    playlists_title: 'Playlists',
+    empty_playlists: 'Aucune playlist.',
+    empty_playlists_hint: 'Clique sur + pour en créer une.',
+    empty_playlist_hint: 'Vide. Clique + pour ajouter une affirmation.',
     affirmation: 'affirmation',
     affirmations: 'affirmations',
     empty_list: "Aucune affirmation pour l'instant.",
@@ -1785,15 +2126,17 @@ const TRANSLATIONS = {
     silence: 'Silence',
     repeat_2x: 'Répète 2x',
     background_music: 'Musique de fond',
-    music_type: 'Type de musique',
-    music_type_sub: 'Drone intégré ou ta playlist externe',
+    music_type: 'Ambiance',
+    music_type_sub: 'Son d\'ambiance pendant la lecture',
     none: 'Aucune',
-    drone: 'Drone',
-    playlist: 'Playlist',
+    drone: 'Ambiance',
+    ambiance: 'Ambiance',
     playlist_url: 'URL de ma playlist',
     playlist_url_sub: 'Spotify, Apple Music, YouTube, Deezer...<br>S\'ouvre dans l\'app native quand tu lances la lecture.',
     save_url: '💾 Sauvegarder l\'URL',
-    support: 'Soutenir l\'app',
+    support: 'Soutenir',
+    support_title: 'Soutenir GetManifest',
+    support_tagline: 'Offre-moi un café pour continuer à construire ♥',
     support_sub: 'Si Repeat te plaît et t\'aide, tu peux offrir un café ♥',
     kofi_url: 'Lien Ko-fi (ou autre)',
     kofi_sub: 'Colle ton lien ko-fi.com/tonnom ou autre',
@@ -1863,6 +2206,11 @@ const TRANSLATIONS = {
     total: 'Total',
     session: 'Session',
     total_affs: 'All time total',
+    session_affs: 'affirmations this session',
+    session_pause: 'Pause',
+    session_resume: 'Resume',
+    session_end: 'End',
+    last_session: 'Last session:',
     challenge_started_on: 'Started on {d}',
     list_eyebrow: 'Your library',
     list_title_1: 'My',
@@ -1873,6 +2221,10 @@ const TRANSLATIONS = {
     action_new_aff_sub: 'Your words, your voice',
     action_new_group_title: 'New playlist',
     action_new_group_sub: 'Organize your affirmations',
+    playlists_title: 'Playlists',
+    empty_playlists: 'No playlists yet.',
+    empty_playlists_hint: 'Tap + to create one.',
+    empty_playlist_hint: 'Empty. Tap + to add an affirmation.',
     affirmation: 'affirmation',
     affirmations: 'affirmations',
     empty_list: 'No affirmations yet.',
@@ -1923,15 +2275,17 @@ const TRANSLATIONS = {
     silence: 'Silence',
     repeat_2x: 'Repeat 2x',
     background_music: 'Background music',
-    music_type: 'Music type',
-    music_type_sub: 'Built-in drone or your external playlist',
+    music_type: 'Ambiance',
+    music_type_sub: 'Background sound during playback',
     none: 'None',
-    drone: 'Drone',
-    playlist: 'Playlist',
+    drone: 'Ambiance',
+    ambiance: 'Ambiance',
     playlist_url: 'My playlist URL',
     playlist_url_sub: 'Spotify, Apple Music, YouTube, Deezer...<br>Opens in the native app when you start playback.',
     save_url: '💾 Save URL',
-    support: 'Support the app',
+    support: 'Support',
+    support_title: 'Support GetManifest',
+    support_tagline: 'Buy me a coffee to keep building ♥',
     support_sub: 'If you love Repeat and it helps you, buy me a coffee ♥',
     kofi_url: 'Ko-fi link (or other)',
     kofi_sub: 'Paste your ko-fi.com/yourname or any URL',
@@ -2189,6 +2543,7 @@ function defaultState() {
       pauseBetween: 3,
       playbackRate: 1.0,
       musicMode: 'none',
+      ambianceId: 'ocean',
       musicPlaylistUrl: '',
       pauseMode: 'silence', // deprecated, kept for backward compat
       selectedGroupId: 'all',
@@ -2225,10 +2580,13 @@ function loadState() {
     if (!raw) return defaultState();
     const p = JSON.parse(raw);
     const d = defaultState();
+    const settings = Object.assign(d.settings, p.settings || {});
+    // Migration : l'ancien mode 'playlist' n'existe plus → bascule sur 'none'
+    if (settings.musicMode === 'playlist') settings.musicMode = 'none';
     return {
       groups: p.groups || d.groups,
       affirmations: p.affirmations !== undefined ? p.affirmations : d.affirmations,
-      settings: Object.assign(d.settings, p.settings || {}),
+      settings: settings,
       stats: Object.assign(d.stats, p.stats || {}),
       challenge: Object.assign(d.challenge, p.challenge || {}),
       onboardingDone: p.onboardingDone || false,
@@ -2282,10 +2640,12 @@ function render() {
 // ============================================================
 let playerState = {
   playing: false,
+  paused: false,
   currentIdx: 0,
   queue: [],
   loopCount: 0,
   totalPlayed: 0,
+  lastSessionCount: 0,
   pauseTimeout: null,
   repeatPending: false,
   sessionStart: null,
@@ -2307,29 +2667,46 @@ function renderPlayer() {
   const availableAffs = getAvailableAffs();
   const currentAff = playerState.queue[playerState.currentIdx];
 
+  // Playlist selected label
+  const selectedPlaylist = s.selectedGroupId === 'all'
+    ? t('all_groups')
+    : (groups.find(g => g.id === s.selectedGroupId)?.name || t('all_groups'));
+
+  // State du compteur :
+  // - en lecture : total session en cours (live)
+  // - en pause : total session en pause (gelé)
+  // - arrêté (terminer) : 0 + petite ligne "dernière session : X"
+  const sessionTotal = playerState.totalPlayed || 0;
+  const lastSessionLabel = (!playerState.playing && !playerState.sessionStart && playerState.lastSessionCount > 0)
+    ? `<div class="last-session-label">${t('last_session')} <em>${playerState.lastSessionCount}</em></div>`
+    : '';
+
   document.getElementById('page-player').innerHTML = `
     <div class="player-fullscreen">
       <div class="player-top">
         <div class="brand-logo">getmanifest</div>
         <div class="brand-tagline">YOUR LIFE, YOUR WAY</div>
       </div>
-      <h1 class="h1" style="text-align:center">${t('player_title_1')} <span class="dot">${t('player_title_2')}</span></h1>
 
-      <div class="player-selector-wrap">
-        <select class="group-selector" id="group-select">
-          <option value="all" ${s.selectedGroupId==='all'?'selected':''}>◇ ${t('all_groups')} (${state.affirmations.filter(a => a.recording).length})</option>
+      <div class="playlist-selector-wrap">
+        <div class="playlist-selector-btn">
+          <span class="playlist-selector-icon">♪</span>
+          <span class="playlist-selector-name">${escapeHtml(selectedPlaylist)}</span>
+          <span class="playlist-selector-arrow">⌄</span>
+        </div>
+        <select class="playlist-overlay-select" id="group-select">
+          <option value="all" ${s.selectedGroupId==='all'?'selected':''}>${t('all_groups')} (${state.affirmations.filter(a => a.recording).length})</option>
           ${groups.map(g => {
             const n = state.affirmations.filter(a => a.groupId === g.id && a.recording).length;
-            return `<option value="${g.id}" ${s.selectedGroupId===g.id?'selected':''}>◈ ${escapeHtml(g.name)} (${n})</option>`;
+            return `<option value="${g.id}" ${s.selectedGroupId===g.id?'selected':''}>${escapeHtml(g.name)} (${n})</option>`;
           }).join('')}
         </select>
       </div>
 
-      <div class="player-center">
+      <div class="player-main">
         <div class="now-playing" id="now-playing">
           ${availableAffs.length === 0 ? t('no_recordings') : (currentAff ? escapeHtml(currentAff.title) : t('ready'))}
         </div>
-        <div class="now-playing-state" id="np-state">${playerState.playing ? t('playing') : t('paused')}</div>
 
         <div class="orb-container">
           <div class="orb-ring"></div>
@@ -2337,21 +2714,24 @@ function renderPlayer() {
             ${playerState.playing ? '❚❚' : '▶'}
           </button>
         </div>
+
+        <div class="session-counter-wrap">
+          <div class="session-counter-value">${sessionTotal}</div>
+          <div class="session-counter-label">${t('session_affs')}</div>
+          ${lastSessionLabel}
+        </div>
       </div>
 
-      <div class="session-stats">
-        <div class="session-stat-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-          <span class="session-stat-val" id="session-timer">${formatSessionTime(playerState.sessionStart ? Math.floor((Date.now() - playerState.sessionStart)/1000) : 0)}</span>
-          <span class="session-stat-label">${t('session')}</span>
+      ${playerState.playing || playerState.sessionStart ? `
+        <div class="session-actions">
+          ${playerState.playing ? `
+            <button class="session-btn pause" id="pause-btn">${t('session_pause')}</button>
+          ` : `
+            <button class="session-btn resume" id="resume-btn">${t('session_resume')}</button>
+          `}
+          <button class="session-btn end" id="end-btn">${t('session_end')}</button>
         </div>
-        <div class="session-divider"></div>
-        <div class="session-stat-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>
-          <span class="session-stat-val">${state.stats.totalPlays || 0}</span>
-          <span class="session-stat-label">${t('total_affs')}</span>
-        </div>
-      </div>
+      ` : ''}
 
       ${playerState.playing ? `
         <div class="live-speed">
@@ -2362,24 +2742,30 @@ function renderPlayer() {
           <input type="range" id="live-speed" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
         </div>
       ` : ''}
-    </div>
 
-    <button class="player-fab" id="player-settings-btn" aria-label="${t('player_sheet_btn')}">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-    </button>
+      <button class="player-settings-mini" id="player-settings-btn" aria-label="${t('player_sheet_btn')}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
   `;
 
+  // Click sur orb : si en lecture = pause, sinon start/resume
   document.getElementById('play-btn').addEventListener('click', togglePlay);
   document.getElementById('group-select').addEventListener('change', (e) => {
     s.selectedGroupId = e.target.value;
     saveState();
-    if (playerState.playing) stopPlayback();
+    if (playerState.playing) stopPlayback(false);
+    playerState.lastSessionCount = 0;
+    playerState.totalPlayed = 0;
     render();
   });
   document.getElementById('player-settings-btn').addEventListener('click', openPlayerSheet);
+  document.getElementById('pause-btn')?.addEventListener('click', pausePlayback);
+  document.getElementById('resume-btn')?.addEventListener('click', resumePlayback);
+  document.getElementById('end-btn')?.addEventListener('click', endPlaybackSession);
   document.getElementById('live-speed')?.addEventListener('input', (e) => {
     const v = parseFloat(e.target.value);
     state.settings.playbackRate = v;
@@ -2399,8 +2785,13 @@ function getAvailableAffs() {
 }
 
 function togglePlay() {
-  if (playerState.playing) stopPlayback();
-  else startPlayback();
+  if (playerState.playing) {
+    pausePlayback();
+  } else if (playerState.sessionStart) {
+    resumePlayback();
+  } else {
+    startPlayback();
+  }
 }
 
 function startPlayback() {
@@ -2409,33 +2800,60 @@ function startPlayback() {
   playerState.queue = affs;
   if (playerState.currentIdx >= affs.length) playerState.currentIdx = 0;
   playerState.playing = true;
+  playerState.paused = false;
   playerState.repeatPending = false;
-  playerState.sessionStart = Date.now();
+  if (!playerState.sessionStart) {
+    playerState.sessionStart = Date.now();
+    playerState.totalPlayed = 0;
+  }
   state.stats.sessionsCount++;
   saveState();
   startMusic();
   playNext();
   renderPlayer();
-  // live timer
-  if (playerState.sessionTimerInterval) clearInterval(playerState.sessionTimerInterval);
-  playerState.sessionTimerInterval = setInterval(() => {
-    const el = document.getElementById('session-timer');
-    if (el && playerState.sessionStart) {
-      el.textContent = formatSessionTime(Math.floor((Date.now() - playerState.sessionStart)/1000));
-    }
-  }, 1000);
 }
 
-function stopPlayback() {
+function pausePlayback() {
   playerState.playing = false;
+  playerState.paused = true;
+  const audio = document.getElementById('aff-audio');
+  audio.pause();
+  if (playerState.pauseTimeout) { clearTimeout(playerState.pauseTimeout); playerState.pauseTimeout = null; }
+  stopMusic();
+  renderPlayer();
+}
+
+function resumePlayback() {
+  playerState.playing = true;
+  playerState.paused = false;
+  startMusic();
+  playNext();
+  renderPlayer();
+}
+
+function endPlaybackSession() {
+  // Garde le compteur de la session comme "dernière session"
+  playerState.lastSessionCount = playerState.totalPlayed || 0;
+  playerState.totalPlayed = 0;
+  playerState.playing = false;
+  playerState.paused = false;
+  playerState.sessionStart = null;
+  playerState.currentIdx = 0;
   const audio = document.getElementById('aff-audio');
   audio.pause();
   audio.currentTime = 0;
   if (playerState.pauseTimeout) { clearTimeout(playerState.pauseTimeout); playerState.pauseTimeout = null; }
-  if (playerState.sessionTimerInterval) { clearInterval(playerState.sessionTimerInterval); playerState.sessionTimerInterval = null; }
-  playerState.sessionStart = null;
   stopMusic();
   renderPlayer();
+}
+
+// Alias pour compat avec changement de playlist
+function stopPlayback(fully = true) {
+  if (fully) {
+    endPlaybackSession();
+  } else {
+    pausePlayback();
+  }
 }
 
 function playNext() {
@@ -2487,125 +2905,365 @@ function playNext() {
 // ============================================================
 // MUSIC (drone + playlist)
 // ============================================================
-let droneCtx = null;
-let droneNodes = [];
+// ============================================================
+// AMBIANCES SONORES génératives
+// ============================================================
+let musicCtx = null;
+let musicNodes = [];
+let musicMasterGain = null;
+let musicLFOs = [];
+
+const AMBIANCES = {
+  ocean: { name: '🌊 Vagues océan', color: '#4bb5d6' },
+  rain: { name: '🌧️ Pluie douce', color: '#88a5b8' },
+  hz432: { name: '✨ 432 Hz', color: '#c4a3ed' },
+  hz528: { name: '💗 528 Hz (amour)', color: '#e478a0' },
+  bowl: { name: '🔔 Bol tibétain', color: '#d4b89a' },
+  drone: { name: '🌙 Drone doux', color: '#a89d8f' },
+};
 
 function startMusic() {
   const mode = state.settings.musicMode;
-  if (mode === 'drone') startDrone();
-  else if (mode === 'playlist' && state.settings.musicPlaylistUrl) {
-    window.open(state.settings.musicPlaylistUrl, '_blank');
-  }
+  if (mode === 'none') return;
+  // Tout autre mode (drone / ambiance) joue l'ambiance générée
+  const ambiance = state.settings.ambianceId || 'ocean';
+  startAmbiance(ambiance);
 }
-function stopMusic() { stopDrone(); }
 
-function startDrone() {
-  stopDrone();
+function stopMusic() { stopAmbiance(); }
+
+function startAmbiance(id) {
+  stopAmbiance();
   try {
-    droneCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const vol = state.settings.musicVolume;
-    [110, 164.81, 220].forEach(f => {
-      const osc = droneCtx.createOscillator();
-      const gain = droneCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = f;
-      gain.gain.value = vol * 0.08;
-      osc.connect(gain);
-      gain.connect(droneCtx.destination);
-      osc.start();
-      droneNodes.push({ osc, gain });
-    });
-  } catch(e) {}
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    musicCtx = new AudioCtx();
+    musicMasterGain = musicCtx.createGain();
+    musicMasterGain.gain.value = state.settings.musicVolume * 0.4;
+    musicMasterGain.connect(musicCtx.destination);
+
+    switch(id) {
+      case 'ocean': buildOcean(); break;
+      case 'rain': buildRain(); break;
+      case 'hz432': buildTone(432); break;
+      case 'hz528': buildTone(528); break;
+      case 'bowl': buildBowl(); break;
+      case 'drone':
+      default: buildDrone(); break;
+    }
+  } catch(e) { console.warn('ambiance error', e); }
 }
 
-function stopDrone() {
-  droneNodes.forEach(({osc, gain}) => {
+function stopAmbiance() {
+  musicLFOs.forEach(lfo => { try { lfo.stop(); } catch(e){} });
+  musicLFOs = [];
+  musicNodes.forEach(n => {
     try {
-      gain.gain.setValueAtTime(gain.gain.value, droneCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0, droneCtx.currentTime + 0.3);
-      osc.stop(droneCtx.currentTime + 0.4);
+      if (n.gain) {
+        n.gain.gain.setValueAtTime(n.gain.gain.value, musicCtx.currentTime);
+        n.gain.gain.linearRampToValueAtTime(0, musicCtx.currentTime + 0.4);
+      }
+      if (n.osc) n.osc.stop(musicCtx.currentTime + 0.5);
+      if (n.source) try { n.source.stop(musicCtx.currentTime + 0.5); } catch(e){}
     } catch(e){}
   });
-  droneNodes = [];
-  if (droneCtx) setTimeout(() => { try { droneCtx.close(); } catch(e){} droneCtx = null; }, 500);
+  musicNodes = [];
+  if (musicCtx) {
+    const ctx = musicCtx;
+    musicCtx = null;
+    setTimeout(() => { try { ctx.close(); } catch(e){} }, 700);
+  }
 }
 
-function updateDroneVolume() {
-  const vol = state.settings.musicVolume;
-  droneNodes.forEach(({gain}) => { try { gain.gain.value = vol * 0.08; } catch(e){} });
+function updateMusicVolume() {
+  if (musicMasterGain && musicCtx) {
+    try { musicMasterGain.gain.value = state.settings.musicVolume * 0.4; } catch(e){}
+  }
+}
+
+// Alias pour compat
+function updateDroneVolume() { updateMusicVolume(); }
+
+// Helper : créer un buffer de bruit
+function createNoiseBuffer(duration = 2, type = 'white') {
+  const sampleRate = musicCtx.sampleRate;
+  const buffer = musicCtx.createBuffer(1, sampleRate * duration, sampleRate);
+  const data = buffer.getChannelData(0);
+  if (type === 'pink') {
+    // Approximation de bruit rose (Paul Kellet)
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < data.length; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179;
+      b1 = 0.99332 * b1 + w * 0.0750759;
+      b2 = 0.96900 * b2 + w * 0.1538520;
+      b3 = 0.86650 * b3 + w * 0.3104856;
+      b4 = 0.55000 * b4 + w * 0.5329522;
+      b5 = -0.7616 * b5 - w * 0.0168980;
+      data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362) * 0.11;
+      b6 = w * 0.115926;
+    }
+  } else if (type === 'brown') {
+    // Bruit brun (basses lourdes)
+    let last = 0;
+    for (let i = 0; i < data.length; i++) {
+      const w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      data[i] = last * 3.5;
+    }
+  } else {
+    // Bruit blanc
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  }
+  return buffer;
+}
+
+// === OCEAN WAVES ===
+function buildOcean() {
+  const noise = musicCtx.createBufferSource();
+  noise.buffer = createNoiseBuffer(5, 'brown');
+  noise.loop = true;
+
+  const bandpass = musicCtx.createBiquadFilter();
+  bandpass.type = 'bandpass';
+  bandpass.frequency.value = 400;
+  bandpass.Q.value = 0.6;
+
+  const lowpass = musicCtx.createBiquadFilter();
+  lowpass.type = 'lowpass';
+  lowpass.frequency.value = 800;
+  lowpass.Q.value = 0.5;
+
+  const waveGain = musicCtx.createGain();
+  waveGain.gain.value = 0;
+
+  noise.connect(bandpass);
+  bandpass.connect(lowpass);
+  lowpass.connect(waveGain);
+  waveGain.connect(musicMasterGain);
+  noise.start();
+
+  // LFO lent pour simuler le va-et-vient des vagues
+  const lfo = musicCtx.createOscillator();
+  lfo.frequency.value = 0.13; // ~7.5 sec par cycle
+  const lfoGain = musicCtx.createGain();
+  lfoGain.gain.value = 1.2;
+  lfo.connect(lfoGain);
+  lfoGain.connect(waveGain.gain);
+  waveGain.gain.value = 1.5;
+  lfo.start();
+
+  // 2e LFO pour variation sur le filtre
+  const lfo2 = musicCtx.createOscillator();
+  lfo2.frequency.value = 0.07;
+  const lfo2Gain = musicCtx.createGain();
+  lfo2Gain.gain.value = 300;
+  lfo2.connect(lfo2Gain);
+  lfo2Gain.connect(bandpass.frequency);
+  lfo2.start();
+
+  musicNodes.push({ source: noise, gain: waveGain });
+  musicLFOs.push(lfo, lfo2);
+}
+
+// === RAIN ===
+function buildRain() {
+  const noise = musicCtx.createBufferSource();
+  noise.buffer = createNoiseBuffer(4, 'pink');
+  noise.loop = true;
+
+  const highpass = musicCtx.createBiquadFilter();
+  highpass.type = 'highpass';
+  highpass.frequency.value = 1000;
+  highpass.Q.value = 0.5;
+
+  const lowpass = musicCtx.createBiquadFilter();
+  lowpass.type = 'lowpass';
+  lowpass.frequency.value = 5000;
+
+  const rainGain = musicCtx.createGain();
+  rainGain.gain.value = 0.8;
+
+  noise.connect(highpass);
+  highpass.connect(lowpass);
+  lowpass.connect(rainGain);
+  rainGain.connect(musicMasterGain);
+  noise.start();
+
+  // Léger grondement en fond pour l'ambiance
+  const brownNoise = musicCtx.createBufferSource();
+  brownNoise.buffer = createNoiseBuffer(4, 'brown');
+  brownNoise.loop = true;
+  const brownLow = musicCtx.createBiquadFilter();
+  brownLow.type = 'lowpass';
+  brownLow.frequency.value = 200;
+  const brownGain = musicCtx.createGain();
+  brownGain.gain.value = 0.35;
+  brownNoise.connect(brownLow);
+  brownLow.connect(brownGain);
+  brownGain.connect(musicMasterGain);
+  brownNoise.start();
+
+  musicNodes.push({ source: noise, gain: rainGain }, { source: brownNoise, gain: brownGain });
+}
+
+// === TONE PURE (432 ou 528) ===
+function buildTone(freq) {
+  // Fondamentale
+  const osc1 = musicCtx.createOscillator();
+  osc1.type = 'sine';
+  osc1.frequency.value = freq;
+  const g1 = musicCtx.createGain();
+  g1.gain.value = 0.35;
+  osc1.connect(g1); g1.connect(musicMasterGain);
+  osc1.start();
+
+  // Octave au-dessus discrète
+  const osc2 = musicCtx.createOscillator();
+  osc2.type = 'sine';
+  osc2.frequency.value = freq * 2;
+  const g2 = musicCtx.createGain();
+  g2.gain.value = 0.15;
+  osc2.connect(g2); g2.connect(musicMasterGain);
+  osc2.start();
+
+  // Quinte juste
+  const osc3 = musicCtx.createOscillator();
+  osc3.type = 'sine';
+  osc3.frequency.value = freq * 1.5;
+  const g3 = musicCtx.createGain();
+  g3.gain.value = 0.2;
+  osc3.connect(g3); g3.connect(musicMasterGain);
+  osc3.start();
+
+  // LFO très lent sur la fondamentale pour douceur
+  const lfo = musicCtx.createOscillator();
+  lfo.frequency.value = 0.08;
+  const lfoGain = musicCtx.createGain();
+  lfoGain.gain.value = 0.1;
+  lfo.connect(lfoGain); lfoGain.connect(g1.gain);
+  lfo.start();
+
+  musicNodes.push({osc: osc1, gain: g1}, {osc: osc2, gain: g2}, {osc: osc3, gain: g3});
+  musicLFOs.push(lfo);
+}
+
+// === BOL TIBÉTAIN ===
+function buildBowl() {
+  // Fondamentale basse (A2 autour de 110Hz) avec harmoniques inharmoniques
+  const freqs = [110, 220, 329.6, 440, 554.4, 659.2];
+  const amps =  [0.4,  0.25, 0.18,  0.12, 0.08,  0.05];
+  freqs.forEach((f, i) => {
+    const osc = musicCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const g = musicCtx.createGain();
+    g.gain.value = amps[i];
+    osc.connect(g); g.connect(musicMasterGain);
+    osc.start();
+
+    // Modulation lente pour simuler le beating du bol
+    const lfo = musicCtx.createOscillator();
+    lfo.frequency.value = 2 + i * 0.3;
+    const lfoGain = musicCtx.createGain();
+    lfoGain.gain.value = amps[i] * 0.3;
+    lfo.connect(lfoGain); lfoGain.connect(g.gain);
+    lfo.start();
+
+    musicNodes.push({osc, gain: g});
+    musicLFOs.push(lfo);
+  });
+}
+
+// === DRONE (fallback classique) ===
+function buildDrone() {
+  [110, 164.81, 220].forEach(f => {
+    const osc = musicCtx.createOscillator();
+    const g = musicCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    g.gain.value = 0.2;
+    osc.connect(g); g.connect(musicMasterGain);
+    osc.start();
+    musicNodes.push({ osc, gain: g });
+  });
 }
 
 // ============================================================
 // LIST
 // ============================================================
+// Garde-fou pour les playlists ouvertes/fermées
+if (!window.collapsedPlaylists) window.collapsedPlaylists = {};
+
 function renderList() {
   const groups = state.groups;
   document.getElementById('page-list').innerHTML = `
-    <h1 class="h1">${t('list_title_1')} <span class="dot">${t('list_title_2')}</span></h1>
-
-    <div class="action-cards">
-      <button class="action-card primary" id="add-aff">
-        <div class="action-card-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        </div>
-        <div class="action-card-text">
-          <div class="action-card-title">${t('action_new_aff_title')}</div>
-          <div class="action-card-sub">${t('action_new_aff_sub')}</div>
-        </div>
-      </button>
-      <button class="action-card" id="add-group">
-        <div class="action-card-icon secondary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-        </div>
-        <div class="action-card-text">
-          <div class="action-card-title">${t('action_new_group_title')}</div>
-          <div class="action-card-sub">${t('action_new_group_sub')}</div>
-        </div>
+    <div class="list-header-row">
+      <h2 class="list-title">${t('playlists_title')}</h2>
+      <button class="icon-add-btn" id="add-group" aria-label="${t('action_new_group_title')}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
     </div>
 
-    ${groups.map(g => {
+    ${groups.length === 0 ? `
+      <div class="empty-state">
+        <div class="big">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+        <p>${t('empty_playlists')}<br>${t('empty_playlists_hint')}</p>
+      </div>
+    ` : groups.map(g => {
       const affs = state.affirmations.filter(a => a.groupId === g.id);
       const wordAff = affs.length > 1 ? t('affirmations') : t('affirmation');
+      const isCollapsed = window.collapsedPlaylists[g.id];
       return `
-        <div class="group-section">
-          <div class="group-header">
-            <div>
+        <div class="group-section ${isCollapsed ? 'collapsed' : ''}">
+          <div class="group-header" data-toggle-group="${g.id}">
+            <svg class="group-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="group-info">
               <div class="group-name">${escapeHtml(g.name)}</div>
               <div class="group-count">${affs.length} ${wordAff}</div>
             </div>
-            <button class="group-actions-btn" data-group-edit="${g.id}">⚙</button>
+            <button class="group-add-btn" data-group-add="${g.id}" aria-label="Add" onclick="event.stopPropagation()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button class="group-settings-btn" data-group-edit="${g.id}" aria-label="Edit" onclick="event.stopPropagation()">⚙</button>
           </div>
-          ${affs.length === 0 ? '' : affs.map(a => {
-            const playCount = (state.stats.byAffirmation && state.stats.byAffirmation[a.id]) ? state.stats.byAffirmation[a.id].plays : 0;
-            return `
-            <div class="aff-row">
-              <div class="aff-rec-dot ${a.recording ? '' : 'empty'}"></div>
-              <div class="aff-title">
-                ${escapeHtml(a.title)}${playCount > 0 ? ` <span class="aff-play-count">${playCount}×</span>` : ''}
-                ${!a.recording ? `<div class="aff-no-rec">${t('not_recorded')}</div>` : ''}
+          <div class="group-content">
+            ${affs.length === 0 ? `<div class="playlist-empty-hint">${t('empty_playlist_hint')}</div>` : affs.map(a => {
+              const playCount = (state.stats.byAffirmation && state.stats.byAffirmation[a.id]) ? state.stats.byAffirmation[a.id].plays : 0;
+              return `
+              <div class="aff-row">
+                <div class="aff-rec-dot ${a.recording ? '' : 'empty'}"></div>
+                <div class="aff-title">
+                  ${escapeHtml(a.title)}${playCount > 0 ? ` <span class="aff-play-count">${playCount}×</span>` : ''}
+                  ${!a.recording ? `<div class="aff-no-rec">${t('not_recorded')}</div>` : ''}
+                </div>
+                <button class="aff-btn" data-aff-play="${a.id}" ${!a.recording?'style="opacity:0.3"':''}>▶</button>
+                <button class="aff-btn" data-aff-edit="${a.id}">⚙</button>
               </div>
-              <button class="aff-btn" data-aff-play="${a.id}" ${!a.recording?'style="opacity:0.3"':''}>▶</button>
-              <button class="aff-btn" data-aff-edit="${a.id}">⚙</button>
-            </div>
-          `;}).join('')}
+            `;}).join('')}
+          </div>
         </div>
       `;
     }).join('')}
-
-    ${state.affirmations.length === 0 ? `
-      <div class="empty-state">
-        <div class="big">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-        </div>
-        <p>${t('empty_list')}<br>${t('empty_list_hint')}</p>
-      </div>
-    ` : ''}
   `;
 
-  document.getElementById('add-aff').addEventListener('click', () => openAddAffModal());
   document.getElementById('add-group').addEventListener('click', () => openAddGroupModal());
-  document.querySelectorAll('[data-group-edit]').forEach(b => b.addEventListener('click', () => openEditGroupModal(b.dataset.groupEdit)));
+  document.querySelectorAll('[data-toggle-group]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const gid = el.dataset.toggleGroup;
+      window.collapsedPlaylists[gid] = !window.collapsedPlaylists[gid];
+      render();
+    });
+  });
+  document.querySelectorAll('[data-group-add]').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openAddAffModal(b.dataset.groupAdd);
+  }));
+  document.querySelectorAll('[data-group-edit]').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openEditGroupModal(b.dataset.groupEdit);
+  }));
   document.querySelectorAll('[data-aff-play]').forEach(b => b.addEventListener('click', () => {
     const aff = state.affirmations.find(a => a.id === b.dataset.affPlay);
     if (aff && aff.recording) previewAff(aff);
@@ -2775,14 +3433,23 @@ function openPlayerSheet() {
 
       <div class="setting-row col" style="padding: 14px 0">
         <div>
-          <div class="setting-label">${t('music_type')}</div>
+          <div class="setting-label">${t('ambiance')}</div>
           <div class="setting-sub">${t('music_type_sub')}</div>
         </div>
-        <div class="music-mode-row" style="margin-top:8px">
+        <div class="music-mode-row two" style="margin-top:8px">
           <button class="music-mode-btn ${s.musicMode==='none'?'active':''}" data-ps-music-mode="none">${t('none')}</button>
-          <button class="music-mode-btn ${s.musicMode==='drone'?'active':''}" data-ps-music-mode="drone">${t('drone')}</button>
-          <button class="music-mode-btn ${s.musicMode==='playlist'?'active':''}" data-ps-music-mode="playlist" ${!s.musicPlaylistUrl?'disabled style="opacity:0.4"':''}>${t('playlist')}</button>
+          <button class="music-mode-btn ${s.musicMode==='drone'?'active':''}" data-ps-music-mode="drone">${t('ambiance')}</button>
         </div>
+
+        ${s.musicMode === 'drone' ? `
+          <div class="ambiance-grid" style="margin-top: 12px">
+            ${Object.entries(AMBIANCES).map(([id, amb]) => `
+              <button class="ambiance-btn ${s.ambianceId===id?'active':''}" data-ambiance="${id}" style="--amb-color: ${amb.color}">
+                ${amb.name}
+              </button>
+            `).join('')}
+          </div>
+        ` : ''}
       </div>
 
       <button class="btn-secondary" id="ps-close" style="margin-top:16px">${t('cancel') === 'Annuler' ? 'Fermer' : 'Close'}</button>
@@ -2811,9 +3478,24 @@ function openPlayerSheet() {
     b.addEventListener('click', () => {
       state.settings.musicMode = b.dataset.psMusicMode;
       saveState();
-      overlay.querySelectorAll('[data-ps-music-mode]').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
+      // Re-render la sheet pour afficher/masquer la grille d'ambiances
+      overlay.remove();
+      openPlayerSheet();
       if (playerState.playing) { stopMusic(); startMusic(); }
+    });
+  });
+
+  overlay.querySelectorAll('[data-ambiance]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.ambianceId = b.dataset.ambiance;
+      saveState();
+      overlay.querySelectorAll('[data-ambiance]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      // Si en lecture, on relance la musique avec la nouvelle ambiance
+      if (playerState.playing && state.settings.musicMode === 'drone') {
+        stopMusic();
+        startMusic();
+      }
     });
   });
 
@@ -2964,6 +3646,137 @@ function renderChallenge() {
 // Enregistrement intégré dans l'onglet 10K
 let chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null, recording: null, duration: 0 };
 
+// ============================================================
+// AUDIO RECORDING - avec filtres bruits + embellissement voix
+// ============================================================
+async function getProcessedMicStream() {
+  // Étape 1 : obtenir le stream micro avec filtres natifs
+  const rawStream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,       // Annule les échos
+      noiseSuppression: true,       // Supprime bruits de fond
+      autoGainControl: true,        // Normalise le volume
+      sampleRate: 48000,
+      channelCount: 1,
+    }
+  });
+
+  // Étape 2 : si Web Audio API dispo, on applique un embellissement
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return { stream: rawStream, cleanup: () => rawStream.getTracks().forEach(t => t.stop()) };
+
+    const ctx = new AudioContextClass({ sampleRate: 48000 });
+    const source = ctx.createMediaStreamSource(rawStream);
+
+    // --- Chaîne d'effets ---
+    // 1. Filtre passe-haut : coupe les basses parasites (grondements)
+    const highPass = ctx.createBiquadFilter();
+    highPass.type = 'highpass';
+    highPass.frequency.value = 85;
+    highPass.Q.value = 0.7;
+
+    // 2. Filtre passe-bas : coupe les hautes fréquences stridentes
+    const lowPass = ctx.createBiquadFilter();
+    lowPass.type = 'lowpass';
+    lowPass.frequency.value = 10000;
+    lowPass.Q.value = 0.7;
+
+    // 3. Boost léger des médiums (présence vocale, 2.5 kHz)
+    const presence = ctx.createBiquadFilter();
+    presence.type = 'peaking';
+    presence.frequency.value = 2500;
+    presence.Q.value = 1.2;
+    presence.gain.value = 3; // +3dB
+
+    // 4. Compresseur : équilibre volumes forts/doux
+    const compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.value = -24;
+    compressor.knee.value = 30;
+    compressor.ratio.value = 4;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.25;
+
+    // 5. Léger gain final (volume boost)
+    const makeupGain = ctx.createGain();
+    makeupGain.gain.value = 1.3;
+
+    // Connexions
+    source.connect(highPass);
+    highPass.connect(lowPass);
+    lowPass.connect(presence);
+    presence.connect(compressor);
+    compressor.connect(makeupGain);
+
+    // Destination de streaming (output)
+    const dest = ctx.createMediaStreamDestination();
+    makeupGain.connect(dest);
+
+    const processedStream = dest.stream;
+
+    const cleanup = () => {
+      try { source.disconnect(); } catch(e){}
+      try { ctx.close(); } catch(e){}
+      rawStream.getTracks().forEach(t => t.stop());
+    };
+
+    return { stream: processedStream, cleanup, analyser: null };
+  } catch(e) {
+    console.warn('Audio processing failed, falling back to raw stream', e);
+    return { stream: rawStream, cleanup: () => rawStream.getTracks().forEach(t => t.stop()) };
+  }
+}
+
+// Fonction de test micro avec visualisation du niveau
+async function testMic(canvas) {
+  const rawStream = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+  });
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioContextClass();
+  const source = ctx.createMediaStreamSource(rawStream);
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 512;
+  source.connect(analyser);
+
+  const canvasCtx = canvas.getContext('2d');
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  let running = true;
+
+  function draw() {
+    if (!running) return;
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
+    const w = canvas.width;
+    const h = canvas.height;
+    canvasCtx.clearRect(0, 0, w, h);
+
+    const bars = 24;
+    const barW = w / bars - 3;
+    for (let i = 0; i < bars; i++) {
+      const idx = Math.floor((i / bars) * bufferLength * 0.6);
+      const v = dataArray[idx] / 255;
+      const barH = v * h * 0.95;
+      // dégradé rose gold
+      const t = i / bars;
+      const r = Math.round(0xf5 + (0xe4 - 0xf5) * t);
+      const g = Math.round(0xb5 + (0x78 - 0xb5) * t);
+      const b = Math.round(0x93 + (0xa0 - 0x93) * t);
+      canvasCtx.fillStyle = `rgb(${r},${g},${b})`;
+      canvasCtx.fillRect(i * (w / bars) + 1.5, h - barH, barW, barH);
+    }
+  }
+  draw();
+
+  return () => {
+    running = false;
+    try { source.disconnect(); } catch(e){}
+    try { ctx.close(); } catch(e){}
+    rawStream.getTracks().forEach(t => t.stop());
+  };
+}
+
 function setupChallengeRecorder() {
   const recBtn = document.getElementById('ch-rec-btn');
   const timer = document.getElementById('ch-rec-timer');
@@ -2996,12 +3809,13 @@ function setupChallengeRecorder() {
       clearInterval(chRecorder.interval);
     } else {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const { stream, cleanup } = await getProcessedMicStream();
         chRecorder.chunks = [];
         chRecorder.mediaRecorder = new MediaRecorder(stream);
+        chRecorder._cleanup = cleanup;
         chRecorder.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chRecorder.chunks.push(e.data); };
         chRecorder.mediaRecorder.onstop = () => {
-          stream.getTracks().forEach(t => t.stop());
+          cleanup();
           const blob = new Blob(chRecorder.chunks, { type: 'audio/webm' });
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -3284,9 +4098,9 @@ function renderStats() {
 // ============================================================
 // MODALS
 // ============================================================
-function openAddAffModal() {
+function openAddAffModal(defaultGroupId) {
   if (state.groups.length === 0) { toast(t('toast_need_group')); return; }
-  openAffModal(null);
+  openAffModal(null, defaultGroupId);
 }
 
 function openEditAffModal(id) {
@@ -3294,9 +4108,10 @@ function openEditAffModal(id) {
   if (aff) openAffModal(aff);
 }
 
-function openAffModal(existing) {
+function openAffModal(existing, defaultGroupId) {
   const isEdit = !!existing;
-  const aff = existing || { id: uid(), title: '', groupId: state.groups[0].id, recording: null, duration: 0 };
+  const initialGroup = defaultGroupId || (existing && existing.groupId) || state.groups[0].id;
+  const aff = existing || { id: uid(), title: '', groupId: initialGroup, recording: null, duration: 0 };
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay active';
@@ -3351,12 +4166,12 @@ function openAffModal(existing) {
       clearInterval(recTimerInterval);
     } else {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const { stream, cleanup } = await getProcessedMicStream();
         recChunks = [];
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recChunks.push(e.data); };
         mediaRecorder.onstop = () => {
-          stream.getTracks().forEach(t => t.stop());
+          cleanup();
           const blob = new Blob(recChunks, { type: 'audio/webm' });
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -3546,7 +4361,7 @@ function renderSettings() {
     </div>
 
     <div class="h3">${t('appearance')}</div>
-    <div class="setting-group" style="padding: 16px 18px">
+    <div class="setting-group" style="padding: 10px 12px">
       <div class="theme-picker ${s.darkMode ? 'dark-preview' : ''}">
         ${THEMES.map(th => `
           <div class="theme-chip ${th.id} ${s.theme===th.id?'active':''}" data-theme-id="${th.id}">
@@ -3567,30 +4382,20 @@ function renderSettings() {
       </div>
     </div>
 
-    <div class="h3">${t('playlist_url')}</div>
-    <div class="setting-group">
-      <div class="setting-row col">
-        <div>
-          <div class="setting-label">${t('playlist_url')}</div>
-          <div class="setting-sub">${t('playlist_url_sub')}</div>
+    <div class="h3">${t('support')}</div>
+    <button class="kofi-card" id="kofi-support-btn">
+      <div class="kofi-card-bg"></div>
+      <div class="kofi-card-content">
+        <div class="kofi-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
-        <input type="text" class="input-text" id="playlist-url" placeholder="https://open.spotify.com/playlist/..." value="${escapeHtml(s.musicPlaylistUrl)}" />
-        <button class="btn-secondary" id="save-playlist">${t('save_url')}</button>
-      </div>
-    </div>
-
-    <div class="h3">${t('support')} ♥</div>
-    <div class="setting-group">
-      <div class="setting-row col">
-        <div>
-          <div class="setting-label">${t('kofi_url')}</div>
-          <div class="setting-sub">${t('support_sub')}<br><br>${t('kofi_sub')}</div>
+        <div class="kofi-text">
+          <div class="kofi-title">${t('support_title')}</div>
+          <div class="kofi-sub">${t('support_tagline')}</div>
         </div>
-        <input type="text" class="input-text" id="kofi-url" placeholder="https://ko-fi.com/perrine" value="${escapeHtml(s.kofiUrl || '')}" />
-        <button class="btn-secondary" id="save-kofi">💾</button>
-        ${s.kofiUrl ? `<button class="support-btn-float" id="test-kofi">${t('support_btn')}</button>` : ''}
+        <div class="kofi-arrow">→</div>
       </div>
-    </div>
+    </button>
 
     <div class="h3">${t('data')}</div>
     <div class="setting-group">
@@ -3653,25 +4458,8 @@ function renderSettings() {
     });
   });
 
-  document.getElementById('save-playlist').addEventListener('click', () => {
-    const url = document.getElementById('playlist-url').value.trim();
-    state.settings.musicPlaylistUrl = url;
-    if (!url && state.settings.musicMode === 'playlist') state.settings.musicMode = 'none';
-    saveState();
-    toast(url ? t('toast_playlist_saved') : t('toast_url_cleared'));
-    render();
-  });
-
-  document.getElementById('save-kofi').addEventListener('click', () => {
-    const url = document.getElementById('kofi-url').value.trim();
-    state.settings.kofiUrl = url;
-    saveState();
-    toast(url ? t('toast_kofi_saved') : t('toast_url_cleared'));
-    render();
-  });
-
-  document.getElementById('test-kofi')?.addEventListener('click', () => {
-    if (state.settings.kofiUrl) window.open(state.settings.kofiUrl, '_blank');
+  document.getElementById('kofi-support-btn')?.addEventListener('click', () => {
+    window.open('https://ko-fi.com/getmanifestapp', '_blank');
   });
 
   document.getElementById('export').addEventListener('click', () => exportData(false));
@@ -3764,43 +4552,72 @@ function startOnboarding() {
 }
 
 function renderOnboarding() {
-  // remove existing
-  document.getElementById('onboarding')?.remove();
-
   const step = ONBOARDING_STEPS[obStep];
   const isLast = obStep === ONBOARDING_STEPS.length - 1;
 
-  const el = document.createElement('div');
-  el.id = 'onboarding';
-  el.className = 'onboarding-overlay';
-  el.innerHTML = `
-    <div class="ob-top">
-      <div class="ob-step-indicator">${t('ob_step')} ${obStep+1} ${t('ob_of')} ${ONBOARDING_STEPS.length}</div>
-      <button class="ob-skip-btn" id="ob-skip">${t('ob_skip')}</button>
-    </div>
-    <div class="ob-content">
-      <div class="ob-visual">${step.icon}</div>
-      <div class="ob-title">${t(step.titleKey)}</div>
-      <div class="ob-text">${t(step.textKey)}</div>
-    </div>
-    <div class="ob-dots">
-      ${ONBOARDING_STEPS.map((_, i) => `<div class="ob-dot ${i===obStep?'active':''}"></div>`).join('')}
-    </div>
-    <button class="ob-next-btn" id="ob-next">${isLast ? t('ob_start') : t('ob_next')} →</button>
-  `;
-  document.body.appendChild(el);
+  let el = document.getElementById('onboarding');
+  const firstBuild = !el;
 
-  document.getElementById('ob-skip').addEventListener('click', endOnboarding);
-  document.getElementById('ob-next').addEventListener('click', () => {
-    if (isLast) {
-      endOnboarding();
-      // ouvre direct l'onglet affirmations à la fin
-      switchTab('list');
-    } else {
-      obStep++;
-      renderOnboarding();
-    }
-  });
+  if (firstBuild) {
+    el = document.createElement('div');
+    el.id = 'onboarding';
+    el.className = 'onboarding-overlay';
+    el.innerHTML = `
+      <div class="ob-top">
+        <div class="ob-step-indicator" id="ob-indicator"></div>
+        <button class="ob-skip-btn" id="ob-skip">${t('ob_skip')}</button>
+      </div>
+      <div class="ob-content">
+        <div class="ob-visual" id="ob-visual"></div>
+        <div class="ob-title" id="ob-title"></div>
+        <div class="ob-text" id="ob-text"></div>
+      </div>
+      <div class="ob-dots" id="ob-dots"></div>
+      <button class="ob-next-btn" id="ob-next"></button>
+    `;
+    document.body.appendChild(el);
+
+    document.getElementById('ob-skip').addEventListener('click', endOnboarding);
+    document.getElementById('ob-next').addEventListener('click', () => {
+      const isNowLast = obStep === ONBOARDING_STEPS.length - 1;
+      if (isNowLast) {
+        endOnboarding();
+        switchTab('list');
+      } else {
+        obStep++;
+        renderOnboarding();
+      }
+    });
+  }
+
+  // Update contents with fade transition
+  const visualEl = document.getElementById('ob-visual');
+  const titleEl = document.getElementById('ob-title');
+  const textEl = document.getElementById('ob-text');
+  const indicatorEl = document.getElementById('ob-indicator');
+  const dotsEl = document.getElementById('ob-dots');
+  const nextBtn = document.getElementById('ob-next');
+
+  const applyContent = () => {
+    visualEl.textContent = step.icon;
+    titleEl.textContent = t(step.titleKey);
+    textEl.textContent = t(step.textKey);
+    indicatorEl.textContent = `${t('ob_step')} ${obStep+1} ${t('ob_of')} ${ONBOARDING_STEPS.length}`;
+    dotsEl.innerHTML = ONBOARDING_STEPS.map((_, i) => `<div class="ob-dot ${i===obStep?'active':''}"></div>`).join('');
+    nextBtn.textContent = (isLast ? t('ob_start') : t('ob_next')) + ' →';
+  };
+
+  if (firstBuild) {
+    applyContent();
+  } else {
+    // Fade out puis fade in
+    const content = el.querySelector('.ob-content');
+    content.classList.add('ob-fading');
+    setTimeout(() => {
+      applyContent();
+      content.classList.remove('ob-fading');
+    }, 180);
+  }
 }
 
 function endOnboarding() {
