@@ -1,0 +1,3840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f5e6f0">
+<title>GetManifest ✦</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================
+   THEMES — 6 ambiances
+   =================================================== */
+
+/* Default : Rose Gold (couleurs exactes du logo) */
+:root, [data-theme="doux"] {
+  --bg-grad: linear-gradient(170deg, #fff5ef 0%, #fde8e3 60%, #f5c8c3 100%);
+  --bg-solid: #fff5ef;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(228, 120, 160, 0.12);
+  --text: #5c4a44;
+  --text-strong: #3d2a28;
+  --text-dim: #a89d8f;
+  --text-faint: #c9b8a8;
+  --accent: #e478a0;
+  --accent-light: #f0a0a8;
+  --accent-glow: rgba(240, 160, 168, 0.45);
+  --orb-grad: linear-gradient(135deg, #f5b593 0%, #f0a0a8 50%, #e478a0 100%);
+  --tab-bg: rgba(255,255,255,0.95);
+  --tab-border: rgba(228, 120, 160, 0.1);
+  --tab-active-bg: rgba(240, 160, 168, 0.12);
+  --line: rgba(228, 120, 160, 0.15);
+  --btn-text: #ffffff;
+  --danger: #d85858;
+  --input-bg: #ffffff;
+}
+
+[data-theme="boho"] {
+  --bg-grad: linear-gradient(170deg, #f5ede3 0%, #ead8c4 60%, #d4b89a 100%);
+  --bg-solid: #f5ede3;
+  --card-bg: #fff8ef;
+  --card-shadow: 0 4px 20px rgba(168, 115, 74, 0.15);
+  --text: #5c4a37;
+  --text-strong: #4a3523;
+  --text-dim: #a8927a;
+  --text-faint: #b89b7f;
+  --accent: #b86842;
+  --accent-light: #d4916e;
+  --accent-glow: rgba(184, 104, 66, 0.4);
+  --orb-grad: linear-gradient(135deg, #d4916e 0%, #b86842 50%, #8b4a2d 100%);
+  --tab-bg: rgba(255, 248, 239, 0.95);
+  --tab-border: rgba(168, 115, 74, 0.15);
+  --tab-active-bg: rgba(184, 104, 66, 0.12);
+  --line: rgba(168, 115, 74, 0.2);
+  --btn-text: #ffffff;
+  --danger: #b84242;
+  --input-bg: #fff8ef;
+}
+
+[data-theme="ocean"] {
+  --bg-grad: linear-gradient(170deg, #e3f2f7 0%, #bde0ec 60%, #88c5d8 100%);
+  --bg-solid: #e3f2f7;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(34, 139, 180, 0.15);
+  --text: #1e4a5c;
+  --text-strong: #0a2d3d;
+  --text-dim: #6c9bb0;
+  --text-faint: #a3c3d4;
+  --accent: #1e88ab;
+  --accent-light: #4bb5d6;
+  --accent-glow: rgba(75, 181, 214, 0.5);
+  --orb-grad: linear-gradient(135deg, #7dd3e8 0%, #4bb5d6 50%, #1e88ab 100%);
+  --tab-bg: rgba(255,255,255,0.95);
+  --tab-border: rgba(34, 139, 180, 0.15);
+  --tab-active-bg: rgba(75, 181, 214, 0.15);
+  --line: rgba(34, 139, 180, 0.2);
+  --btn-text: #ffffff;
+  --danger: #e05a5a;
+  --input-bg: #ffffff;
+}
+
+[data-theme="mini"] {
+  --bg-grad: #f8f6f3;
+  --bg-solid: #f8f6f3;
+  --card-bg: #ffffff;
+  --card-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  --text: #2c2c2c;
+  --text-strong: #1a1a1a;
+  --text-dim: #777;
+  --text-faint: #bbb;
+  --accent: #1a1a1a;
+  --accent-light: #444;
+  --accent-glow: rgba(0, 0, 0, 0.2);
+  --orb-grad: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+  --tab-bg: rgba(255, 255, 255, 0.95);
+  --tab-border: rgba(0,0,0,0.08);
+  --tab-active-bg: rgba(0,0,0,0.05);
+  --line: #e8e4df;
+  --btn-text: #ffffff;
+  --danger: #c93d3d;
+  --input-bg: #ffffff;
+}
+
+[data-theme="lavande"] {
+  --bg-grad: linear-gradient(170deg, #eee6f8 0%, #d7c7ec 60%, #bda4de 100%);
+  --bg-solid: #eee6f8;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(142, 111, 200, 0.15);
+  --text: #4a3d6b;
+  --text-strong: #392a5c;
+  --text-dim: #9f8bc0;
+  --text-faint: #a893c8;
+  --accent: #7855c4;
+  --accent-light: #a885e0;
+  --accent-glow: rgba(168, 133, 224, 0.5);
+  --orb-grad: linear-gradient(135deg, #d4b5f0 0%, #a885e0 50%, #7855c4 100%);
+  --tab-bg: rgba(255,255,255,0.95);
+  --tab-border: rgba(142, 111, 200, 0.15);
+  --tab-active-bg: rgba(168, 133, 224, 0.15);
+  --line: rgba(142, 111, 200, 0.2);
+  --btn-text: #ffffff;
+  --danger: #c93d7a;
+  --input-bg: #ffffff;
+}
+
+[data-theme="sauge"] {
+  --bg-grad: linear-gradient(170deg, #f4f1e8 0%, #e3e5d2 60%, #c8cfb4 100%);
+  --bg-solid: #f4f1e8;
+  --card-bg: #fdfbf5;
+  --card-shadow: 0 4px 20px rgba(122, 143, 90, 0.12);
+  --text: #4a5540;
+  --text-strong: #3a4530;
+  --text-dim: #96a386;
+  --text-faint: #a5b58c;
+  --accent: #607848;
+  --accent-light: #8aa06b;
+  --accent-glow: rgba(138, 160, 107, 0.4);
+  --orb-grad: linear-gradient(135deg, #b8c998 0%, #8aa06b 50%, #607848 100%);
+  --tab-bg: rgba(253, 251, 245, 0.95);
+  --tab-border: rgba(122, 143, 90, 0.15);
+  --tab-active-bg: rgba(138, 160, 107, 0.12);
+  --line: rgba(122, 143, 90, 0.2);
+  --btn-text: #ffffff;
+  --danger: #b85252;
+  --input-bg: #fdfbf5;
+}
+
+/* ===== MODE SOMBRE : versions dark de chaque thème ===== */
+[data-theme="doux-dark"] {
+  --bg-grad: linear-gradient(170deg, #1a1410 0%, #241a16 60%, #2d1f1a 100%);
+  --bg-solid: #1a1410;
+  --card-bg: #251c18;
+  --card-shadow: 0 4px 20px rgba(240, 160, 168, 0.15);
+  --text: #e8d4c8;
+  --text-strong: #faeae0;
+  --text-dim: #a89d8f;
+  --text-faint: #70655a;
+  --accent: #f0a0a8;
+  --accent-light: #f5b593;
+  --accent-glow: rgba(240, 160, 168, 0.55);
+  --orb-grad: linear-gradient(135deg, #f5b593 0%, #f0a0a8 50%, #e478a0 100%);
+  --tab-bg: rgba(26, 20, 16, 0.95);
+  --tab-border: rgba(240, 160, 168, 0.2);
+  --tab-active-bg: rgba(240, 160, 168, 0.15);
+  --line: rgba(240, 160, 168, 0.2);
+  --btn-text: #1a1410;
+  --danger: #f08080;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+[data-theme="boho-dark"] {
+  --bg-grad: linear-gradient(170deg, #1a1310 0%, #2a1f16 60%, #3a2a1c 100%);
+  --bg-solid: #1a1310;
+  --card-bg: #2a1f16;
+  --card-shadow: 0 4px 20px rgba(212, 145, 110, 0.15);
+  --text: #e8d4bc;
+  --text-strong: #f8ead3;
+  --text-dim: #a8927a;
+  --text-faint: #7a6549;
+  --accent: #e09870;
+  --accent-light: #f5b593;
+  --accent-glow: rgba(224, 152, 112, 0.5);
+  --orb-grad: linear-gradient(135deg, #f5b593 0%, #e09870 50%, #b86842 100%);
+  --tab-bg: rgba(26, 19, 16, 0.95);
+  --tab-border: rgba(212, 145, 110, 0.2);
+  --tab-active-bg: rgba(212, 145, 110, 0.15);
+  --line: rgba(212, 145, 110, 0.2);
+  --btn-text: #1a1310;
+  --danger: #e07070;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+[data-theme="ocean-dark"] {
+  --bg-grad: linear-gradient(170deg, #031420 0%, #052235 60%, #0a3550 100%);
+  --bg-solid: #031420;
+  --card-bg: rgba(255,255,255,0.05);
+  --card-shadow: 0 4px 20px rgba(100, 200, 240, 0.2);
+  --text: #b8dceb;
+  --text-strong: #e8f5fa;
+  --text-dim: #6b94ab;
+  --text-faint: #4a6b7f;
+  --accent: #5fc5ea;
+  --accent-light: #8bd9f0;
+  --accent-glow: rgba(95, 197, 234, 0.6);
+  --orb-grad: linear-gradient(135deg, #a8e8fa 0%, #5fc5ea 50%, #2a95c0 100%);
+  --tab-bg: rgba(3, 20, 32, 0.95);
+  --tab-border: rgba(95, 197, 234, 0.2);
+  --tab-active-bg: rgba(95, 197, 234, 0.15);
+  --line: rgba(95, 197, 234, 0.2);
+  --btn-text: #031420;
+  --danger: #f08080;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+[data-theme="mini-dark"] {
+  --bg-grad: #0f0f0f;
+  --bg-solid: #0f0f0f;
+  --card-bg: #1a1a1a;
+  --card-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  --text: #d4d4d4;
+  --text-strong: #ffffff;
+  --text-dim: #808080;
+  --text-faint: #525252;
+  --accent: #ffffff;
+  --accent-light: #e0e0e0;
+  --accent-glow: rgba(255, 255, 255, 0.2);
+  --orb-grad: linear-gradient(135deg, #e0e0e0 0%, #ffffff 100%);
+  --tab-bg: rgba(15, 15, 15, 0.95);
+  --tab-border: rgba(255,255,255,0.1);
+  --tab-active-bg: rgba(255,255,255,0.1);
+  --line: #333333;
+  --btn-text: #0f0f0f;
+  --danger: #ef6464;
+  --input-bg: #1f1f1f;
+}
+
+[data-theme="lavande-dark"] {
+  --bg-grad: linear-gradient(170deg, #10081e 0%, #1a0e2e 60%, #241440 100%);
+  --bg-solid: #10081e;
+  --card-bg: #1f1332;
+  --card-shadow: 0 4px 20px rgba(168, 133, 224, 0.2);
+  --text: #d4c0e8;
+  --text-strong: #ebe0f8;
+  --text-dim: #9888b0;
+  --text-faint: #6a5e85;
+  --accent: #c4a3ed;
+  --accent-light: #e0cdf5;
+  --accent-glow: rgba(196, 163, 237, 0.5);
+  --orb-grad: linear-gradient(135deg, #e0cdf5 0%, #c4a3ed 50%, #7855c4 100%);
+  --tab-bg: rgba(16, 8, 30, 0.95);
+  --tab-border: rgba(196, 163, 237, 0.2);
+  --tab-active-bg: rgba(196, 163, 237, 0.15);
+  --line: rgba(196, 163, 237, 0.2);
+  --btn-text: #10081e;
+  --danger: #e07090;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+[data-theme="sauge-dark"] {
+  --bg-grad: linear-gradient(170deg, #0d140a 0%, #141f10 60%, #1c2a16 100%);
+  --bg-solid: #0d140a;
+  --card-bg: #1a2515;
+  --card-shadow: 0 4px 20px rgba(138, 160, 107, 0.2);
+  --text: #c8d4b4;
+  --text-strong: #e2ead0;
+  --text-dim: #8a9676;
+  --text-faint: #5c6849;
+  --accent: #a8c188;
+  --accent-light: #c4d9a4;
+  --accent-glow: rgba(168, 193, 136, 0.5);
+  --orb-grad: linear-gradient(135deg, #c4d9a4 0%, #a8c188 50%, #607848 100%);
+  --tab-bg: rgba(13, 20, 10, 0.95);
+  --tab-border: rgba(168, 193, 136, 0.2);
+  --tab-active-bg: rgba(168, 193, 136, 0.15);
+  --line: rgba(168, 193, 136, 0.2);
+  --btn-text: #0d140a;
+  --danger: #e07070;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+/* ===================================================
+   BASE
+   =================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: 'Nunito', -apple-system, system-ui, sans-serif;
+  font-weight: 500;
+  background: var(--bg-grad);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  overscroll-behavior: none;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+body {
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+/* Quand on est sur le player, pas de scroll */
+body.player-active {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: max(20px, env(safe-area-inset-top)) 22px 20px;
+}
+
+h1.h1 {
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text-strong);
+  letter-spacing: -0.3px;
+  margin-bottom: 16px;
+  font-family: 'Nunito', sans-serif;
+}
+h1.h1 .dot { color: var(--accent); font-weight: 600; }
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.h3 {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin: 24px 0 10px;
+}
+.sublabel { font-size: 12px; color: var(--text-dim); line-height: 1.5; font-weight: 500; }
+
+/* ===================================================
+   TABS
+   =================================================== */
+.tabs {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--tab-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--tab-border);
+  display: flex;
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+  z-index: 100;
+  justify-content: space-around;
+}
+.tab {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  font-weight: 700;
+  border-radius: 100px;
+  transition: color 0.2s;
+}
+.tab-icon { font-size: 18px; font-weight: 400; }
+.tab.active { color: var(--accent); }
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===================================================
+   PLAYER - plein écran, pas de scroll
+   =================================================== */
+#page-player.active {
+  display: flex;
+  flex-direction: column;
+}
+.player-fullscreen {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 90px - max(20px, env(safe-area-inset-top)) - 40px - env(safe-area-inset-bottom));
+  padding-bottom: 10px;
+}
+.player-top {
+  text-align: center;
+  margin-bottom: 14px;
+}
+/* Mini header global sur toutes les pages (sauf Player qui a son gros logo) */
+.mini-header {
+  text-align: center;
+  padding: 4px 0 18px;
+}
+.mini-logo {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.3;
+  padding: 2px 0;
+  background: linear-gradient(90deg, #f5b593 0%, #f0a0a8 50%, #e478a0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.3px;
+  display: inline-block;
+}
+.mini-tagline {
+  font-size: 8px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: #a89d8f;
+  margin-top: -2px;
+}
+/* Hide mini header sur le player (y'a le gros logo) */
+body.player-active .mini-header { display: none; }
+
+/* Header global visible sur toutes les pages */
+.app-header {
+  text-align: center;
+  padding: 10px 0 20px;
+}
+.brand-logo {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1.3;
+  padding: 4px 0;
+  background: linear-gradient(90deg, #f5b593 0%, #f0a0a8 50%, #e478a0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  display: inline-block;
+}
+.brand-tagline {
+  font-size: 10px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  color: #a89d8f;
+  margin-top: 2px;
+}
+.brand-mode {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+.brand-mode-name {
+  color: var(--accent);
+}
+
+.player-selector-wrap {
+  margin-bottom: 12px;
+}
+.player-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 0;
+}
+
+.selector-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.group-selector {
+  width: 100%;
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 16px 44px 16px 20px;
+  color: var(--text-strong);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--accent-glow);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+}
+
+/* support button floating */
+.support-btn-float {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  width: 100%;
+  margin-top: 10px;
+}
+.support-btn-float:active { opacity: 0.7; }
+
+.now-playing {
+  text-align: center;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text-strong);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  line-height: 1.3;
+}
+.now-playing-state {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-top: -12px;
+}
+
+.orb-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orb {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: var(--orb-grad);
+  box-shadow: 0 15px 45px var(--accent-glow), inset 0 -10px 25px rgba(0,0,0,0.12);
+  animation: orbPulse 2s ease-in-out infinite;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 44px;
+  font-weight: 700;
+  transition: transform 0.15s;
+  border: none;
+}
+.orb:active { transform: scale(0.95); }
+.orb.paused {
+  animation-play-state: paused;
+  opacity: 0.6;
+}
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent-glow);
+  animation: orbPulse 2s ease-in-out infinite reverse;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Session stats sous l'orbe */
+.session-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: var(--card-bg);
+  border-radius: 100px;
+  padding: 10px 22px;
+  box-shadow: var(--card-shadow);
+  margin-top: 4px;
+}
+.session-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+}
+.session-stat-item svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.session-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-strong);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+.session-stat-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+.session-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--line);
+}
+
+/* ===================================================
+   LIST
+   =================================================== */
+/* Action cards (nouveau design des 2 boutons créer) */
+.action-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.action-card {
+  background: var(--card-bg);
+  border: none;
+  border-radius: 18px;
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.1s, box-shadow 0.2s;
+  font-family: inherit;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+.action-card:active {
+  transform: scale(0.98);
+}
+.action-card.primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: var(--btn-text);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.action-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.action-card-icon.secondary {
+  background: var(--accent);
+  color: var(--btn-text);
+}
+.action-card.primary .action-card-icon {
+  background: rgba(255,255,255,0.25);
+  color: var(--btn-text);
+}
+.action-card-text {
+  flex: 1;
+  min-width: 0;
+}
+.action-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
+}
+.action-card-sub {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+  letter-spacing: 0.3px;
+}
+.action-card:not(.primary) .action-card-title {
+  color: var(--text-strong);
+}
+.action-card:not(.primary) .action-card-sub {
+  color: var(--text-dim);
+  opacity: 1;
+}
+
+.group-section {
+  margin-bottom: 24px;
+}
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.group-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.group-count {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.group-actions-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.aff-row {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--card-shadow);
+}
+.aff-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  line-height: 1.3;
+}
+.aff-no-rec {
+  color: var(--text-faint);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 3px;
+  font-weight: 700;
+}
+.aff-rec-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.aff-rec-dot.empty { background: transparent; border: 1.5px solid var(--text-faint); box-shadow: none; }
+.aff-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: transform 0.1s;
+}
+.aff-btn:active { transform: scale(0.9); }
+.aff-btn.danger { color: var(--danger); }
+
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--text-dim);
+}
+.empty-state .big {
+  font-size: 48px;
+  opacity: 0.5;
+  margin-bottom: 14px;
+  color: var(--accent);
+}
+
+/* ===================================================
+   SETTINGS
+   =================================================== */
+.setting-group {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 6px 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--card-shadow);
+}
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row.col { flex-direction: column; align-items: stretch; gap: 10px; }
+.setting-label { font-size: 14px; font-weight: 600; color: var(--text-strong); }
+.setting-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 500; line-height: 1.4; }
+.setting-val { color: var(--accent); font-weight: 800; font-size: 18px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 4px;
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-top: -9px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.input-text, .input-select {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text-strong);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0;
+}
+.input-text:focus, .input-select:focus { outline: none; border-color: var(--accent); }
+
+.music-mode-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+.music-mode-row.two { grid-template-columns: 1fr 1fr; }
+.music-mode-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  padding: 10px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.music-mode-btn.active {
+  background: var(--accent);
+  color: var(--btn-text);
+  border-color: var(--accent);
+}
+
+/* THEME PICKER */
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.theme-chip {
+  position: relative;
+  border-radius: 14px;
+  padding: 14px 10px 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  text-align: center;
+}
+.theme-chip.active { border-color: var(--text-strong); }
+.theme-chip-orb {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+}
+.theme-chip-name {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: inherit;
+}
+/* Light chips (par défaut) */
+.theme-chip.doux { background: linear-gradient(135deg, #fff5ef, #f5c8c3); color: #3d2a28; }
+.theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
+.theme-chip.boho { background: linear-gradient(135deg, #f5ede3, #d4b89a); color: #4a3523; }
+.theme-chip.boho .theme-chip-orb { background: linear-gradient(135deg, #d4916e, #8b4a2d); }
+.theme-chip.ocean { background: linear-gradient(135deg, #e3f2f7, #88c5d8); color: #0a2d3d; }
+.theme-chip.ocean .theme-chip-orb { background: linear-gradient(135deg, #7dd3e8, #1e88ab); }
+.theme-chip.mini { background: #f8f6f3; color: #1a1a1a; border-color: #e8e4df; }
+.theme-chip.mini.active { border-color: #1a1a1a; }
+.theme-chip.mini .theme-chip-orb { background: linear-gradient(135deg, #333, #1a1a1a); }
+.theme-chip.lavande { background: linear-gradient(135deg, #eee6f8, #bda4de); color: #392a5c; }
+.theme-chip.lavande .theme-chip-orb { background: linear-gradient(135deg, #d4b5f0, #7855c4); }
+.theme-chip.sauge { background: linear-gradient(135deg, #f4f1e8, #c8cfb4); color: #3a4530; }
+.theme-chip.sauge .theme-chip-orb { background: linear-gradient(135deg, #b8c998, #607848); }
+
+/* Dark chips (quand l'app est en mode sombre) */
+.theme-picker.dark-preview .theme-chip.doux { background: linear-gradient(135deg, #1a1410, #2d1f1a); color: #faeae0; }
+.theme-picker.dark-preview .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
+.theme-picker.dark-preview .theme-chip.boho { background: linear-gradient(135deg, #1a1310, #3a2a1c); color: #f8ead3; }
+.theme-picker.dark-preview .theme-chip.boho .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #b86842); }
+.theme-picker.dark-preview .theme-chip.ocean { background: linear-gradient(135deg, #031420, #0a3550); color: #e8f5fa; }
+.theme-picker.dark-preview .theme-chip.ocean .theme-chip-orb { background: linear-gradient(135deg, #a8e8fa, #2a95c0); }
+.theme-picker.dark-preview .theme-chip.mini { background: #0f0f0f; color: #ffffff; border-color: #333333; }
+.theme-picker.dark-preview .theme-chip.mini.active { border-color: #ffffff; }
+.theme-picker.dark-preview .theme-chip.mini .theme-chip-orb { background: linear-gradient(135deg, #e0e0e0, #ffffff); }
+.theme-picker.dark-preview .theme-chip.lavande { background: linear-gradient(135deg, #10081e, #241440); color: #ebe0f8; }
+.theme-picker.dark-preview .theme-chip.lavande .theme-chip-orb { background: linear-gradient(135deg, #e0cdf5, #7855c4); }
+.theme-picker.dark-preview .theme-chip.sauge { background: linear-gradient(135deg, #0d140a, #1c2a16); color: #e2ead0; }
+.theme-picker.dark-preview .theme-chip.sauge .theme-chip-orb { background: linear-gradient(135deg, #c4d9a4, #607848); }
+
+/* ===================================================
+   MODAL
+   =================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+.modal {
+  background: var(--bg-solid);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 22px calc(20px + env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 500px;
+  max-height: 88vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  text-align: center;
+  color: var(--text-strong);
+}
+.modal-title .accent { color: var(--accent); }
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: -8px auto 14px;
+}
+
+.btn-primary {
+  width: 100%;
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 14px;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  color: var(--text-strong);
+  border: 1.5px solid var(--line);
+  padding: 12px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.btn-secondary.danger { color: var(--danger); border-color: var(--danger); }
+
+/* ===================================================
+   RECORD
+   =================================================== */
+.rec-btn {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  background: var(--input-bg);
+  color: var(--danger);
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all 0.2s;
+}
+.rec-btn.recording {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+  animation: recPulse 1s infinite;
+}
+@keyframes recPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 61, 90, 0.5); }
+  50% { box-shadow: 0 0 0 15px rgba(201, 61, 90, 0); }
+}
+.rec-timer {
+  text-align: center;
+  font-size: 32px;
+  color: var(--accent);
+  font-weight: 800;
+  margin: 10px 0;
+}
+.rec-wrapper { text-align: center; padding: 16px 0; }
+.playback-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--text-strong);
+  border-radius: 100px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 10px 4px 0;
+}
+
+/* ===================================================
+   TOAST
+   =================================================== */
+.toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-strong);
+  color: var(--card-bg);
+  padding: 12px 22px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 300;
+  animation: toastIn 0.3s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+.hidden { display: none !important; }
+
+/* ===================================================
+   PLAYER FAB (floating action button bas droite)
+   =================================================== */
+.player-fab {
+  position: fixed;
+  right: 20px;
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--accent-glow);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  transition: all 0.25s ease;
+}
+.player-fab:active {
+  transform: scale(0.92);
+  background: var(--accent);
+  color: var(--btn-text);
+}
+.player-fab svg {
+  transition: transform 0.4s ease;
+}
+.player-fab:active svg {
+  transform: rotate(45deg);
+}
+
+/* ===================================================
+   PLAY COUNT BADGE sur affirmation
+   =================================================== */
+.aff-play-count {
+  display: inline-block;
+  background: var(--line);
+  color: var(--text-dim);
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ===================================================
+   STATS PAGE
+   =================================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.stats-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 16px 14px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+.stats-card.primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: var(--btn-text);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.stats-card-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+.stats-card-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-strong);
+  line-height: 1;
+}
+.stats-card.primary .stats-card-val { color: var(--btn-text); }
+.stats-card-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.stats-card.primary .stats-card-label { color: var(--btn-text); opacity: 0.85; }
+
+/* Graphique 7 jours */
+.stats-chart {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px 14px 14px;
+  box-shadow: var(--card-shadow);
+  height: 180px;
+}
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  padding: 0 2px;
+}
+.chart-bar {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 6px 6px 0 0;
+  min-height: 2px;
+  transition: height 0.4s;
+}
+.chart-bar.today {
+  background: linear-gradient(180deg, var(--accent-light), var(--accent));
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.chart-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+.chart-label.today { color: var(--accent); }
+.chart-count {
+  font-size: 10px;
+  color: var(--text-faint);
+  font-weight: 600;
+  margin-top: 2px;
+  min-height: 12px;
+}
+
+/* Top rows */
+.top-row {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  box-shadow: var(--card-shadow);
+}
+.top-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-text);
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.top-content {
+  flex: 1;
+  min-width: 0;
+}
+.top-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.top-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.top-count {
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+/* ===================================================
+   CHALLENGE
+   =================================================== */
+.challenge-aff-card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+}
+.challenge-aff-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.challenge-aff-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-strong);
+  line-height: 1.3;
+}
+
+.challenge-progress-wrap {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: var(--btn-text);
+  border-radius: 24px;
+  padding: 26px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px var(--accent-glow);
+}
+.challenge-progress-stats {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.challenge-count-main {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.challenge-count-sub {
+  font-size: 18px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+.challenge-progress-bar {
+  height: 10px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.challenge-progress-fill {
+  height: 100%;
+  background: #fff;
+  border-radius: 100px;
+  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  transition: width 0.4s;
+}
+.challenge-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.challenge-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Toggle Dark mode */
+.dark-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.dark-toggle-labels {
+  display: flex;
+  gap: 4px;
+}
+.dark-emoji { font-size: 14px; }
+.toggle-switch {
+  background: var(--line);
+  border: none;
+  width: 44px;
+  height: 24px;
+  border-radius: 100px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+  padding: 0;
+}
+.toggle-switch.active { background: var(--accent); }
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch.active .toggle-knob { transform: translateX(20px); }
+.dark-toggle-text {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.dark-toggle-text strong {
+  color: var(--accent);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* Barre vitesse live */
+.live-speed {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: var(--card-shadow);
+  margin-top: 4px;
+}
+.live-speed-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.live-speed-label > span:first-child {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.live-speed-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* Divider "ou" dans challenge */
+.challenge-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  color: var(--text-faint);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.challenge-divider::before, .challenge-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ===================================================
+   ICÔNES SVG DES ONGLETS (style minimaliste moderne)
+   =================================================== */
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  transition: all 0.25s ease;
+}
+.tab-icon svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.25s ease;
+}
+.tab.active .tab-icon {
+  color: var(--accent);
+}
+.tab.active .tab-icon svg {
+  transform: scale(1.12);
+  filter: drop-shadow(0 2px 6px var(--accent-glow));
+}
+
+/* ===================================================
+   ONBOARDING
+   =================================================== */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-grad);
+  background-attachment: fixed;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  padding: max(30px, env(safe-area-inset-top)) 24px calc(30px + env(safe-area-inset-bottom));
+  animation: fadeIn 0.4s;
+}
+.ob-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.ob-step-indicator {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.ob-skip-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.ob-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 28px;
+  padding: 20px 0;
+}
+.ob-visual {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: var(--orb-grad);
+  box-shadow: 0 15px 50px var(--accent-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  color: #fff;
+  animation: orbPulse 2s ease-in-out infinite;
+}
+.ob-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text-strong);
+  letter-spacing: -0.5px;
+  max-width: 400px;
+  line-height: 1.15;
+}
+.ob-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 360px;
+  line-height: 1.5;
+}
+.ob-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.ob-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: all 0.3s;
+}
+.ob-dot.active {
+  background: var(--accent);
+  width: 28px;
+  border-radius: 100px;
+}
+.ob-next-btn {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  padding: 16px;
+  border-radius: 100px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--accent-glow);
+  letter-spacing: 0.3px;
+}
+.ob-next-btn:active { transform: scale(0.98); }
+
+/* Example badge sur affirmations exemples */
+.example-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--btn-text);
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.aff-example-hint {
+  color: var(--accent);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 3px;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="mini-header" id="mini-header">
+    <div class="mini-logo">getmanifest</div>
+    <div class="mini-tagline">YOUR LIFE, YOUR WAY</div>
+  </div>
+  <section class="page active" id="page-player"></section>
+  <section class="page" id="page-list"></section>
+  <section class="page" id="page-challenge"></section>
+  <section class="page" id="page-stats"></section>
+  <section class="page" id="page-settings"></section>
+</div>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="player">
+    <span class="tab-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="tab-label">Player</span>
+  </button>
+  <button class="tab" data-tab="list">
+    <span class="tab-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="12" rx="3"/>
+        <path d="M5 10v2a7 7 0 0 0 14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+    </span>
+    <span class="tab-label">Affs</span>
+  </button>
+  <button class="tab" data-tab="challenge">
+    <span class="tab-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4z"/>
+        <path d="M17 5h3a2 2 0 0 1 0 4h-3M7 5H4a2 2 0 0 0 0 4h3"/>
+      </svg>
+    </span>
+    <span class="tab-label">10K</span>
+  </button>
+  <button class="tab" data-tab="stats">
+    <span class="tab-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="M7 15l4-4 3 3 5-5"/>
+        <circle cx="7" cy="15" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="11" cy="11" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="14" cy="14" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="19" cy="9" r="1.3" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="tab-label">Stats</span>
+  </button>
+  <button class="tab" data-tab="settings">
+    <span class="tab-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </span>
+    <span class="tab-label">Régl.</span>
+  </button>
+</nav>
+
+<audio id="aff-audio"></audio>
+
+<script>
+const STORAGE_KEY = 'repeat_v1';
+const THEMES = [
+  { id: 'doux', name: 'Rose Gold' },
+  { id: 'boho', name: 'Boho' },
+  { id: 'ocean', name: 'Océan' },
+  { id: 'mini', name: 'Mini' },
+  { id: 'lavande', name: 'Lavande' },
+  { id: 'sauge', name: 'Sauge' },
+];
+
+// ============================================================
+// I18N
+// ============================================================
+const TRANSLATIONS = {
+  fr: {
+    // Nav
+    tab_player: 'Player',
+    tab_list: 'Affs',
+    tab_challenge: '10K',
+    tab_stats: 'Stats',
+    tab_settings: 'Régl.',
+    // Player
+    player_eyebrow: 'Lecture en boucle',
+    player_title: 'Repeat',
+    player_title_1: 'Mode',
+    player_title_2: 'Repeat',
+    mode_label: 'Mode',
+    challenge_title_1: '10K',
+    challenge_title_2: 'Challenge',
+    choose_group: 'Choisis ta playlist',
+    all_groups: 'Toutes les playlists',
+    no_recordings: "Enregistre d'abord des affirmations",
+    ready: 'Prêt à démarrer',
+    playing: 'Lecture...',
+    paused: 'En pause',
+    repeating: 'Répète...',
+    pause_wait: 'Pause {s}s...',
+    loops: 'Boucles',
+    total: 'Total',
+    session: 'Session',
+    total_affs: 'Total depuis le début',
+    challenge_started_on: 'Commencé le {d}',
+    // List
+    list_eyebrow: 'Ta bibliothèque',
+    list_title_1: 'Mes',
+    list_title_2: 'affirmations',
+    add_affirmation: '+ Nouvelle affirmation',
+    add_group: '+ Nouvelle playlist',
+    action_new_aff_title: 'Nouvelle affirmation',
+    action_new_aff_sub: 'Ta phrase, ta voix',
+    action_new_group_title: 'Nouvelle playlist',
+    action_new_group_sub: 'Classe tes affirmations',
+    affirmation: 'affirmation',
+    affirmations: 'affirmations',
+    empty_list: "Aucune affirmation pour l'instant.",
+    empty_list_hint: 'Clique sur "+ Nouvelle affirmation" pour commencer.',
+    empty_group: 'Vide',
+    not_recorded: 'Pas encore enregistré',
+    // Modals - affirmation
+    new_aff: 'Nouvelle',
+    edit_aff: 'Modifier',
+    word_affirmation: 'affirmation',
+    title: 'Titre',
+    aff_placeholder: 'Je suis riche de millions...',
+    group: 'Playlist',
+    voice_recording: 'Enregistrement vocal',
+    rec_exists: 'Un enregistrement existe.',
+    rec_tap: 'Touche pour enregistrer ta voix.',
+    listen: '▶ Écouter',
+    erase: '✕ Effacer',
+    save: 'Sauvegarder',
+    create: 'Créer',
+    delete: 'Supprimer',
+    cancel: 'Annuler',
+    // Modals - group
+    new_group: 'Nouvelle',
+    edit_group: 'Modifier',
+    word_group: 'playlist',
+    group_name: 'Nom de la playlist',
+    group_placeholder: 'Argent, SP, Confiance...',
+    contains: 'Contient',
+    // Settings
+    settings_eyebrow: 'Personnalise',
+    settings_title_1: 'Tes',
+    settings_title_2: 'réglages',
+    language: 'Langue',
+    appearance: 'Apparence',
+    dark_mode: 'Mode sombre',
+    on: 'ON',
+    off: 'OFF',
+    audio: 'Audio',
+    aff_volume: 'Volume des affirmations',
+    aff_volume_sub: 'Volume de ta voix enregistrée',
+    music_volume: 'Volume de la musique',
+    music_volume_sub: 'Fond sonore (drone synthétique)',
+    play_speed: 'Vitesse de lecture',
+    play_speed_sub: 'Plus lent = plus facile à répéter',
+    pause_between: 'Pause entre deux',
+    pause_between_sub: 'Temps de silence après chaque affirmation',
+    during_pause: 'Pendant la pause',
+    pause_mode: 'Mode de pause',
+    pause_mode_sub: 'Silence pour que tu répètes, ou l\'affirmation se joue 2 fois.',
+    silence: 'Silence',
+    repeat_2x: 'Répète 2x',
+    background_music: 'Musique de fond',
+    music_type: 'Type de musique',
+    music_type_sub: 'Drone intégré ou ta playlist externe',
+    none: 'Aucune',
+    drone: 'Drone',
+    playlist: 'Playlist',
+    playlist_url: 'URL de ma playlist',
+    playlist_url_sub: 'Spotify, Apple Music, YouTube, Deezer...<br>S\'ouvre dans l\'app native quand tu lances la lecture.',
+    save_url: '💾 Sauvegarder l\'URL',
+    support: 'Soutenir l\'app',
+    support_sub: 'Si Repeat te plaît et t\'aide, tu peux offrir un café ♥',
+    kofi_url: 'Lien Ko-fi (ou autre)',
+    kofi_sub: 'Colle ton lien ko-fi.com/tonnom ou autre',
+    support_btn: '♥ Soutenir l\'app',
+    data: 'Données',
+    export_light: 'Exporter (sans audio)',
+    export_light_sub: 'Backup léger JSON',
+    export_full: 'Export complet',
+    export_full_sub: 'Avec les audios (plus lourd)',
+    import_data: 'Importer',
+    import_data_sub: 'Restaurer depuis un .json',
+    erase_all: 'Tout effacer',
+    erase_all_sub: 'Attention, définitif',
+    // Toasts
+    toast_saved: 'Enregistré ✓',
+    toast_recorded: 'Enregistré ✓',
+    toast_created: 'Créé ✓',
+    toast_modified: 'Modifié ✓',
+    toast_deleted: 'Supprimé',
+    toast_imported: 'Importé ✓',
+    toast_exported: 'Exporté ✓',
+    toast_reset: 'Réinitialisé',
+    toast_invalid_file: 'Fichier invalide',
+    toast_mic_error: "Impossible d'accéder au micro",
+    toast_play_error: 'Erreur de lecture',
+    toast_need_group: "Crée d'abord une playlist",
+    toast_no_recordings: 'Aucune affirmation enregistrée',
+    toast_give_title: 'Donne un titre',
+    toast_give_name: 'Donne un nom',
+    toast_storage_full: 'Erreur sauvegarde (stockage plein ?)',
+    toast_playlist_saved: 'Playlist enregistrée ✓',
+    toast_url_cleared: 'URL effacée',
+    toast_kofi_saved: 'Lien soutien enregistré ✓',
+    toast_theme: 'Thème',
+    // Confirms
+    confirm_erase_rec: "Effacer l'enregistrement ?",
+    confirm_delete_aff: 'Supprimer cette affirmation ?',
+    confirm_delete_group: 'Supprimer cette playlist ?',
+    confirm_delete_group_with: 'Cette playlist contient {n} {w}. Elles seront aussi supprimées. Continuer ?',
+    confirm_import: 'Importer va remplacer tes données actuelles. Continuer ?',
+    confirm_reset: 'Tout effacer définitivement ?',
+    // Days / backups
+    backup_name: 'repeat-backup-',
+  },
+  en: {
+    tab_player: 'Player',
+    tab_list: 'Affs',
+    tab_challenge: '10K',
+    tab_stats: 'Stats',
+    tab_settings: 'Settings',
+    player_eyebrow: 'Loop playback',
+    player_title: 'Repeat',
+    player_title_1: 'Mode',
+    player_title_2: 'Repeat',
+    mode_label: 'Mode',
+    challenge_title_1: '10K',
+    challenge_title_2: 'Challenge',
+    choose_group: 'Choose your playlist',
+    all_groups: 'All playlists',
+    no_recordings: 'Record some affirmations first',
+    ready: 'Ready to start',
+    playing: 'Playing...',
+    paused: 'Paused',
+    repeating: 'Repeating...',
+    pause_wait: 'Pause {s}s...',
+    loops: 'Loops',
+    total: 'Total',
+    session: 'Session',
+    total_affs: 'All time total',
+    challenge_started_on: 'Started on {d}',
+    list_eyebrow: 'Your library',
+    list_title_1: 'My',
+    list_title_2: 'affirmations',
+    add_affirmation: '+ New affirmation',
+    add_group: '+ New playlist',
+    action_new_aff_title: 'New affirmation',
+    action_new_aff_sub: 'Your words, your voice',
+    action_new_group_title: 'New playlist',
+    action_new_group_sub: 'Organize your affirmations',
+    affirmation: 'affirmation',
+    affirmations: 'affirmations',
+    empty_list: 'No affirmations yet.',
+    empty_list_hint: 'Tap "+ New affirmation" to start.',
+    empty_group: 'Empty',
+    not_recorded: 'Not recorded yet',
+    new_aff: 'New',
+    edit_aff: 'Edit',
+    word_affirmation: 'affirmation',
+    title: 'Title',
+    aff_placeholder: 'I am wealthy beyond measure...',
+    group: 'Playlist',
+    voice_recording: 'Voice recording',
+    rec_exists: 'A recording exists.',
+    rec_tap: 'Tap to record your voice.',
+    listen: '▶ Listen',
+    erase: '✕ Erase',
+    save: 'Save',
+    create: 'Create',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    new_group: 'New',
+    edit_group: 'Edit',
+    word_group: 'playlist',
+    group_name: 'Playlist name',
+    group_placeholder: 'Money, SP, Confidence...',
+    contains: 'Contains',
+    settings_eyebrow: 'Customize',
+    settings_title_1: 'Your',
+    settings_title_2: 'settings',
+    language: 'Language',
+    appearance: 'Appearance',
+    dark_mode: 'Dark mode',
+    on: 'ON',
+    off: 'OFF',
+    audio: 'Audio',
+    aff_volume: 'Affirmations volume',
+    aff_volume_sub: 'Volume of your recorded voice',
+    music_volume: 'Music volume',
+    music_volume_sub: 'Background sound (synth drone)',
+    play_speed: 'Playback speed',
+    play_speed_sub: 'Slower = easier to repeat along',
+    pause_between: 'Pause between',
+    pause_between_sub: 'Silence after each affirmation',
+    during_pause: 'During the pause',
+    pause_mode: 'Pause mode',
+    pause_mode_sub: 'Silence (you repeat), or the affirmation plays twice.',
+    silence: 'Silence',
+    repeat_2x: 'Repeat 2x',
+    background_music: 'Background music',
+    music_type: 'Music type',
+    music_type_sub: 'Built-in drone or your external playlist',
+    none: 'None',
+    drone: 'Drone',
+    playlist: 'Playlist',
+    playlist_url: 'My playlist URL',
+    playlist_url_sub: 'Spotify, Apple Music, YouTube, Deezer...<br>Opens in the native app when you start playback.',
+    save_url: '💾 Save URL',
+    support: 'Support the app',
+    support_sub: 'If you love Repeat and it helps you, buy me a coffee ♥',
+    kofi_url: 'Ko-fi link (or other)',
+    kofi_sub: 'Paste your ko-fi.com/yourname or any URL',
+    support_btn: '♥ Support the app',
+    data: 'Data',
+    export_light: 'Export (no audio)',
+    export_light_sub: 'Light JSON backup',
+    export_full: 'Full export',
+    export_full_sub: 'With audios (heavier)',
+    import_data: 'Import',
+    import_data_sub: 'Restore from a .json',
+    erase_all: 'Erase everything',
+    erase_all_sub: 'Warning, permanent',
+    toast_saved: 'Saved ✓',
+    toast_recorded: 'Recorded ✓',
+    toast_created: 'Created ✓',
+    toast_modified: 'Modified ✓',
+    toast_deleted: 'Deleted',
+    toast_imported: 'Imported ✓',
+    toast_exported: 'Exported ✓',
+    toast_reset: 'Reset',
+    toast_invalid_file: 'Invalid file',
+    toast_mic_error: 'Cannot access microphone',
+    toast_play_error: 'Playback error',
+    toast_need_group: 'Create a playlist first',
+    toast_no_recordings: 'No recordings available',
+    toast_give_title: 'Give it a title',
+    toast_give_name: 'Give it a name',
+    toast_storage_full: 'Save error (storage full?)',
+    toast_playlist_saved: 'Playlist saved ✓',
+    toast_url_cleared: 'URL cleared',
+    toast_kofi_saved: 'Support link saved ✓',
+    toast_theme: 'Theme',
+    confirm_erase_rec: 'Erase the recording?',
+    confirm_delete_aff: 'Delete this affirmation?',
+    confirm_delete_group: 'Delete this playlist?',
+    confirm_delete_group_with: 'This playlist contains {n} {w}. They will also be deleted. Continue?',
+    confirm_import: 'Importing will replace your current data. Continue?',
+    confirm_reset: 'Erase everything permanently?',
+    backup_name: 'repeat-backup-',
+  }
+};
+
+// Exemples d'affirmations pré-remplies au premier lancement
+const EXAMPLE_AFFIRMATIONS = {
+  fr: [
+    "Je suis riche de millions, sans effort",
+    "Je suis une femme qu'on écoute et qu'on aime",
+    "Tout vient à moi facilement",
+    "Je suis exactement là où je dois être",
+  ],
+  en: [
+    "I am wealthy beyond measure, effortlessly",
+    "I am loved and heard",
+    "Everything comes to me easily",
+    "I am exactly where I need to be",
+  ],
+};
+
+// Traductions supplémentaires
+Object.assign(TRANSLATIONS.fr, {
+  // Stats
+  stats_eyebrow: 'Ton suivi',
+  stats_title_1: 'Mes',
+  stats_title_2: 'stats',
+  stats_today: "Aujourd'hui",
+  stats_week: 'Cette semaine',
+  stats_total: 'Depuis le début',
+  stats_streak: 'Jours d\'affilée',
+  stats_best_day: 'Record du jour',
+  stats_minutes: 'min',
+  stats_affs: 'aff.',
+  stats_loops: 'boucles',
+  stats_active_days: 'Jours actifs',
+  stats_top_affs: 'Top affirmations',
+  stats_top_playlists: 'Top playlists',
+  stats_7days: '7 derniers jours',
+  stats_empty: 'Pas encore de stats. Lance ta première session.',
+  stats_times_short: '×',
+  stats_last_played: 'Dernière écoute',
+  stats_never_played: 'Jamais écoutée',
+  stats_today_short: "aujourd'hui",
+  stats_days_ago: 'il y a {n}j',
+  stats_hours_ago: 'il y a {n}h',
+  stats_mins_ago: 'il y a {n}min',
+  stats_just_now: "à l'instant",
+  // Share
+  // Challenge
+  challenge_main_title: '10K Challenge',
+  challenge_desc: 'Challenge 10 000 pour imprégner ton subconscient plus vite.',
+  challenge_change_aff: 'Changer d\'affirmation',
+  challenge_remaining: 'restantes',
+  challenge_start: 'Lancer le challenge',
+  challenge_pause: 'Mettre en pause',
+  challenge_resume: 'Reprendre',
+  challenge_reset: 'Reset le challenge',
+  challenge_confirm_reset: 'Reset le compteur à 0 ?',
+  challenge_done: 'Challenge terminé ! 10 000 affirmations',
+  challenge_started: 'Challenge démarré',
+  challenge_select_hint: 'Toutes les répétitions sont comptées, même en Player.',
+  challenge_this_aff: 'Cette affirmation',
+  challenge_select_prompt: 'Choisis parmi mes affirmations',
+  challenge_or: 'ou',
+  challenge_record_new: 'Enregistrer une affirmation',
+  ch_title_placeholder: 'Titre de l\'affirmation',
+  ch_rec_hint: 'Touche pour enregistrer ta voix',
+  ch_redo: '✕ Recommencer',
+  ch_use_this: 'Utiliser cette affirmation',
+  // Player bottom sheet (réglages dans player)
+  player_sheet_title: 'Réglages de lecture',
+  player_sheet_btn: 'Réglages',
+  // Share
+  share: 'Partager',
+  share_playlist: 'Partager cette playlist',
+  share_sub: 'Envoie le fichier à une amie pour qu\'elle importe tes affirmations.',
+  share_only_titles: 'Sans les audios',
+  share_only_titles_sub: 'Léger, juste les titres',
+  share_with_audio: 'Avec les audios',
+  share_with_audio_sub: 'Lourd mais complet',
+  toast_shared: 'Partagé ✓',
+  // Onboarding
+  ob_skip: 'Passer',
+  ob_next: 'Suivant',
+  ob_start: 'Commencer',
+  ob_step: 'Étape',
+  ob_of: 'sur',
+
+  ob1_title: 'Bienvenue dans GetManifest',
+  ob1_text: 'Ta boîte à outils de manifestation. Pour commencer, tu vas découvrir le mode Repeat : écoute tes affirmations en boucle avec ta propre voix.',
+
+  ob2_title: 'Enregistre tes affirmations',
+  ob2_text: 'Dans l\'onglet Affirmations, tape le titre d\'une affirmation et enregistre-la avec ta propre voix. Classe-les en playlists (Argent, Confiance, etc.)',
+
+  ob3_title: 'Lance la lecture en boucle',
+  ob3_text: 'Choisis une playlist et appuie sur le gros bouton rond. Tes affirmations tournent en boucle, à la vitesse que tu veux, avec le temps de pause que tu veux.',
+
+  ob4_title: 'Personnalise à ton goût',
+  ob4_text: 'Dans Réglages, change le thème de couleur, la vitesse, la pause entre deux affirmations, ou connecte ta musique de fond préférée.',
+
+  ob5_title: 'C\'est à toi de jouer',
+  ob5_text: 'Ouvre l\'onglet Affirmations, crée tes affirmations avec ta voix, et c\'est parti.',
+
+  example_badge: 'Exemple',
+  example_hint: 'Clique pour l\'enregistrer avec ta voix',
+});
+
+Object.assign(TRANSLATIONS.en, {
+  stats_eyebrow: 'Your journey',
+  stats_title_1: 'My',
+  stats_title_2: 'stats',
+  stats_today: 'Today',
+  stats_week: 'This week',
+  stats_total: 'All time',
+  stats_streak: 'Day streak',
+  stats_best_day: 'Best day',
+  stats_minutes: 'min',
+  stats_affs: 'affs',
+  stats_loops: 'loops',
+  stats_active_days: 'Active days',
+  stats_top_affs: 'Top affirmations',
+  stats_top_playlists: 'Top playlists',
+  stats_7days: 'Last 7 days',
+  stats_empty: 'No stats yet. Start your first session.',
+  stats_times_short: '×',
+  stats_last_played: 'Last played',
+  stats_never_played: 'Never played',
+  stats_today_short: 'today',
+  stats_days_ago: '{n}d ago',
+  stats_hours_ago: '{n}h ago',
+  stats_mins_ago: '{n}min ago',
+  stats_just_now: 'just now',
+  challenge_main_title: '10K Challenge',
+  challenge_desc: '10,000 challenge to imprint your subconscious faster.',
+  challenge_change_aff: 'Change affirmation',
+  challenge_remaining: 'remaining',
+  challenge_start: 'Start challenge',
+  challenge_pause: 'Pause',
+  challenge_resume: 'Resume',
+  challenge_reset: 'Reset challenge',
+  challenge_confirm_reset: 'Reset the counter to 0?',
+  challenge_done: 'Challenge complete! 10,000 affirmations',
+  challenge_started: 'Challenge started',
+  challenge_select_hint: 'All repetitions count, even in Player mode.',
+  challenge_this_aff: 'This affirmation',
+  challenge_select_prompt: 'Pick from my affirmations',
+  challenge_or: 'or',
+  challenge_record_new: 'Record an affirmation',
+  ch_title_placeholder: 'Affirmation title',
+  ch_rec_hint: 'Tap to record your voice',
+  ch_redo: '✕ Redo',
+  ch_use_this: 'Use this affirmation',
+  player_sheet_title: 'Playback settings',
+  player_sheet_btn: 'Settings',
+  share: 'Share',
+  share_playlist: 'Share this playlist',
+  share_sub: 'Send the file to a friend so they can import your affirmations.',
+  share_only_titles: 'Without audio',
+  share_only_titles_sub: 'Light, just the titles',
+  share_with_audio: 'With audio',
+  share_with_audio_sub: 'Heavier but complete',
+  toast_shared: 'Shared ✓',
+
+  ob_skip: 'Skip',
+  ob_next: 'Next',
+  ob_start: 'Start',
+  ob_step: 'Step',
+  ob_of: 'of',
+
+  ob1_title: 'Welcome to GetManifest',
+  ob1_text: 'Your manifestation toolkit. To start, you\'ll discover the Repeat mode: listen to your affirmations on loop, in your own voice.',
+
+  ob2_title: 'Record your affirmations',
+  ob2_text: 'In the Affirmations tab, type a title and record it in your own voice. Organize them in playlists (Money, Confidence, etc.)',
+
+  ob3_title: 'Start the loop playback',
+  ob3_text: 'Choose a playlist and tap the big round button. Your affirmations loop at your chosen speed, with the pause you prefer.',
+
+  ob4_title: 'Make it yours',
+  ob4_text: 'In Settings, pick a color theme, adjust speed and pause times, or connect your favorite background music.',
+
+  ob5_title: 'Over to you',
+  ob5_text: 'Open the Affirmations tab, create your own with your voice, and off you go.',
+
+  example_badge: 'Example',
+  example_hint: 'Tap to record with your voice',
+});
+
+function t(key, vars) {
+  const lang = state.settings.language || 'fr';
+  let str = (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS.fr[key] || key;
+  if (vars) {
+    Object.keys(vars).forEach(k => { str = str.replace('{' + k + '}', vars[k]); });
+  }
+  return str;
+}
+
+function detectBrowserLang() {
+  const l = (navigator.language || 'fr').toLowerCase();
+  if (l.startsWith('fr')) return 'fr';
+  return 'en';
+}
+
+let state = loadState();
+
+function defaultState() {
+  const lang = detectBrowserLang();
+  const defaultPlaylistName = lang === 'en' ? 'My affirmations' : 'Mes affirmations';
+  return {
+    groups: [{ id: 'g_default', name: defaultPlaylistName }],
+    affirmations: [],
+    onboardingDone: false,
+    settings: {
+      affVolume: 1.0,
+      musicVolume: 0.3,
+      pauseBetween: 3,
+      playbackRate: 1.0,
+      musicMode: 'none',
+      musicPlaylistUrl: '',
+      pauseMode: 'silence', // deprecated, kept for backward compat
+      selectedGroupId: 'all',
+      theme: 'doux',
+      language: null,
+      kofiUrl: 'https://ko-fi.com/getmanifestapp',
+      darkMode: true,
+    },
+    challenge: {
+      affirmationId: null,
+      count: 0,
+      target: 10000,
+      startedAt: null,
+      playing: false,
+    },
+    stats: {
+      totalPlays: 0,
+      sessionsCount: 0,
+      totalSeconds: 0,
+      totalLoops: 0,
+      byDay: {}, // { 'YYYY-MM-DD': { plays, loops, seconds } }
+      byAffirmation: {}, // { affId: { plays, lastPlayed } }
+      byPlaylist: {}, // { playlistId: { plays } }
+      bestDay: { date: null, plays: 0 },
+      streak: 0,
+      lastActiveDay: null,
+    }
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const p = JSON.parse(raw);
+    const d = defaultState();
+    return {
+      groups: p.groups || d.groups,
+      affirmations: p.affirmations !== undefined ? p.affirmations : d.affirmations,
+      settings: Object.assign(d.settings, p.settings || {}),
+      stats: Object.assign(d.stats, p.stats || {}),
+      challenge: Object.assign(d.challenge, p.challenge || {}),
+      onboardingDone: p.onboardingDone || false,
+    };
+  } catch(e) { return defaultState(); }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) { toast(t('toast_storage_full')); }
+}
+
+function applyTheme() {
+  let theme = state.settings.theme || 'doux';
+  // Migration : ancien thème 'tech' → 'ocean'
+  if (theme === 'tech') { theme = 'ocean'; state.settings.theme = 'ocean'; saveState(); }
+  const dark = state.settings.darkMode ? '-dark' : '';
+  document.documentElement.setAttribute('data-theme', theme + dark);
+}
+
+function uid() { return 'id_' + Math.random().toString(36).slice(2, 10); }
+function escapeHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+let currentTab = 'player';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.body.classList.toggle('player-active', tab === 'player');
+  // scroll to top quand on change d'onglet
+  window.scrollTo(0, 0);
+  render();
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => switchTab(t.dataset.tab));
+});
+
+function render() {
+  if (currentTab === 'player') renderPlayer();
+  else if (currentTab === 'list') renderList();
+  else if (currentTab === 'challenge') renderChallenge();
+  else if (currentTab === 'stats') renderStats();
+  else if (currentTab === 'settings') renderSettings();
+}
+
+// ============================================================
+// PLAYER
+// ============================================================
+let playerState = {
+  playing: false,
+  currentIdx: 0,
+  queue: [],
+  loopCount: 0,
+  totalPlayed: 0,
+  pauseTimeout: null,
+  repeatPending: false,
+  sessionStart: null,
+  sessionTimerInterval: null,
+};
+
+function formatSessionTime(secs) {
+  secs = Math.max(0, Math.floor(secs));
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function renderPlayer() {
+  const s = state.settings;
+  const groups = state.groups;
+  const availableAffs = getAvailableAffs();
+  const currentAff = playerState.queue[playerState.currentIdx];
+
+  document.getElementById('page-player').innerHTML = `
+    <div class="player-fullscreen">
+      <div class="player-top">
+        <div class="brand-logo">getmanifest</div>
+        <div class="brand-tagline">YOUR LIFE, YOUR WAY</div>
+      </div>
+      <h1 class="h1" style="text-align:center">${t('player_title_1')} <span class="dot">${t('player_title_2')}</span></h1>
+
+      <div class="player-selector-wrap">
+        <select class="group-selector" id="group-select">
+          <option value="all" ${s.selectedGroupId==='all'?'selected':''}>◇ ${t('all_groups')} (${state.affirmations.filter(a => a.recording).length})</option>
+          ${groups.map(g => {
+            const n = state.affirmations.filter(a => a.groupId === g.id && a.recording).length;
+            return `<option value="${g.id}" ${s.selectedGroupId===g.id?'selected':''}>◈ ${escapeHtml(g.name)} (${n})</option>`;
+          }).join('')}
+        </select>
+      </div>
+
+      <div class="player-center">
+        <div class="now-playing" id="now-playing">
+          ${availableAffs.length === 0 ? t('no_recordings') : (currentAff ? escapeHtml(currentAff.title) : t('ready'))}
+        </div>
+        <div class="now-playing-state" id="np-state">${playerState.playing ? t('playing') : t('paused')}</div>
+
+        <div class="orb-container">
+          <div class="orb-ring"></div>
+          <button class="orb ${playerState.playing?'':'paused'}" id="play-btn" ${availableAffs.length === 0 ? 'disabled style="opacity:0.4"' : ''}>
+            ${playerState.playing ? '❚❚' : '▶'}
+          </button>
+        </div>
+      </div>
+
+      <div class="session-stats">
+        <div class="session-stat-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          <span class="session-stat-val" id="session-timer">${formatSessionTime(playerState.sessionStart ? Math.floor((Date.now() - playerState.sessionStart)/1000) : 0)}</span>
+          <span class="session-stat-label">${t('session')}</span>
+        </div>
+        <div class="session-divider"></div>
+        <div class="session-stat-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>
+          <span class="session-stat-val">${state.stats.totalPlays || 0}</span>
+          <span class="session-stat-label">${t('total_affs')}</span>
+        </div>
+      </div>
+
+      ${playerState.playing ? `
+        <div class="live-speed">
+          <div class="live-speed-label">
+            <span>${t('play_speed')}</span>
+            <span class="live-speed-val" id="live-speed-val">${s.playbackRate.toFixed(2)}x</span>
+          </div>
+          <input type="range" id="live-speed" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+        </div>
+      ` : ''}
+    </div>
+
+    <button class="player-fab" id="player-settings-btn" aria-label="${t('player_sheet_btn')}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  `;
+
+  document.getElementById('play-btn').addEventListener('click', togglePlay);
+  document.getElementById('group-select').addEventListener('change', (e) => {
+    s.selectedGroupId = e.target.value;
+    saveState();
+    if (playerState.playing) stopPlayback();
+    render();
+  });
+  document.getElementById('player-settings-btn').addEventListener('click', openPlayerSheet);
+  document.getElementById('live-speed')?.addEventListener('input', (e) => {
+    const v = parseFloat(e.target.value);
+    state.settings.playbackRate = v;
+    saveState();
+    document.getElementById('live-speed-val').textContent = v.toFixed(2) + 'x';
+    document.getElementById('aff-audio').playbackRate = v;
+  });
+}
+
+function getAvailableAffs() {
+  const s = state.settings;
+  return state.affirmations.filter(a => {
+    if (!a.recording) return false;
+    if (s.selectedGroupId === 'all') return true;
+    return a.groupId === s.selectedGroupId;
+  });
+}
+
+function togglePlay() {
+  if (playerState.playing) stopPlayback();
+  else startPlayback();
+}
+
+function startPlayback() {
+  const affs = getAvailableAffs();
+  if (affs.length === 0) { toast(t('toast_no_recordings')); return; }
+  playerState.queue = affs;
+  if (playerState.currentIdx >= affs.length) playerState.currentIdx = 0;
+  playerState.playing = true;
+  playerState.repeatPending = false;
+  playerState.sessionStart = Date.now();
+  state.stats.sessionsCount++;
+  saveState();
+  startMusic();
+  playNext();
+  renderPlayer();
+  // live timer
+  if (playerState.sessionTimerInterval) clearInterval(playerState.sessionTimerInterval);
+  playerState.sessionTimerInterval = setInterval(() => {
+    const el = document.getElementById('session-timer');
+    if (el && playerState.sessionStart) {
+      el.textContent = formatSessionTime(Math.floor((Date.now() - playerState.sessionStart)/1000));
+    }
+  }, 1000);
+}
+
+function stopPlayback() {
+  playerState.playing = false;
+  const audio = document.getElementById('aff-audio');
+  audio.pause();
+  audio.currentTime = 0;
+  if (playerState.pauseTimeout) { clearTimeout(playerState.pauseTimeout); playerState.pauseTimeout = null; }
+  if (playerState.sessionTimerInterval) { clearInterval(playerState.sessionTimerInterval); playerState.sessionTimerInterval = null; }
+  playerState.sessionStart = null;
+  stopMusic();
+  renderPlayer();
+}
+
+function playNext() {
+  if (!playerState.playing) return;
+  const audio = document.getElementById('aff-audio');
+  const aff = playerState.queue[playerState.currentIdx];
+  if (!aff) return;
+
+  audio.src = aff.recording;
+  audio.volume = state.settings.affVolume;
+  audio.playbackRate = state.settings.playbackRate;
+  audio.play().catch(e => { toast(t('toast_play_error')); stopPlayback(); });
+
+  const npEl = document.getElementById('now-playing');
+  if (npEl) npEl.textContent = aff.title;
+  const stEl = document.getElementById('np-state');
+  if (stEl) stEl.textContent = t('playing');
+
+  audio.onended = () => {
+    if (!playerState.playing) return;
+
+    playerState.totalPlayed++;
+
+    // Track play stats pour l'affirmation qu'on vient de terminer
+    trackPlay(aff);
+
+    playerState.currentIdx++;
+    if (playerState.currentIdx >= playerState.queue.length) {
+      playerState.currentIdx = 0;
+      playerState.loopCount++;
+      trackLoop();
+    }
+
+    saveState();
+    const lc = document.getElementById('loop-counter');
+    if (lc) lc.textContent = playerState.loopCount;
+    const tc = document.getElementById('total-counter');
+    if (tc) tc.textContent = playerState.totalPlayed;
+
+    const stEl2 = document.getElementById('np-state');
+    if (stEl2) stEl2.textContent = t('pause_wait', { s: state.settings.pauseBetween });
+    playerState.pauseTimeout = setTimeout(() => {
+      if (!playerState.playing) return;
+      playNext();
+    }, state.settings.pauseBetween * 1000);
+  };
+}
+
+// ============================================================
+// MUSIC (drone + playlist)
+// ============================================================
+let droneCtx = null;
+let droneNodes = [];
+
+function startMusic() {
+  const mode = state.settings.musicMode;
+  if (mode === 'drone') startDrone();
+  else if (mode === 'playlist' && state.settings.musicPlaylistUrl) {
+    window.open(state.settings.musicPlaylistUrl, '_blank');
+  }
+}
+function stopMusic() { stopDrone(); }
+
+function startDrone() {
+  stopDrone();
+  try {
+    droneCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const vol = state.settings.musicVolume;
+    [110, 164.81, 220].forEach(f => {
+      const osc = droneCtx.createOscillator();
+      const gain = droneCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      gain.gain.value = vol * 0.08;
+      osc.connect(gain);
+      gain.connect(droneCtx.destination);
+      osc.start();
+      droneNodes.push({ osc, gain });
+    });
+  } catch(e) {}
+}
+
+function stopDrone() {
+  droneNodes.forEach(({osc, gain}) => {
+    try {
+      gain.gain.setValueAtTime(gain.gain.value, droneCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, droneCtx.currentTime + 0.3);
+      osc.stop(droneCtx.currentTime + 0.4);
+    } catch(e){}
+  });
+  droneNodes = [];
+  if (droneCtx) setTimeout(() => { try { droneCtx.close(); } catch(e){} droneCtx = null; }, 500);
+}
+
+function updateDroneVolume() {
+  const vol = state.settings.musicVolume;
+  droneNodes.forEach(({gain}) => { try { gain.gain.value = vol * 0.08; } catch(e){} });
+}
+
+// ============================================================
+// LIST
+// ============================================================
+function renderList() {
+  const groups = state.groups;
+  document.getElementById('page-list').innerHTML = `
+    <h1 class="h1">${t('list_title_1')} <span class="dot">${t('list_title_2')}</span></h1>
+
+    <div class="action-cards">
+      <button class="action-card primary" id="add-aff">
+        <div class="action-card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </div>
+        <div class="action-card-text">
+          <div class="action-card-title">${t('action_new_aff_title')}</div>
+          <div class="action-card-sub">${t('action_new_aff_sub')}</div>
+        </div>
+      </button>
+      <button class="action-card" id="add-group">
+        <div class="action-card-icon secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        </div>
+        <div class="action-card-text">
+          <div class="action-card-title">${t('action_new_group_title')}</div>
+          <div class="action-card-sub">${t('action_new_group_sub')}</div>
+        </div>
+      </button>
+    </div>
+
+    ${groups.map(g => {
+      const affs = state.affirmations.filter(a => a.groupId === g.id);
+      const wordAff = affs.length > 1 ? t('affirmations') : t('affirmation');
+      return `
+        <div class="group-section">
+          <div class="group-header">
+            <div>
+              <div class="group-name">${escapeHtml(g.name)}</div>
+              <div class="group-count">${affs.length} ${wordAff}</div>
+            </div>
+            <button class="group-actions-btn" data-group-edit="${g.id}">⚙</button>
+          </div>
+          ${affs.length === 0 ? '' : affs.map(a => {
+            const playCount = (state.stats.byAffirmation && state.stats.byAffirmation[a.id]) ? state.stats.byAffirmation[a.id].plays : 0;
+            return `
+            <div class="aff-row">
+              <div class="aff-rec-dot ${a.recording ? '' : 'empty'}"></div>
+              <div class="aff-title">
+                ${escapeHtml(a.title)}${playCount > 0 ? ` <span class="aff-play-count">${playCount}×</span>` : ''}
+                ${!a.recording ? `<div class="aff-no-rec">${t('not_recorded')}</div>` : ''}
+              </div>
+              <button class="aff-btn" data-aff-play="${a.id}" ${!a.recording?'style="opacity:0.3"':''}>▶</button>
+              <button class="aff-btn" data-aff-edit="${a.id}">⚙</button>
+            </div>
+          `;}).join('')}
+        </div>
+      `;
+    }).join('')}
+
+    ${state.affirmations.length === 0 ? `
+      <div class="empty-state">
+        <div class="big">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        </div>
+        <p>${t('empty_list')}<br>${t('empty_list_hint')}</p>
+      </div>
+    ` : ''}
+  `;
+
+  document.getElementById('add-aff').addEventListener('click', () => openAddAffModal());
+  document.getElementById('add-group').addEventListener('click', () => openAddGroupModal());
+  document.querySelectorAll('[data-group-edit]').forEach(b => b.addEventListener('click', () => openEditGroupModal(b.dataset.groupEdit)));
+  document.querySelectorAll('[data-aff-play]').forEach(b => b.addEventListener('click', () => {
+    const aff = state.affirmations.find(a => a.id === b.dataset.affPlay);
+    if (aff && aff.recording) previewAff(aff);
+  }));
+  document.querySelectorAll('[data-aff-edit]').forEach(b => b.addEventListener('click', () => openEditAffModal(b.dataset.affEdit)));
+}
+
+// ============================================================
+// STATS TRACKING
+// ============================================================
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatChallengeDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const lang = state.settings.language || 'fr';
+  const months = {
+    fr: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+    en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  };
+  const ms = months[lang] || months.fr;
+  return `${d.getDate()} ${ms[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function trackPlay(aff) {
+  if (!aff) return;
+  const key = todayKey();
+  const s = state.stats;
+
+  // byDay
+  if (!s.byDay[key]) s.byDay[key] = { plays: 0, loops: 0, seconds: 0 };
+  s.byDay[key].plays++;
+  s.byDay[key].seconds += Math.round(aff.duration || 0);
+
+  // byAffirmation
+  if (!s.byAffirmation[aff.id]) s.byAffirmation[aff.id] = { plays: 0, lastPlayed: 0 };
+  s.byAffirmation[aff.id].plays++;
+  s.byAffirmation[aff.id].lastPlayed = Date.now();
+
+  // byPlaylist
+  if (aff.groupId) {
+    if (!s.byPlaylist[aff.groupId]) s.byPlaylist[aff.groupId] = { plays: 0 };
+    s.byPlaylist[aff.groupId].plays++;
+  }
+
+  // globals
+  s.totalPlays++;
+  s.totalSeconds += Math.round(aff.duration || 0);
+
+  // best day
+  if (s.byDay[key].plays > s.bestDay.plays) {
+    s.bestDay = { date: key, plays: s.byDay[key].plays };
+  }
+
+  // streak
+  updateStreak();
+
+  saveState();
+}
+
+function trackLoop() {
+  const key = todayKey();
+  if (!state.stats.byDay[key]) state.stats.byDay[key] = { plays: 0, loops: 0, seconds: 0 };
+  state.stats.byDay[key].loops++;
+  state.stats.totalLoops++;
+  saveState();
+}
+
+function updateStreak() {
+  const s = state.stats;
+  const today = todayKey();
+  if (s.lastActiveDay === today) return; // déjà compté aujourd'hui
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+
+  if (s.lastActiveDay === yKey) {
+    s.streak++;
+  } else if (!s.lastActiveDay) {
+    s.streak = 1;
+  } else {
+    s.streak = 1; // reset
+  }
+  s.lastActiveDay = today;
+}
+
+function timeAgo(ts) {
+  if (!ts) return t('stats_never_played');
+  const now = Date.now();
+  const diff = Math.floor((now - ts) / 1000);
+  if (diff < 60) return t('stats_just_now');
+  if (diff < 3600) return t('stats_mins_ago', { n: Math.floor(diff/60) });
+  if (diff < 86400) return t('stats_hours_ago', { n: Math.floor(diff/3600) });
+  const days = Math.floor(diff/86400);
+  if (days === 0) return t('stats_today_short');
+  return t('stats_days_ago', { n: days });
+}
+
+function previewAff(aff) {
+  const audio = document.getElementById('aff-audio');
+  audio.src = aff.recording;
+  audio.volume = state.settings.affVolume;
+  audio.playbackRate = state.settings.playbackRate;
+  audio.play().catch(() => toast(t('toast_play_error')));
+}
+
+// ============================================================
+// PLAYER SETTINGS BOTTOM SHEET
+// ============================================================
+function openPlayerSheet() {
+  const s = state.settings;
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.id = 'player-sheet';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${t('player_sheet_title')}</div>
+
+      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
+          <div>
+            <div class="setting-label">${t('aff_volume')}</div>
+            <div class="setting-sub">${t('aff_volume_sub')}</div>
+          </div>
+          <div class="setting-val" id="ps-val-aff-vol">${Math.round(s.affVolume*100)}%</div>
+        </div>
+        <input type="range" id="ps-aff-vol" min="0" max="1" step="0.05" value="${s.affVolume}" />
+      </div>
+
+      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
+          <div>
+            <div class="setting-label">${t('music_volume')}</div>
+            <div class="setting-sub">${t('music_volume_sub')}</div>
+          </div>
+          <div class="setting-val" id="ps-val-music-vol">${Math.round(s.musicVolume*100)}%</div>
+        </div>
+        <input type="range" id="ps-music-vol" min="0" max="1" step="0.05" value="${s.musicVolume}" />
+      </div>
+
+      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
+          <div>
+            <div class="setting-label">${t('play_speed')}</div>
+            <div class="setting-sub">${t('play_speed_sub')}</div>
+          </div>
+          <div class="setting-val" id="ps-val-rate">${s.playbackRate.toFixed(2)}x</div>
+        </div>
+        <input type="range" id="ps-rate" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+      </div>
+
+      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
+          <div>
+            <div class="setting-label">${t('pause_between')}</div>
+            <div class="setting-sub">${t('pause_between_sub')}</div>
+          </div>
+          <div class="setting-val" id="ps-val-pause">${s.pauseBetween}s</div>
+        </div>
+        <input type="range" id="ps-pause" min="0" max="15" step="1" value="${s.pauseBetween}" />
+      </div>
+
+      <div class="setting-row col" style="padding: 14px 0">
+        <div>
+          <div class="setting-label">${t('music_type')}</div>
+          <div class="setting-sub">${t('music_type_sub')}</div>
+        </div>
+        <div class="music-mode-row" style="margin-top:8px">
+          <button class="music-mode-btn ${s.musicMode==='none'?'active':''}" data-ps-music-mode="none">${t('none')}</button>
+          <button class="music-mode-btn ${s.musicMode==='drone'?'active':''}" data-ps-music-mode="drone">${t('drone')}</button>
+          <button class="music-mode-btn ${s.musicMode==='playlist'?'active':''}" data-ps-music-mode="playlist" ${!s.musicPlaylistUrl?'disabled style="opacity:0.4"':''}>${t('playlist')}</button>
+        </div>
+      </div>
+
+      <button class="btn-secondary" id="ps-close" style="margin-top:16px">${t('cancel') === 'Annuler' ? 'Fermer' : 'Close'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const bindRange = (id, key, format) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', (e) => {
+      const v = parseFloat(e.target.value);
+      state.settings[key] = v;
+      saveState();
+      document.getElementById('ps-val-' + id.replace('ps-', '')).textContent = format(v);
+      if (key === 'musicVolume') updateDroneVolume();
+      if (key === 'affVolume') { document.getElementById('aff-audio').volume = v; }
+      if (key === 'playbackRate') { document.getElementById('aff-audio').playbackRate = v; }
+    });
+  };
+  bindRange('ps-aff-vol', 'affVolume', v => Math.round(v*100) + '%');
+  bindRange('ps-music-vol', 'musicVolume', v => Math.round(v*100) + '%');
+  bindRange('ps-rate', 'playbackRate', v => v.toFixed(2) + 'x');
+  bindRange('ps-pause', 'pauseBetween', v => v + 's');
+
+  overlay.querySelectorAll('[data-ps-music-mode]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.musicMode = b.dataset.psMusicMode;
+      saveState();
+      overlay.querySelectorAll('[data-ps-music-mode]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (playerState.playing) { stopMusic(); startMusic(); }
+    });
+  });
+
+  document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ============================================================
+// 10K CHALLENGE
+// ============================================================
+let challengeAudio = null;
+let challengeTimeout = null;
+
+function renderChallenge() {
+  const c = state.challenge;
+  const s = state.settings;
+  const aff = c.affirmationId ? state.affirmations.find(a => a.id === c.affirmationId && a.recording) : null;
+  const pct = Math.min(100, (c.count / c.target) * 100);
+  const remaining = Math.max(0, c.target - c.count);
+  const available = state.affirmations.filter(a => a.recording);
+
+  document.getElementById('page-challenge').innerHTML = `
+    <h1 class="h1">${t('challenge_title_1')} <span class="dot">${t('challenge_title_2')}</span></h1>
+    <p class="sublabel" style="margin-bottom:20px; max-width: 440px">${t('challenge_desc')}</p>
+
+    <div class="challenge-aff-card">
+      ${aff ? `
+        <div class="challenge-aff-label">${t('challenge_this_aff')}</div>
+        <div class="challenge-aff-title">${escapeHtml(aff.title)}</div>
+        <button class="btn-secondary" id="ch-change-aff" style="margin-top:12px">${t('challenge_change_aff')}</button>
+      ` : `
+        ${available.length > 0 ? `
+          <select class="input-select" id="ch-select" style="margin-bottom: 14px">
+            <option value="">${t('challenge_select_prompt')}</option>
+            ${available.map(a => `<option value="${a.id}">${escapeHtml(a.title)}</option>`).join('')}
+          </select>
+          <div class="challenge-divider"><span>${t('challenge_or')}</span></div>
+        ` : ''}
+
+        <div class="h3" style="margin-top: ${available.length > 0 ? '16px' : '0'}">${t('challenge_record_new')}</div>
+        <input type="text" class="input-text" id="ch-new-title" placeholder="${t('ch_title_placeholder')}" style="margin-bottom: 12px" />
+        <div class="rec-wrapper" style="padding: 10px 0">
+          <div class="rec-timer" id="ch-rec-timer">${formatDur(0)}</div>
+          <button class="rec-btn" id="ch-rec-btn">●</button>
+          <p class="sublabel" style="margin-top: 10px" id="ch-rec-hint">${t('ch_rec_hint')}</p>
+          <div id="ch-rec-playback" style="display:none; margin-top:10px">
+            <button class="playback-btn" id="ch-rec-play">${t('listen')}</button>
+            <button class="playback-btn" id="ch-rec-redo" style="color: var(--danger)">${t('ch_redo')}</button>
+          </div>
+        </div>
+        <button class="btn-primary" id="ch-create" disabled style="margin-top: 10px; opacity: 0.5">${t('ch_use_this')}</button>
+      `}
+    </div>
+
+    ${aff ? `
+      <div class="challenge-progress-wrap">
+        ${c.startedAt ? `<div class="challenge-started">${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</div>` : ''}
+        <div class="challenge-progress-stats">
+          <div class="challenge-count-main">${c.count.toLocaleString('fr-FR')}</div>
+          <div class="challenge-count-sep">/</div>
+          <div class="challenge-count-target">${c.target.toLocaleString('fr-FR')}</div>
+        </div>
+        <div class="challenge-progress-bar">
+          <div class="challenge-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="challenge-progress-info">
+          <span>${pct.toFixed(1)}%</span>
+          <span>${remaining.toLocaleString('fr-FR')} ${t('challenge_remaining')}</span>
+        </div>
+      </div>
+
+      <div class="challenge-controls">
+        <button class="action-card primary" id="ch-toggle">
+          <div class="action-card-icon">
+            ${c.playing ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>'}
+          </div>
+          <div class="action-card-text">
+            <div class="action-card-title">${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}</div>
+            <div class="action-card-sub">${t('challenge_select_hint')}</div>
+          </div>
+        </button>
+
+        ${c.playing ? `
+          <div class="live-speed">
+            <div class="live-speed-label">
+              <span>${t('play_speed')}</span>
+              <span class="live-speed-val" id="ch-live-speed-val">${s.playbackRate.toFixed(2)}x</span>
+            </div>
+            <input type="range" id="ch-live-speed" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+          </div>
+        ` : ''}
+
+        <button class="btn-secondary danger" id="ch-reset" style="margin-top:8px">${t('challenge_reset')}</button>
+      </div>
+    ` : ''}
+
+    ${aff ? `
+      <button class="player-fab" id="ch-settings-btn" aria-label="${t('player_sheet_btn')}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    ` : ''}
+  `;
+
+  // Handlers
+  document.getElementById('ch-select')?.addEventListener('change', (e) => {
+    if (!e.target.value) return;
+    state.challenge.affirmationId = e.target.value;
+    state.challenge.count = 0;
+    state.challenge.startedAt = Date.now();
+    saveState();
+    render();
+  });
+  document.getElementById('ch-change-aff')?.addEventListener('click', () => {
+    stopChallenge();
+    state.challenge.affirmationId = null;
+    saveState();
+    render();
+  });
+  document.getElementById('ch-toggle')?.addEventListener('click', toggleChallenge);
+  document.getElementById('ch-settings-btn')?.addEventListener('click', openPlayerSheet);
+  document.getElementById('ch-reset')?.addEventListener('click', () => {
+    if (confirm(t('challenge_confirm_reset'))) {
+      stopChallenge();
+      state.challenge.count = 0;
+      saveState();
+      render();
+    }
+  });
+
+  // Live speed slider pendant lecture
+  document.getElementById('ch-live-speed')?.addEventListener('input', (e) => {
+    const v = parseFloat(e.target.value);
+    state.settings.playbackRate = v;
+    saveState();
+    document.getElementById('ch-live-speed-val').textContent = v.toFixed(2) + 'x';
+    document.getElementById('aff-audio').playbackRate = v;
+  });
+
+  // Enregistrement direct dans l'onglet 10K
+  if (!aff) {
+    setupChallengeRecorder();
+  }
+}
+
+// Enregistrement intégré dans l'onglet 10K
+let chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null, recording: null, duration: 0 };
+
+function setupChallengeRecorder() {
+  const recBtn = document.getElementById('ch-rec-btn');
+  const timer = document.getElementById('ch-rec-timer');
+  const hint = document.getElementById('ch-rec-hint');
+  const playback = document.getElementById('ch-rec-playback');
+  const createBtn = document.getElementById('ch-create');
+  const titleInput = document.getElementById('ch-new-title');
+
+  if (!recBtn) return;
+
+  const updateCreateBtn = () => {
+    const hasTitle = titleInput.value.trim().length > 0;
+    const hasRec = !!chRecorder.recording;
+    if (hasTitle && hasRec) {
+      createBtn.disabled = false;
+      createBtn.style.opacity = '1';
+    } else {
+      createBtn.disabled = true;
+      createBtn.style.opacity = '0.5';
+    }
+  };
+
+  titleInput.addEventListener('input', updateCreateBtn);
+
+  recBtn.addEventListener('click', async () => {
+    if (chRecorder.mediaRecorder && chRecorder.mediaRecorder.state === 'recording') {
+      chRecorder.mediaRecorder.stop();
+      recBtn.classList.remove('recording');
+      recBtn.textContent = '●';
+      clearInterval(chRecorder.interval);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        chRecorder.chunks = [];
+        chRecorder.mediaRecorder = new MediaRecorder(stream);
+        chRecorder.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chRecorder.chunks.push(e.data); };
+        chRecorder.mediaRecorder.onstop = () => {
+          stream.getTracks().forEach(t => t.stop());
+          const blob = new Blob(chRecorder.chunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            chRecorder.recording = reader.result;
+            chRecorder.duration = (Date.now() - chRecorder.startTime) / 1000;
+            timer.textContent = formatDur(chRecorder.duration);
+            hint.textContent = t('rec_exists');
+            playback.style.display = 'block';
+            updateCreateBtn();
+          };
+          reader.readAsDataURL(blob);
+        };
+        chRecorder.mediaRecorder.start();
+        chRecorder.startTime = Date.now();
+        recBtn.classList.add('recording');
+        recBtn.textContent = '■';
+        chRecorder.interval = setInterval(() => {
+          timer.textContent = formatDur((Date.now() - chRecorder.startTime) / 1000);
+        }, 100);
+      } catch(e) { toast(t('toast_mic_error')); }
+    }
+  });
+
+  document.getElementById('ch-rec-play')?.addEventListener('click', () => {
+    const a = document.getElementById('aff-audio');
+    a.src = chRecorder.recording;
+    a.volume = state.settings.affVolume;
+    a.playbackRate = state.settings.playbackRate;
+    a.play();
+  });
+
+  document.getElementById('ch-rec-redo')?.addEventListener('click', () => {
+    chRecorder.recording = null;
+    chRecorder.duration = 0;
+    timer.textContent = formatDur(0);
+    hint.textContent = t('ch_rec_hint');
+    playback.style.display = 'none';
+    updateCreateBtn();
+  });
+
+  createBtn.addEventListener('click', () => {
+    const title = titleInput.value.trim();
+    if (!title || !chRecorder.recording) return;
+
+    // Trouver un groupe par défaut (le premier)
+    let groupId = state.groups[0]?.id;
+    if (!groupId) {
+      // Créer un groupe si aucun
+      const newG = { id: uid(), name: state.settings.language === 'en' ? 'My affirmations' : 'Mes affirmations' };
+      state.groups.push(newG);
+      groupId = newG.id;
+    }
+
+    const newAff = {
+      id: uid(),
+      title,
+      groupId,
+      recording: chRecorder.recording,
+      duration: chRecorder.duration,
+    };
+    state.affirmations.push(newAff);
+
+    // Reset du recorder
+    chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null, recording: null, duration: 0 };
+
+    // Set comme affirmation du challenge
+    state.challenge.affirmationId = newAff.id;
+    state.challenge.count = 0;
+    state.challenge.startedAt = Date.now();
+    saveState();
+
+    toast(t('toast_created'));
+    render();
+  });
+}
+
+function toggleChallenge() {
+  if (state.challenge.playing) {
+    stopChallenge();
+  } else {
+    startChallenge();
+  }
+}
+
+function startChallenge() {
+  const aff = state.affirmations.find(a => a.id === state.challenge.affirmationId && a.recording);
+  if (!aff) { toast(t('toast_no_recordings')); return; }
+  state.challenge.playing = true;
+  if (!state.challenge.startedAt) state.challenge.startedAt = Date.now();
+  saveState();
+  startMusic();
+  playChallenge();
+  render();
+  toast(t('challenge_started'));
+}
+
+function stopChallenge() {
+  state.challenge.playing = false;
+  if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
+  if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+  stopMusic();
+  saveState();
+  render();
+}
+
+function playChallenge() {
+  if (!state.challenge.playing) return;
+  const aff = state.affirmations.find(a => a.id === state.challenge.affirmationId && a.recording);
+  if (!aff) { stopChallenge(); return; }
+
+  const audio = document.getElementById('aff-audio');
+  audio.src = aff.recording;
+  audio.volume = state.settings.affVolume;
+  audio.playbackRate = state.settings.playbackRate;
+  audio.play().catch(() => { toast(t('toast_play_error')); stopChallenge(); });
+  challengeAudio = audio;
+
+  audio.onended = () => {
+    if (!state.challenge.playing) return;
+
+    state.challenge.count++;
+    trackPlay(aff);
+    saveState();
+
+    // Update UI
+    const el = document.querySelector('.challenge-count-main');
+    if (el) el.textContent = state.challenge.count.toLocaleString();
+    const fill = document.querySelector('.challenge-progress-fill');
+    if (fill) fill.style.width = Math.min(100, (state.challenge.count / state.challenge.target) * 100) + '%';
+    const pctEl = document.querySelector('.challenge-progress-info span:first-child');
+    if (pctEl) pctEl.textContent = ((state.challenge.count / state.challenge.target) * 100).toFixed(1) + '%';
+    const remEl = document.querySelector('.challenge-progress-info span:last-child');
+    if (remEl) remEl.textContent = Math.max(0, state.challenge.target - state.challenge.count).toLocaleString() + ' ' + t('challenge_remaining');
+
+    if (state.challenge.count >= state.challenge.target) {
+      stopChallenge();
+      toast(t('challenge_done'));
+      return;
+    }
+
+    challengeTimeout = setTimeout(() => {
+      if (!state.challenge.playing) return;
+      playChallenge();
+    }, state.settings.pauseBetween * 1000);
+  };
+}
+
+// ============================================================
+// STATS PAGE
+// ============================================================
+function renderStats() {
+  const s = state.stats;
+  const today = todayKey();
+  const todayStats = s.byDay[today] || { plays: 0, loops: 0, seconds: 0 };
+
+  // 7 derniers jours
+  const last7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const ds = s.byDay[k] || { plays: 0 };
+    last7.push({ day: ['D','L','M','M','J','V','S'][d.getDay()], count: ds.plays, isToday: k === today });
+  }
+  const maxDay = Math.max(1, ...last7.map(d => d.count));
+
+  // Semaine total
+  const weekTotal = last7.reduce((sum, d) => sum + d.count, 0);
+
+  // Top affirmations
+  const topAffs = Object.entries(s.byAffirmation || {})
+    .map(([id, data]) => {
+      const aff = state.affirmations.find(a => a.id === id);
+      return aff ? { title: aff.title, plays: data.plays, lastPlayed: data.lastPlayed } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.plays - a.plays)
+    .slice(0, 5);
+
+  // Top playlists
+  const topPlaylists = Object.entries(s.byPlaylist || {})
+    .map(([id, data]) => {
+      const g = state.groups.find(g => g.id === id);
+      return g ? { name: g.name, plays: data.plays } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.plays - a.plays)
+    .slice(0, 3);
+
+  const activeDays = Object.keys(s.byDay || {}).filter(k => s.byDay[k].plays > 0).length;
+
+  document.getElementById('page-stats').innerHTML = `
+    <div class="eyebrow">${t('stats_eyebrow')}</div>
+    <h1 class="h1">${t('stats_title_1')} <span class="dot">${t('stats_title_2')}</span></h1>
+
+    ${s.totalPlays === 0 ? `
+      <div class="empty-state">
+        <div class="big">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-5"/></svg>
+        </div>
+        <p>${t('stats_empty')}</p>
+      </div>
+    ` : `
+      <div class="stats-grid">
+        <div class="stats-card primary">
+          <div class="stats-card-icon">🔥</div>
+          <div class="stats-card-val">${s.streak || 0}</div>
+          <div class="stats-card-label">${t('stats_streak')}</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">📅</div>
+          <div class="stats-card-val">${todayStats.plays}</div>
+          <div class="stats-card-label">${t('stats_today')}</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">📊</div>
+          <div class="stats-card-val">${weekTotal}</div>
+          <div class="stats-card-label">${t('stats_week')}</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">✨</div>
+          <div class="stats-card-val">${s.totalPlays}</div>
+          <div class="stats-card-label">${t('stats_total')}</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">🏆</div>
+          <div class="stats-card-val">${s.bestDay.plays || 0}</div>
+          <div class="stats-card-label">${t('stats_best_day')}</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">⏱️</div>
+          <div class="stats-card-val">${Math.round((s.totalSeconds || 0) / 60)}</div>
+          <div class="stats-card-label">${t('stats_minutes')}</div>
+        </div>
+      </div>
+
+      <div class="h3" style="margin-top:28px">${t('stats_7days')}</div>
+      <div class="stats-chart">
+        ${last7.map(d => `
+          <div class="chart-col">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar ${d.isToday ? 'today' : ''}" style="height:${(d.count / maxDay) * 100}%" title="${d.count} aff."></div>
+            </div>
+            <div class="chart-label ${d.isToday ? 'today' : ''}">${d.day}</div>
+            <div class="chart-count">${d.count || ''}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      ${topAffs.length > 0 ? `
+        <div class="h3" style="margin-top:28px">${t('stats_top_affs')}</div>
+        ${topAffs.map((a, i) => `
+          <div class="top-row">
+            <div class="top-rank">${i+1}</div>
+            <div class="top-content">
+              <div class="top-title">${escapeHtml(a.title)}</div>
+              <div class="top-sub">${timeAgo(a.lastPlayed)}</div>
+            </div>
+            <div class="top-count">${a.plays}×</div>
+          </div>
+        `).join('')}
+      ` : ''}
+
+      ${topPlaylists.length > 0 ? `
+        <div class="h3" style="margin-top:28px">${t('stats_top_playlists')}</div>
+        ${topPlaylists.map((p, i) => `
+          <div class="top-row">
+            <div class="top-rank">${i+1}</div>
+            <div class="top-content">
+              <div class="top-title">${escapeHtml(p.name)}</div>
+            </div>
+            <div class="top-count">${p.plays}×</div>
+          </div>
+        `).join('')}
+      ` : ''}
+    `}
+  `;
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openAddAffModal() {
+  if (state.groups.length === 0) { toast(t('toast_need_group')); return; }
+  openAffModal(null);
+}
+
+function openEditAffModal(id) {
+  const aff = state.affirmations.find(a => a.id === id);
+  if (aff) openAffModal(aff);
+}
+
+function openAffModal(existing) {
+  const isEdit = !!existing;
+  const aff = existing || { id: uid(), title: '', groupId: state.groups[0].id, recording: null, duration: 0 };
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${isEdit ? t('edit_aff') : t('new_aff')} <span class="accent">${t('word_affirmation')}</span></div>
+
+      <div class="h3">${t('title')}</div>
+      <input type="text" class="input-text" id="aff-title" placeholder="${t('aff_placeholder')}" value="${escapeHtml(aff.title)}" />
+
+      <div class="h3">${t('group')}</div>
+      <select class="input-select" id="aff-group">
+        ${state.groups.map(g => `<option value="${g.id}" ${g.id===aff.groupId?'selected':''}>${escapeHtml(g.name)}</option>`).join('')}
+      </select>
+
+      <div class="h3">${t('voice_recording')}</div>
+      <div class="rec-wrapper">
+        <div class="rec-timer" id="rec-timer">${formatDur(aff.duration)}</div>
+        <button class="rec-btn" id="rec-btn">●</button>
+        <p class="sublabel" style="margin-top:12px">${aff.recording ? t('rec_exists') : t('rec_tap')}</p>
+        ${aff.recording ? `
+          <div style="margin-top:4px">
+            <button class="playback-btn" id="rec-play">${t('listen')}</button>
+            <button class="playback-btn" id="rec-delete" style="color:var(--danger)">${t('erase')}</button>
+          </div>
+        ` : ''}
+      </div>
+
+      <button class="btn-primary" id="aff-save">${isEdit ? t('save') : t('create')}</button>
+      ${isEdit ? `<button class="btn-secondary danger" id="aff-delete">${t('delete')}</button>` : ''}
+      <button class="btn-secondary" id="aff-cancel">${t('cancel')}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  let currentRecording = aff.recording;
+  let currentDuration = aff.duration;
+  let mediaRecorder = null;
+  let recChunks = [];
+  let recStartTime = 0;
+  let recTimerInterval = null;
+
+  const recBtn = document.getElementById('rec-btn');
+  const recTimer = document.getElementById('rec-timer');
+
+  recBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      recBtn.classList.remove('recording');
+      recBtn.textContent = '●';
+      clearInterval(recTimerInterval);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          stream.getTracks().forEach(t => t.stop());
+          const blob = new Blob(recChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            currentRecording = reader.result;
+            currentDuration = (Date.now() - recStartTime) / 1000;
+            recTimer.textContent = formatDur(currentDuration);
+            toast(t('toast_recorded'));
+            refreshRecButtons();
+          };
+          reader.readAsDataURL(blob);
+        };
+        mediaRecorder.start();
+        recStartTime = Date.now();
+        recBtn.classList.add('recording');
+        recBtn.textContent = '■';
+        recTimerInterval = setInterval(() => {
+          recTimer.textContent = formatDur((Date.now() - recStartTime) / 1000);
+        }, 100);
+      } catch(e) { toast(t('toast_mic_error')); }
+    }
+  });
+
+  function refreshRecButtons() {
+    const wrap = document.querySelector('.rec-wrapper');
+    document.getElementById('rec-play')?.remove();
+    document.getElementById('rec-delete')?.remove();
+    const container = document.querySelector('.rec-wrapper > div');
+    if (container) container.remove();
+
+    if (currentRecording) {
+      const div = document.createElement('div');
+      div.style.marginTop = '4px';
+      const playBtn = document.createElement('button');
+      playBtn.className = 'playback-btn';
+      playBtn.id = 'rec-play';
+      playBtn.textContent = t('listen');
+      div.appendChild(playBtn);
+      const delBtn = document.createElement('button');
+      delBtn.className = 'playback-btn';
+      delBtn.id = 'rec-delete';
+      delBtn.style.color = 'var(--danger)';
+      delBtn.textContent = t('erase');
+      div.appendChild(delBtn);
+      wrap.appendChild(div);
+
+      playBtn.addEventListener('click', () => {
+        const a = document.getElementById('aff-audio');
+        a.src = currentRecording; a.volume = state.settings.affVolume; a.playbackRate = state.settings.playbackRate; a.play();
+      });
+      delBtn.addEventListener('click', () => {
+        if (confirm(t('confirm_erase_rec'))) {
+          currentRecording = null;
+          currentDuration = 0;
+          recTimer.textContent = formatDur(0);
+          refreshRecButtons();
+        }
+      });
+    }
+  }
+
+  document.getElementById('rec-play')?.addEventListener('click', () => {
+    const a = document.getElementById('aff-audio');
+    a.src = currentRecording; a.volume = state.settings.affVolume; a.playbackRate = state.settings.playbackRate; a.play();
+  });
+  document.getElementById('rec-delete')?.addEventListener('click', () => {
+    if (confirm(t('confirm_erase_rec'))) {
+      currentRecording = null;
+      currentDuration = 0;
+      recTimer.textContent = formatDur(0);
+      refreshRecButtons();
+    }
+  });
+
+  document.getElementById('aff-save').addEventListener('click', () => {
+    const title = document.getElementById('aff-title').value.trim();
+    const groupId = document.getElementById('aff-group').value;
+    if (!title) { toast(t('toast_give_title')); return; }
+    aff.title = title;
+    aff.groupId = groupId;
+    aff.recording = currentRecording;
+    aff.duration = currentDuration;
+    if (!isEdit) state.affirmations.push(aff);
+    saveState();
+    overlay.remove();
+    toast(isEdit ? t('toast_modified') : t('toast_created'));
+    render();
+  });
+
+  if (isEdit) {
+    document.getElementById('aff-delete').addEventListener('click', () => {
+      if (confirm(t('confirm_delete_aff'))) {
+        state.affirmations = state.affirmations.filter(a => a.id !== aff.id);
+        saveState();
+        overlay.remove();
+        toast(t('toast_deleted'));
+        render();
+      }
+    });
+  }
+
+  document.getElementById('aff-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+function formatDur(sec) {
+  sec = Math.max(0, Math.round(sec));
+  return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
+}
+
+function openAddGroupModal() { openGroupModal(null); }
+function openEditGroupModal(id) {
+  const g = state.groups.find(x => x.id === id);
+  if (g) openGroupModal(g);
+}
+
+function openGroupModal(existing) {
+  const isEdit = !!existing;
+  const g = existing || { id: uid(), name: '' };
+  const affCount = isEdit ? state.affirmations.filter(a => a.groupId === g.id).length : 0;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  const wordAff = affCount > 1 ? t('affirmations') : t('affirmation');
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${isEdit ? t('edit_group') : t('new_group')} <span class="accent">${t('word_group')}</span></div>
+
+      <div class="h3">${t('group_name')}</div>
+      <input type="text" class="input-text" id="g-name" placeholder="${t('group_placeholder')}" value="${escapeHtml(g.name)}" />
+      ${isEdit && affCount > 0 ? `<p class="sublabel" style="margin-top:8px">${t('contains')} ${affCount} ${wordAff}</p>` : ''}
+
+      <button class="btn-primary" id="g-save">${isEdit ? t('save') : t('create')}</button>
+      ${isEdit ? `<button class="btn-secondary danger" id="g-delete">${t('delete')}</button>` : ''}
+      <button class="btn-secondary" id="g-cancel">${t('cancel')}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  document.getElementById('g-save').addEventListener('click', () => {
+    const name = document.getElementById('g-name').value.trim();
+    if (!name) { toast(t('toast_give_name')); return; }
+    g.name = name;
+    if (!isEdit) state.groups.push(g);
+    saveState();
+    overlay.remove();
+    render();
+  });
+
+  if (isEdit) {
+    document.getElementById('g-delete').addEventListener('click', () => {
+      if (affCount > 0) {
+        if (!confirm(t('confirm_delete_group_with', { n: affCount, w: wordAff }))) return;
+        state.affirmations = state.affirmations.filter(a => a.groupId !== g.id);
+      } else {
+        if (!confirm(t('confirm_delete_group'))) return;
+      }
+      state.groups = state.groups.filter(x => x.id !== g.id);
+      if (state.settings.selectedGroupId === g.id) state.settings.selectedGroupId = 'all';
+      saveState();
+      overlay.remove();
+      render();
+    });
+  }
+
+  document.getElementById('g-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function renderSettings() {
+  const s = state.settings;
+  document.getElementById('page-settings').innerHTML = `
+    <div class="eyebrow">${t('settings_eyebrow')}</div>
+    <h1 class="h1">${t('settings_title_1')} <span class="dot">${t('settings_title_2')}</span></h1>
+
+    <div class="h3">${t('language')}</div>
+    <div class="setting-group" style="padding: 10px 18px">
+      <div class="setting-row col">
+        <div class="music-mode-row two">
+          <button class="music-mode-btn ${s.language==='fr'?'active':''}" data-lang="fr">🇫🇷 Français</button>
+          <button class="music-mode-btn ${s.language==='en'?'active':''}" data-lang="en">🇬🇧 English</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="h3">${t('appearance')}</div>
+    <div class="setting-group" style="padding: 16px 18px">
+      <div class="theme-picker ${s.darkMode ? 'dark-preview' : ''}">
+        ${THEMES.map(th => `
+          <div class="theme-chip ${th.id} ${s.theme===th.id?'active':''}" data-theme-id="${th.id}">
+            <div class="theme-chip-orb"></div>
+            <div class="theme-chip-name">${th.name}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="dark-toggle">
+        <div class="dark-toggle-labels">
+          <span class="dark-emoji">☀️</span>
+          <span class="dark-emoji">🌙</span>
+        </div>
+        <button class="toggle-switch ${s.darkMode?'active':''}" id="toggle-dark" aria-label="${t('dark_mode')}">
+          <div class="toggle-knob"></div>
+        </button>
+        <div class="dark-toggle-text">${t('dark_mode')} : <strong>${s.darkMode ? t('on') : t('off')}</strong></div>
+      </div>
+    </div>
+
+    <div class="h3">${t('playlist_url')}</div>
+    <div class="setting-group">
+      <div class="setting-row col">
+        <div>
+          <div class="setting-label">${t('playlist_url')}</div>
+          <div class="setting-sub">${t('playlist_url_sub')}</div>
+        </div>
+        <input type="text" class="input-text" id="playlist-url" placeholder="https://open.spotify.com/playlist/..." value="${escapeHtml(s.musicPlaylistUrl)}" />
+        <button class="btn-secondary" id="save-playlist">${t('save_url')}</button>
+      </div>
+    </div>
+
+    <div class="h3">${t('support')} ♥</div>
+    <div class="setting-group">
+      <div class="setting-row col">
+        <div>
+          <div class="setting-label">${t('kofi_url')}</div>
+          <div class="setting-sub">${t('support_sub')}<br><br>${t('kofi_sub')}</div>
+        </div>
+        <input type="text" class="input-text" id="kofi-url" placeholder="https://ko-fi.com/perrine" value="${escapeHtml(s.kofiUrl || '')}" />
+        <button class="btn-secondary" id="save-kofi">💾</button>
+        ${s.kofiUrl ? `<button class="support-btn-float" id="test-kofi">${t('support_btn')}</button>` : ''}
+      </div>
+    </div>
+
+    <div class="h3">${t('data')}</div>
+    <div class="setting-group">
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">${t('export_light')}</div>
+          <div class="setting-sub">${t('export_light_sub')}</div>
+        </div>
+        <button class="btn-secondary" id="export" style="width:auto; padding:8px 16px; margin:0">📥</button>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">${t('export_full')}</div>
+          <div class="setting-sub">${t('export_full_sub')}</div>
+        </div>
+        <button class="btn-secondary" id="export-full" style="width:auto; padding:8px 16px; margin:0">📥</button>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">${t('import_data')}</div>
+          <div class="setting-sub">${t('import_data_sub')}</div>
+        </div>
+        <button class="btn-secondary" id="import" style="width:auto; padding:8px 16px; margin:0">📤</button>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label" style="color:var(--danger)">${t('erase_all')}</div>
+          <div class="setting-sub">${t('erase_all_sub')}</div>
+        </div>
+        <button class="btn-secondary danger" id="reset" style="width:auto; padding:8px 16px; margin:0">✕</button>
+      </div>
+    </div>
+
+    <input type="file" id="import-file" accept=".json" style="display:none" />
+  `;
+
+  document.querySelectorAll('[data-theme-id]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.theme = b.dataset.themeId;
+      saveState();
+      applyTheme();
+      toast(`${t('toast_theme')} : ${THEMES.find(th => th.id === b.dataset.themeId).name}`);
+      render();
+    });
+  });
+
+  document.getElementById('toggle-dark')?.addEventListener('click', () => {
+    state.settings.darkMode = !state.settings.darkMode;
+    saveState();
+    applyTheme();
+    render();
+  });
+
+  document.querySelectorAll('[data-lang]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.language = b.dataset.lang;
+      saveState();
+      applyLangTabs();
+      render();
+    });
+  });
+
+  document.getElementById('save-playlist').addEventListener('click', () => {
+    const url = document.getElementById('playlist-url').value.trim();
+    state.settings.musicPlaylistUrl = url;
+    if (!url && state.settings.musicMode === 'playlist') state.settings.musicMode = 'none';
+    saveState();
+    toast(url ? t('toast_playlist_saved') : t('toast_url_cleared'));
+    render();
+  });
+
+  document.getElementById('save-kofi').addEventListener('click', () => {
+    const url = document.getElementById('kofi-url').value.trim();
+    state.settings.kofiUrl = url;
+    saveState();
+    toast(url ? t('toast_kofi_saved') : t('toast_url_cleared'));
+    render();
+  });
+
+  document.getElementById('test-kofi')?.addEventListener('click', () => {
+    if (state.settings.kofiUrl) window.open(state.settings.kofiUrl, '_blank');
+  });
+
+  document.getElementById('export').addEventListener('click', () => exportData(false));
+  document.getElementById('export-full').addEventListener('click', () => exportData(true));
+  document.getElementById('import').addEventListener('click', () => document.getElementById('import-file').click());
+  document.getElementById('import-file').addEventListener('change', importData);
+  document.getElementById('reset').addEventListener('click', () => {
+    if (confirm(t('confirm_reset'))) {
+      const prevLang = state.settings.language;
+      localStorage.removeItem(STORAGE_KEY);
+      state = defaultState();
+      state.settings.language = prevLang;
+      saveState();
+      applyTheme();
+      toast(t('toast_reset'));
+      render();
+    }
+  });
+}
+
+function exportData(withAudio) {
+  const data = {
+    groups: state.groups,
+    affirmations: withAudio ? state.affirmations : state.affirmations.map(a => ({...a, recording: null})),
+    settings: state.settings,
+    stats: state.stats,
+    version: 1,
+    exportDate: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${t('backup_name')}${new Date().toISOString().slice(0,10)}${withAudio?'-full':''}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(t('toast_exported'));
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!confirm(t('confirm_import'))) return;
+      if (data.groups) state.groups = data.groups;
+      if (data.affirmations) state.affirmations = data.affirmations;
+      if (data.settings) state.settings = Object.assign(defaultState().settings, data.settings);
+      if (data.stats) state.stats = data.stats;
+      saveState();
+      applyTheme();
+      applyLangTabs();
+      toast(t('toast_imported'));
+      render();
+    } catch(err) { toast(t('toast_invalid_file')); }
+  };
+  reader.readAsText(file);
+}
+
+let toastTimeout;
+function toast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  if (toastTimeout) clearTimeout(toastTimeout);
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  toastTimeout = setTimeout(() => el.remove(), 2500);
+}
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+const ONBOARDING_STEPS = [
+  { icon: '♥', titleKey: 'ob1_title', textKey: 'ob1_text' },
+  { icon: '◈', titleKey: 'ob2_title', textKey: 'ob2_text' },
+  { icon: '◉', titleKey: 'ob3_title', textKey: 'ob3_text' },
+  { icon: '◇', titleKey: 'ob4_title', textKey: 'ob4_text' },
+  { icon: '✦', titleKey: 'ob5_title', textKey: 'ob5_text' },
+];
+
+let obStep = 0;
+
+function startOnboarding() {
+  obStep = 0;
+  renderOnboarding();
+}
+
+function renderOnboarding() {
+  // remove existing
+  document.getElementById('onboarding')?.remove();
+
+  const step = ONBOARDING_STEPS[obStep];
+  const isLast = obStep === ONBOARDING_STEPS.length - 1;
+
+  const el = document.createElement('div');
+  el.id = 'onboarding';
+  el.className = 'onboarding-overlay';
+  el.innerHTML = `
+    <div class="ob-top">
+      <div class="ob-step-indicator">${t('ob_step')} ${obStep+1} ${t('ob_of')} ${ONBOARDING_STEPS.length}</div>
+      <button class="ob-skip-btn" id="ob-skip">${t('ob_skip')}</button>
+    </div>
+    <div class="ob-content">
+      <div class="ob-visual">${step.icon}</div>
+      <div class="ob-title">${t(step.titleKey)}</div>
+      <div class="ob-text">${t(step.textKey)}</div>
+    </div>
+    <div class="ob-dots">
+      ${ONBOARDING_STEPS.map((_, i) => `<div class="ob-dot ${i===obStep?'active':''}"></div>`).join('')}
+    </div>
+    <button class="ob-next-btn" id="ob-next">${isLast ? t('ob_start') : t('ob_next')} →</button>
+  `;
+  document.body.appendChild(el);
+
+  document.getElementById('ob-skip').addEventListener('click', endOnboarding);
+  document.getElementById('ob-next').addEventListener('click', () => {
+    if (isLast) {
+      endOnboarding();
+      // ouvre direct l'onglet affirmations à la fin
+      switchTab('list');
+    } else {
+      obStep++;
+      renderOnboarding();
+    }
+  });
+}
+
+function endOnboarding() {
+  state.onboardingDone = true;
+  saveState();
+  document.getElementById('onboarding')?.remove();
+}
+
+// BOOT
+if (!state.settings.language) {
+  state.settings.language = detectBrowserLang();
+  saveState();
+}
+applyTheme();
+applyLangTabs();
+document.body.classList.add('player-active'); // player est l'onglet par défaut
+render();
+if (!state.onboardingDone) {
+  startOnboarding();
+}
+
+function applyLangTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    const key = tab.dataset.tab;
+    const label = tab.querySelector('.tab-label');
+    if (label) {
+      if (key === 'player') label.textContent = t('tab_player');
+      else if (key === 'list') label.textContent = t('tab_list');
+      else if (key === 'challenge') label.textContent = t('tab_challenge');
+      else if (key === 'stats') label.textContent = t('tab_stats');
+      else if (key === 'settings') label.textContent = t('tab_settings');
+    }
+  });
+}
+</script>
+</body>
+</html>
