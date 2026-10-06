@@ -14,7 +14,7 @@
 /* ===================================================
    THEMES — 6 ambiances
    =================================================== */
-/* rebuild */
+
 /* Default : Rose Gold (couleurs exactes du logo) */
 :root, [data-theme="doux"] {
   --bg-grad: linear-gradient(170deg, #fff5ef 0%, #fde8e3 60%, #f5c8c3 100%);
@@ -3649,19 +3649,42 @@ let chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null
 // ============================================================
 // AUDIO RECORDING - avec filtres bruits + embellissement voix
 // ============================================================
+// Choisit le meilleur format audio supporté par le device, haute qualité
+function getBestRecorderOptions() {
+  const candidates = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/mp4;codecs=mp4a.40.2',
+    'audio/mp4',
+    'audio/ogg;codecs=opus',
+  ];
+  for (const type of candidates) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+      return { mimeType: type, audioBitsPerSecond: 128000 };
+    }
+  }
+  return { audioBitsPerSecond: 128000 };
+}
+
 async function getProcessedMicStream() {
-  // Étape 1 : obtenir le stream micro avec filtres natifs
+  // Étape 1 : obtenir le stream micro avec filtres natifs (maximum)
   const rawStream = await navigator.mediaDevices.getUserMedia({
     audio: {
-      echoCancellation: true,       // Annule les échos
-      noiseSuppression: true,       // Supprime bruits de fond
-      autoGainControl: true,        // Normalise le volume
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
       sampleRate: 48000,
       channelCount: 1,
+      // Extensions Chrome/Chromium (ignorées sur iOS)
+      googEchoCancellation: true,
+      googAutoGainControl: true,
+      googNoiseSuppression: true,
+      googHighpassFilter: true,
+      googTypingNoiseDetection: true,
     }
   });
 
-  // Étape 2 : si Web Audio API dispo, on applique un embellissement
+  // Étape 2 : chaîne d'embellissement Web Audio API
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return { stream: rawStream, cleanup: () => rawStream.getTracks().forEach(t => t.stop()) };
@@ -3669,46 +3692,84 @@ async function getProcessedMicStream() {
     const ctx = new AudioContextClass({ sampleRate: 48000 });
     const source = ctx.createMediaStreamSource(rawStream);
 
-    // --- Chaîne d'effets ---
-    // 1. Filtre passe-haut : coupe les basses parasites (grondements)
+    // ========== CHAÎNE D'EFFETS VOIX ==========
+
+    // 1. HIGHPASS @ 100Hz : coupe grondements, climatisation, électroménager
     const highPass = ctx.createBiquadFilter();
     highPass.type = 'highpass';
-    highPass.frequency.value = 85;
+    highPass.frequency.value = 100;
     highPass.Q.value = 0.7;
 
-    // 2. Filtre passe-bas : coupe les hautes fréquences stridentes
-    const lowPass = ctx.createBiquadFilter();
-    lowPass.type = 'lowpass';
-    lowPass.frequency.value = 10000;
-    lowPass.Q.value = 0.7;
+    // 2. CUT @ 350Hz (-4dB) : enlève l'effet "carton" / "salle de bain"
+    //    (résonances basses-médium de la pièce)
+    const roomCut = ctx.createBiquadFilter();
+    roomCut.type = 'peaking';
+    roomCut.frequency.value = 350;
+    roomCut.Q.value = 1.2;
+    roomCut.gain.value = -4;
 
-    // 3. Boost léger des médiums (présence vocale, 2.5 kHz)
+    // 3. WARMTH BOOST @ 200Hz (+1.5dB) : ajoute du corps à la voix
+    const warmth = ctx.createBiquadFilter();
+    warmth.type = 'peaking';
+    warmth.frequency.value = 200;
+    warmth.Q.value = 1.5;
+    warmth.gain.value = 1.5;
+
+    // 4. PRESENCE @ 2.5kHz (+2dB) : clarté sans crier
     const presence = ctx.createBiquadFilter();
     presence.type = 'peaking';
     presence.frequency.value = 2500;
-    presence.Q.value = 1.2;
-    presence.gain.value = 3; // +3dB
+    presence.Q.value = 1.0;
+    presence.gain.value = 2;
 
-    // 4. Compresseur : équilibre volumes forts/doux
+    // 5. DE-ESSER : cut puissant @ 6.5kHz (-6dB) pour atténuer les SSS stridents
+    const deEsser = ctx.createBiquadFilter();
+    deEsser.type = 'peaking';
+    deEsser.frequency.value = 6500;
+    deEsser.Q.value = 2.5;
+    deEsser.gain.value = -6;
+
+    // 6. LOWPASS @ 8500Hz : coupe les stridents aigus (sibilances, souffle fin)
+    const lowPass = ctx.createBiquadFilter();
+    lowPass.type = 'lowpass';
+    lowPass.frequency.value = 8500;
+    lowPass.Q.value = 0.5;
+
+    // 7. COMPRESSEUR doux : équilibre volume, voix plus homogène
     const compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.value = -24;
-    compressor.knee.value = 30;
-    compressor.ratio.value = 4;
-    compressor.attack.value = 0.003;
-    compressor.release.value = 0.25;
+    compressor.threshold.value = -22;
+    compressor.knee.value = 24;
+    compressor.ratio.value = 3;
+    compressor.attack.value = 0.005;
+    compressor.release.value = 0.2;
 
-    // 5. Léger gain final (volume boost)
+    // 8. NOISE GATE pseudo (via Compressor en expansion inverse) :
+    //    on utilise un 2e compresseur avec threshold très bas et ratio énorme
+    //    → atténue drastiquement tout ce qui est sous -45dB (souffle, bruit de fond)
+    const gate = ctx.createDynamicsCompressor();
+    gate.threshold.value = -50;
+    gate.knee.value = 0;
+    gate.ratio.value = 20;  // écrase tout ce qui dépasse ce seuil...
+    gate.attack.value = 0.001;
+    gate.release.value = 0.05;
+    // (astuce : combiné avec le makeupGain, on obtient un effet gate)
+
+    // 9. MAKEUP GAIN : récupère le volume après compression
     const makeupGain = ctx.createGain();
-    makeupGain.gain.value = 1.3;
+    makeupGain.gain.value = 1.5;
 
-    // Connexions
+    // === Connexions ===
     source.connect(highPass);
-    highPass.connect(lowPass);
-    lowPass.connect(presence);
-    presence.connect(compressor);
-    compressor.connect(makeupGain);
+    highPass.connect(roomCut);
+    roomCut.connect(warmth);
+    warmth.connect(presence);
+    presence.connect(deEsser);
+    deEsser.connect(lowPass);
+    lowPass.connect(compressor);
+    compressor.connect(gate);
+    gate.connect(makeupGain);
 
-    // Destination de streaming (output)
+    // Destination de streaming
     const dest = ctx.createMediaStreamDestination();
     makeupGain.connect(dest);
 
@@ -3811,7 +3872,7 @@ function setupChallengeRecorder() {
       try {
         const { stream, cleanup } = await getProcessedMicStream();
         chRecorder.chunks = [];
-        chRecorder.mediaRecorder = new MediaRecorder(stream);
+        chRecorder.mediaRecorder = new MediaRecorder(stream, getBestRecorderOptions());
         chRecorder._cleanup = cleanup;
         chRecorder.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chRecorder.chunks.push(e.data); };
         chRecorder.mediaRecorder.onstop = () => {
@@ -4168,7 +4229,7 @@ function openAffModal(existing, defaultGroupId) {
       try {
         const { stream, cleanup } = await getProcessedMicStream();
         recChunks = [];
-        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder = new MediaRecorder(stream, getBestRecorderOptions());
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recChunks.push(e.data); };
         mediaRecorder.onstop = () => {
           cleanup();
