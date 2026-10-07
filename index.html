@@ -2839,7 +2839,7 @@ function defaultState() {
       pauseBetween: 3,
       playbackRate: 1.0,
       musicMode: 'none',
-      ambianceId: 'ocean',
+      ambianceId: 'healing',
       musicPlaylistUrl: '',
       pauseMode: 'silence', // deprecated, kept for backward compat
       selectedGroupId: 'all',
@@ -2882,6 +2882,8 @@ function loadState() {
     const settings = Object.assign(d.settings, p.settings || {});
     // Migration : l'ancien mode 'playlist' n'existe plus → bascule sur 'none'
     if (settings.musicMode === 'playlist') settings.musicMode = 'none';
+    // Migration : anciennes ambiances supprimées → healing par défaut
+    if (!['healing', 'clouds'].includes(settings.ambianceId)) settings.ambianceId = 'healing';
     const challenge = Object.assign(d.challenge, p.challenge || {});
     // Migration : ancien champ affirmationId (string) → affirmationIds (array)
     if (!challenge.affirmationIds || !Array.isArray(challenge.affirmationIds)) {
@@ -3419,12 +3421,6 @@ let musicLFOs = [];
 const AMBIANCES = {
   healing: { name: '🌸 Healing Touch', color: '#f0a0a8', file: 'audio/healing-touch.mp3' },
   clouds: { name: '☁️ From the Clouds', color: '#d4e5f0', file: 'audio/from-the-clouds.mp3' },
-  ocean: { name: '🌊 Vagues océan', color: '#4bb5d6' },
-  rain: { name: '🌧️ Pluie douce', color: '#88a5b8' },
-  hz432: { name: '✨ 432 Hz', color: '#c4a3ed' },
-  hz528: { name: '💗 528 Hz (amour)', color: '#e478a0' },
-  bowl: { name: '🔔 Bol tibétain', color: '#d4b89a' },
-  drone: { name: '🌙 Drone doux', color: '#a89d8f' },
 };
 
 // Audio element pour les ambiances fichier (healing, clouds...)
@@ -3435,7 +3431,7 @@ function startMusic() {
   const mode = state.settings.musicMode;
   if (mode === 'none') return;
   // Tout autre mode (drone / ambiance) joue l'ambiance générée
-  const ambiance = state.settings.ambianceId || 'ocean';
+  const ambiance = state.settings.ambianceId || 'healing';
   startAmbiance(ambiance);
 }
 
@@ -3443,37 +3439,13 @@ function stopMusic() { stopAmbiance(); }
 
 function startAmbiance(id) {
   stopAmbiance();
-  const amb = AMBIANCES[id];
-  if (!amb) return;
-
-  // Si c'est une ambiance fichier (healing, clouds...), on utilise un <audio> en boucle
-  if (amb.file) {
-    try {
-      musicFileAudio = new Audio(amb.file);
-      musicFileAudio.loop = true;
-      musicFileAudio.volume = state.settings.musicVolume * 0.5;
-      musicFileAudio.play().catch(e => console.warn('music file play error', e));
-    } catch(e) { console.warn('file ambiance error', e); }
-    return;
-  }
-
-  // Sinon : chaîne Web Audio générative
+  const amb = AMBIANCES[id] || AMBIANCES.healing;
+  if (!amb || !amb.file) return;
   try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    musicCtx = new AudioCtx();
-    musicMasterGain = musicCtx.createGain();
-    musicMasterGain.gain.value = state.settings.musicVolume * 0.4;
-    musicMasterGain.connect(musicCtx.destination);
-
-    switch(id) {
-      case 'ocean': buildOcean(); break;
-      case 'rain': buildRain(); break;
-      case 'hz432': buildTone(432); break;
-      case 'hz528': buildTone(528); break;
-      case 'bowl': buildBowl(); break;
-      case 'drone':
-      default: buildDrone(); break;
-    }
+    musicFileAudio = new Audio(amb.file);
+    musicFileAudio.loop = true;
+    musicFileAudio.volume = state.settings.musicVolume * 0.5;
+    musicFileAudio.play().catch(e => console.warn('music file play error', e));
   } catch(e) { console.warn('ambiance error', e); }
 }
 
@@ -3538,210 +3510,6 @@ function fadeOutMusicFile(seconds) {
 // Alias pour compat
 function updateDroneVolume() { updateMusicVolume(); }
 
-// Helper : créer un buffer de bruit
-function createNoiseBuffer(duration = 2, type = 'white') {
-  const sampleRate = musicCtx.sampleRate;
-  const buffer = musicCtx.createBuffer(1, sampleRate * duration, sampleRate);
-  const data = buffer.getChannelData(0);
-  if (type === 'pink') {
-    // Approximation de bruit rose (Paul Kellet)
-    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-    for (let i = 0; i < data.length; i++) {
-      const w = Math.random() * 2 - 1;
-      b0 = 0.99886 * b0 + w * 0.0555179;
-      b1 = 0.99332 * b1 + w * 0.0750759;
-      b2 = 0.96900 * b2 + w * 0.1538520;
-      b3 = 0.86650 * b3 + w * 0.3104856;
-      b4 = 0.55000 * b4 + w * 0.5329522;
-      b5 = -0.7616 * b5 - w * 0.0168980;
-      data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362) * 0.11;
-      b6 = w * 0.115926;
-    }
-  } else if (type === 'brown') {
-    // Bruit brun (basses lourdes)
-    let last = 0;
-    for (let i = 0; i < data.length; i++) {
-      const w = Math.random() * 2 - 1;
-      last = (last + 0.02 * w) / 1.02;
-      data[i] = last * 3.5;
-    }
-  } else {
-    // Bruit blanc
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  }
-  return buffer;
-}
-
-// === OCEAN WAVES ===
-function buildOcean() {
-  const noise = musicCtx.createBufferSource();
-  noise.buffer = createNoiseBuffer(5, 'brown');
-  noise.loop = true;
-
-  const bandpass = musicCtx.createBiquadFilter();
-  bandpass.type = 'bandpass';
-  bandpass.frequency.value = 400;
-  bandpass.Q.value = 0.6;
-
-  const lowpass = musicCtx.createBiquadFilter();
-  lowpass.type = 'lowpass';
-  lowpass.frequency.value = 800;
-  lowpass.Q.value = 0.5;
-
-  const waveGain = musicCtx.createGain();
-  waveGain.gain.value = 0;
-
-  noise.connect(bandpass);
-  bandpass.connect(lowpass);
-  lowpass.connect(waveGain);
-  waveGain.connect(musicMasterGain);
-  noise.start();
-
-  // LFO lent pour simuler le va-et-vient des vagues
-  const lfo = musicCtx.createOscillator();
-  lfo.frequency.value = 0.13; // ~7.5 sec par cycle
-  const lfoGain = musicCtx.createGain();
-  lfoGain.gain.value = 1.2;
-  lfo.connect(lfoGain);
-  lfoGain.connect(waveGain.gain);
-  waveGain.gain.value = 1.5;
-  lfo.start();
-
-  // 2e LFO pour variation sur le filtre
-  const lfo2 = musicCtx.createOscillator();
-  lfo2.frequency.value = 0.07;
-  const lfo2Gain = musicCtx.createGain();
-  lfo2Gain.gain.value = 300;
-  lfo2.connect(lfo2Gain);
-  lfo2Gain.connect(bandpass.frequency);
-  lfo2.start();
-
-  musicNodes.push({ source: noise, gain: waveGain });
-  musicLFOs.push(lfo, lfo2);
-}
-
-// === RAIN ===
-function buildRain() {
-  const noise = musicCtx.createBufferSource();
-  noise.buffer = createNoiseBuffer(4, 'pink');
-  noise.loop = true;
-
-  const highpass = musicCtx.createBiquadFilter();
-  highpass.type = 'highpass';
-  highpass.frequency.value = 1000;
-  highpass.Q.value = 0.5;
-
-  const lowpass = musicCtx.createBiquadFilter();
-  lowpass.type = 'lowpass';
-  lowpass.frequency.value = 5000;
-
-  const rainGain = musicCtx.createGain();
-  rainGain.gain.value = 0.8;
-
-  noise.connect(highpass);
-  highpass.connect(lowpass);
-  lowpass.connect(rainGain);
-  rainGain.connect(musicMasterGain);
-  noise.start();
-
-  // Léger grondement en fond pour l'ambiance
-  const brownNoise = musicCtx.createBufferSource();
-  brownNoise.buffer = createNoiseBuffer(4, 'brown');
-  brownNoise.loop = true;
-  const brownLow = musicCtx.createBiquadFilter();
-  brownLow.type = 'lowpass';
-  brownLow.frequency.value = 200;
-  const brownGain = musicCtx.createGain();
-  brownGain.gain.value = 0.35;
-  brownNoise.connect(brownLow);
-  brownLow.connect(brownGain);
-  brownGain.connect(musicMasterGain);
-  brownNoise.start();
-
-  musicNodes.push({ source: noise, gain: rainGain }, { source: brownNoise, gain: brownGain });
-}
-
-// === TONE PURE (432 ou 528) ===
-function buildTone(freq) {
-  // Fondamentale
-  const osc1 = musicCtx.createOscillator();
-  osc1.type = 'sine';
-  osc1.frequency.value = freq;
-  const g1 = musicCtx.createGain();
-  g1.gain.value = 0.35;
-  osc1.connect(g1); g1.connect(musicMasterGain);
-  osc1.start();
-
-  // Octave au-dessus discrète
-  const osc2 = musicCtx.createOscillator();
-  osc2.type = 'sine';
-  osc2.frequency.value = freq * 2;
-  const g2 = musicCtx.createGain();
-  g2.gain.value = 0.15;
-  osc2.connect(g2); g2.connect(musicMasterGain);
-  osc2.start();
-
-  // Quinte juste
-  const osc3 = musicCtx.createOscillator();
-  osc3.type = 'sine';
-  osc3.frequency.value = freq * 1.5;
-  const g3 = musicCtx.createGain();
-  g3.gain.value = 0.2;
-  osc3.connect(g3); g3.connect(musicMasterGain);
-  osc3.start();
-
-  // LFO très lent sur la fondamentale pour douceur
-  const lfo = musicCtx.createOscillator();
-  lfo.frequency.value = 0.08;
-  const lfoGain = musicCtx.createGain();
-  lfoGain.gain.value = 0.1;
-  lfo.connect(lfoGain); lfoGain.connect(g1.gain);
-  lfo.start();
-
-  musicNodes.push({osc: osc1, gain: g1}, {osc: osc2, gain: g2}, {osc: osc3, gain: g3});
-  musicLFOs.push(lfo);
-}
-
-// === BOL TIBÉTAIN ===
-function buildBowl() {
-  // Fondamentale basse (A2 autour de 110Hz) avec harmoniques inharmoniques
-  const freqs = [110, 220, 329.6, 440, 554.4, 659.2];
-  const amps =  [0.4,  0.25, 0.18,  0.12, 0.08,  0.05];
-  freqs.forEach((f, i) => {
-    const osc = musicCtx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = f;
-    const g = musicCtx.createGain();
-    g.gain.value = amps[i];
-    osc.connect(g); g.connect(musicMasterGain);
-    osc.start();
-
-    // Modulation lente pour simuler le beating du bol
-    const lfo = musicCtx.createOscillator();
-    lfo.frequency.value = 2 + i * 0.3;
-    const lfoGain = musicCtx.createGain();
-    lfoGain.gain.value = amps[i] * 0.3;
-    lfo.connect(lfoGain); lfoGain.connect(g.gain);
-    lfo.start();
-
-    musicNodes.push({osc, gain: g});
-    musicLFOs.push(lfo);
-  });
-}
-
-// === DRONE (fallback classique) ===
-function buildDrone() {
-  [110, 164.81, 220].forEach(f => {
-    const osc = musicCtx.createOscillator();
-    const g = musicCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = f;
-    g.gain.value = 0.2;
-    osc.connect(g); g.connect(musicMasterGain);
-    osc.start();
-    musicNodes.push({ osc, gain: g });
-  });
-}
 
 // ============================================================
 // LIST
