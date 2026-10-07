@@ -3812,6 +3812,14 @@ function openPlayerSheet() {
   bindRange('ps-rate', 'playbackRate', v => v.toFixed(2) + 'x');
   bindRange('ps-pause', 'pauseBetween', v => v + 's');
 
+  // Helper : relance la musique instantanément si on est en lecture (Player OU Challenge)
+  const isActivelyPlaying = () => playerState.playing || state.challenge.playing;
+  const restartMusicIfActive = () => {
+    if (!isActivelyPlaying()) return;
+    stopMusic();
+    if (state.settings.musicMode === 'drone') startMusic();
+  };
+
   overlay.querySelectorAll('[data-ps-music-mode]').forEach(b => {
     b.addEventListener('click', () => {
       state.settings.musicMode = b.dataset.psMusicMode;
@@ -3819,7 +3827,8 @@ function openPlayerSheet() {
       // Re-render la sheet pour afficher/masquer la grille d'ambiances
       overlay.remove();
       openPlayerSheet();
-      if (playerState.playing) { stopMusic(); startMusic(); }
+      // Instant : coupe ou lance la musique selon le nouveau mode
+      restartMusicIfActive();
     });
   });
 
@@ -3829,11 +3838,8 @@ function openPlayerSheet() {
       saveState();
       overlay.querySelectorAll('[data-ambiance]').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
-      // Si en lecture, on relance la musique avec la nouvelle ambiance
-      if (playerState.playing && state.settings.musicMode === 'drone') {
-        stopMusic();
-        startMusic();
-      }
+      // Instant : relance avec la nouvelle musique
+      restartMusicIfActive();
     });
   });
 
