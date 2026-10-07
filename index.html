@@ -4198,25 +4198,51 @@ function renderChallenge() {
     render();
   });
 
-  // Changer la sélection (reset)
+  // Changer la sélection (reset) : stop playback inline + reset en 1 seul render
   document.getElementById('ch-change-aff')?.addEventListener('click', () => {
-    stopChallenge();
+    // Arrête tout si en lecture (inline, sans render)
+    if (state.challenge.playing) {
+      state.challenge.playing = false;
+      if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
+      if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+      stopMusic();
+    }
+    // Reset la sélection
     state.challenge.affirmationIds = [];
     state.challenge.currentIdx = 0;
     saveState();
+    toast('Sélection vidée, choisis à nouveau ✦');
     render();
   });
 
   document.getElementById('ch-toggle')?.addEventListener('click', toggleChallenge);
   document.getElementById('ch-settings-btn')?.addEventListener('click', openPlayerSheet);
-  document.getElementById('ch-reset')?.addEventListener('click', () => {
-    if (confirm(t('challenge_confirm_reset'))) {
-      stopChallenge();
-      state.challenge.count = 0;
-      state.challenge.currentIdx = 0;
-      saveState();
-      render();
+  // Reset du compteur : utilise un toast de confirmation (confirm() natif ne marche pas en PWA)
+  let resetPending = false;
+  document.getElementById('ch-reset')?.addEventListener('click', (ev) => {
+    if (!resetPending) {
+      resetPending = true;
+      ev.target.textContent = '⚠️ Confirmer reset ?';
+      toast('Tape à nouveau pour confirmer');
+      setTimeout(() => {
+        resetPending = false;
+        const btn = document.getElementById('ch-reset');
+        if (btn) btn.textContent = t('challenge_reset');
+      }, 3000);
+      return;
     }
+    // Confirmé : reset
+    if (state.challenge.playing) {
+      state.challenge.playing = false;
+      if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
+      if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+      stopMusic();
+    }
+    state.challenge.count = 0;
+    state.challenge.currentIdx = 0;
+    saveState();
+    toast('Compteur reset à 0 ✓');
+    render();
   });
 
   // Ajout manuel (compteur à main)
