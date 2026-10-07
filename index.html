@@ -2306,7 +2306,7 @@ const TRANSLATIONS = {
     // Nav
     tab_player: 'Player',
     tab_list: 'Affs',
-    tab_challenge: '10K',
+    tab_challenge: 'Challenge',
     tab_stats: 'Stats',
     tab_settings: 'Régl.',
     // Player
@@ -2464,7 +2464,7 @@ const TRANSLATIONS = {
   en: {
     tab_player: 'Player',
     tab_list: 'Affs',
-    tab_challenge: '10K',
+    tab_challenge: 'Challenge',
     tab_stats: 'Stats',
     tab_settings: 'Settings',
     player_eyebrow: 'Loop playback',
@@ -3064,7 +3064,7 @@ function renderPlayer() {
             <span>${t('play_speed')}</span>
             <span class="live-speed-val" id="live-speed-val">${s.playbackRate.toFixed(2)}x</span>
           </div>
-          <input type="range" id="live-speed" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+          <input type="range" id="live-speed" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
         </div>
       ` : ''}
 
@@ -3740,7 +3740,7 @@ function openPlayerSheet() {
           </div>
           <div class="setting-val" id="ps-val-rate">${s.playbackRate.toFixed(2)}x</div>
         </div>
-        <input type="range" id="ps-rate" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+        <input type="range" id="ps-rate" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
       </div>
 
       <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
@@ -3752,6 +3752,21 @@ function openPlayerSheet() {
           <div class="setting-val" id="ps-val-pause">${s.pauseBetween}s</div>
         </div>
         <input type="range" id="ps-pause" min="0" max="15" step="1" value="${s.pauseBetween}" />
+      </div>
+
+      <!-- Objectif Challenge -->
+      <div class="setting-row col" style="padding: 14px 0; border-bottom: 1px solid var(--line)">
+        <div>
+          <div class="setting-label">${t('challenge_target_label')} ${t('tab_challenge')}</div>
+          <div class="setting-sub">Nombre d'affirmations à atteindre</div>
+        </div>
+        <div class="target-chips" style="margin-top: 10px">
+          ${[10000, 20000, 30000, 40000, 50000].map(n => `
+            <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-ps-target="${n}">
+              ${(n/1000) + 'K'}
+            </button>
+          `).join('')}
+        </div>
       </div>
 
       <div class="setting-row col" style="padding: 14px 0">
@@ -3822,6 +3837,19 @@ function openPlayerSheet() {
     });
   });
 
+  // Objectif Challenge chips
+  overlay.querySelectorAll('[data-ps-target]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.challenge.target = parseInt(b.dataset.psTarget, 10);
+      saveState();
+      overlay.querySelectorAll('[data-ps-target]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      toast('Objectif : ' + (state.challenge.target/1000) + 'K ✦');
+      // Si on est sur l'onglet challenge, refresh pour update la barre de progression
+      if (currentTab === 'challenge') renderChallenge();
+    });
+  });
+
   document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 }
@@ -3845,18 +3873,7 @@ function renderChallenge() {
   const TARGET_CHOICES = [10000, 20000, 30000, 40000, 50000];
 
   document.getElementById('page-challenge').innerHTML = `
-    <h1 class="h1">${t('challenge_title_1')} <span class="dot">${t('challenge_title_2')}</span></h1>
-    <p class="sublabel" style="margin-bottom:20px; max-width: 440px">${t('challenge_desc')}</p>
-
-    <!-- OBJECTIF (toujours visible) -->
-    <div class="h3">${t('challenge_target_label')}</div>
-    <div class="target-chips" style="margin-bottom: 18px">
-      ${TARGET_CHOICES.map(n => `
-        <button class="target-chip ${c.target === n ? 'active' : ''}" data-target="${n}">
-          ${(n/1000) + 'K'}
-        </button>
-      `).join('')}
-    </div>
+    <p class="sublabel" style="margin-bottom:18px; max-width: 440px">${t('challenge_desc')}</p>
 
     <!-- SÉLECTION DES AFFIRMATIONS -->
     <div class="challenge-aff-card">
@@ -3936,7 +3953,7 @@ function renderChallenge() {
               <span>${t('play_speed')}</span>
               <span class="live-speed-val" id="ch-live-speed-val">${s.playbackRate.toFixed(2)}x</span>
             </div>
-            <input type="range" id="ch-live-speed" min="0.5" max="1.5" step="0.05" value="${s.playbackRate}" />
+            <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
           </div>
         ` : ''}
 
@@ -3971,15 +3988,6 @@ function renderChallenge() {
   `;
 
   // ====== HANDLERS ======
-
-  // Choix de l'objectif (chips)
-  document.querySelectorAll('[data-target]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.challenge.target = parseInt(btn.dataset.target, 10);
-      saveState();
-      render();
-    });
-  });
 
   // Sélection multiple des affirmations (max 4)
   const checkboxes = document.querySelectorAll('.aff-check');
