@@ -3219,28 +3219,47 @@ function ensurePlayerChain() {
     playerDryGain = playerAudioCtx.createGain();
     playerDryGain.gain.value = 1;
 
-    // Écho 1 : court et plus présent (400ms, 40%)
+    // Écho 1 : court (250ms), avec feedback léger pour cascade douce
     playerDelay1 = playerAudioCtx.createDelay(2.0);
-    playerDelay1.delayTime.value = 0.4;
+    playerDelay1.delayTime.value = 0.25;
     playerDelay1Gain = playerAudioCtx.createGain();
     playerDelay1Gain.gain.value = 0;
+    // Low pass sur l'écho pour qu'il sonne chaleureux (pas crispy)
+    const delay1Filter = playerAudioCtx.createBiquadFilter();
+    delay1Filter.type = 'lowpass';
+    delay1Filter.frequency.value = 2500;
+    // Feedback : l'écho se nourrit lui-même pour cascader doucement
+    const delay1Feedback = playerAudioCtx.createGain();
+    delay1Feedback.gain.value = 0.35;
 
-    // Écho 2 : long et discret (900ms, 15%)
+    // Écho 2 : plus long (550ms), très diffus
     playerDelay2 = playerAudioCtx.createDelay(2.0);
-    playerDelay2.delayTime.value = 0.9;
+    playerDelay2.delayTime.value = 0.55;
     playerDelay2Gain = playerAudioCtx.createGain();
     playerDelay2Gain.gain.value = 0;
+    const delay2Filter = playerAudioCtx.createBiquadFilter();
+    delay2Filter.type = 'lowpass';
+    delay2Filter.frequency.value = 2000;
 
-    // Routing
+    // Routing dry
     playerSource.connect(playerLowpass);
     playerLowpass.connect(playerDryGain);
     playerDryGain.connect(playerFadeGain);
+
+    // Routing echo 1 avec feedback cascadant
     playerLowpass.connect(playerDelay1);
-    playerDelay1.connect(playerDelay1Gain);
+    playerDelay1.connect(delay1Filter);
+    delay1Filter.connect(playerDelay1Gain);
+    delay1Filter.connect(delay1Feedback);
+    delay1Feedback.connect(playerDelay1); // boucle feedback
     playerDelay1Gain.connect(playerFadeGain);
+
+    // Routing echo 2 (sans feedback, un seul tap diffus)
     playerLowpass.connect(playerDelay2);
-    playerDelay2.connect(playerDelay2Gain);
+    playerDelay2.connect(delay2Filter);
+    delay2Filter.connect(playerDelay2Gain);
     playerDelay2Gain.connect(playerFadeGain);
+
     playerFadeGain.connect(playerAudioCtx.destination);
     return true;
   } catch(e) {
@@ -3253,10 +3272,11 @@ function applyNightMode(enable) {
   if (!ensurePlayerChain()) return;
   const now = playerAudioCtx.currentTime;
   if (enable) {
-    playerLowpass.frequency.linearRampToValueAtTime(2800, now + 0.4);
-    playerDryGain.gain.linearRampToValueAtTime(0.65, now + 0.4);
-    playerDelay1Gain.gain.linearRampToValueAtTime(0.4, now + 0.4);
-    playerDelay2Gain.gain.linearRampToValueAtTime(0.18, now + 0.4);
+    // Voix douce et chaleureuse + échos subtils qui s'étalent
+    playerLowpass.frequency.linearRampToValueAtTime(3200, now + 0.5);
+    playerDryGain.gain.linearRampToValueAtTime(0.75, now + 0.5);
+    playerDelay1Gain.gain.linearRampToValueAtTime(0.22, now + 0.5);  // beaucoup moins fort
+    playerDelay2Gain.gain.linearRampToValueAtTime(0.1, now + 0.5);   // juste une touche
   } else {
     playerLowpass.frequency.linearRampToValueAtTime(20000, now + 0.3);
     playerDryGain.gain.linearRampToValueAtTime(1, now + 0.3);
@@ -4769,13 +4789,11 @@ function openAffModal(existing, defaultGroupId) {
       <div class="rec-wrapper">
         <div class="rec-timer" id="rec-timer">${formatDur(aff.duration)}</div>
         <button class="rec-btn" id="rec-btn">●</button>
-        <p class="sublabel" style="margin-top:12px">${aff.recording ? t('rec_exists') : t('rec_tap')}</p>
-        ${aff.recording ? `
-          <div style="margin-top:4px">
-            <button class="playback-btn" id="rec-play">${t('listen')}</button>
-            <button class="playback-btn" id="rec-delete" style="color:var(--danger)">${t('erase')}</button>
-          </div>
-        ` : ''}
+        <p class="sublabel" style="margin-top:12px" id="rec-hint">${aff.recording ? t('rec_exists') : t('rec_tap')}</p>
+        <div id="rec-playback-wrap" style="margin-top:8px; display:${aff.recording ? 'flex' : 'none'}; gap:10px; justify-content:center">
+          <button class="playback-btn" id="rec-play">▶ ${t('listen')}</button>
+          <button class="playback-btn" id="rec-delete" style="color:var(--danger)">${t('erase')}</button>
+        </div>
       </div>
 
       <button class="btn-primary" id="aff-save">${isEdit ? t('save') : t('create')}</button>
@@ -4831,48 +4849,31 @@ function openAffModal(existing, defaultGroupId) {
     }
   });
 
+    // Preview playback via un audio element dédié (évite la chaîne Mode Nuit du player principal)
+  let previewAudio = null;
+  function playPreview() {
+    if (!currentRecording) return;
+    if (previewAudio) { try { previewAudio.pause(); } catch(e){} }
+    previewAudio = new Audio(currentRecording);
+    previewAudio.volume = state.settings.affVolume;
+    previewAudio.playbackRate = state.settings.playbackRate;
+    previewAudio.play().catch(() => toast(t('toast_play_error')));
+  }
+
   function refreshRecButtons() {
-    const wrap = document.querySelector('.rec-wrapper');
-    document.getElementById('rec-play')?.remove();
-    document.getElementById('rec-delete')?.remove();
-    const container = document.querySelector('.rec-wrapper > div');
-    if (container) container.remove();
-
+    const wrap = document.getElementById('rec-playback-wrap');
+    const hint = document.getElementById('rec-hint');
+    if (!wrap) return;
     if (currentRecording) {
-      const div = document.createElement('div');
-      div.style.marginTop = '4px';
-      const playBtn = document.createElement('button');
-      playBtn.className = 'playback-btn';
-      playBtn.id = 'rec-play';
-      playBtn.textContent = t('listen');
-      div.appendChild(playBtn);
-      const delBtn = document.createElement('button');
-      delBtn.className = 'playback-btn';
-      delBtn.id = 'rec-delete';
-      delBtn.style.color = 'var(--danger)';
-      delBtn.textContent = t('erase');
-      div.appendChild(delBtn);
-      wrap.appendChild(div);
-
-      playBtn.addEventListener('click', () => {
-        const a = document.getElementById('aff-audio');
-        a.src = currentRecording; a.volume = state.settings.affVolume; a.playbackRate = state.settings.playbackRate; a.play();
-      });
-      delBtn.addEventListener('click', () => {
-        if (confirm(t('confirm_erase_rec'))) {
-          currentRecording = null;
-          currentDuration = 0;
-          recTimer.textContent = formatDur(0);
-          refreshRecButtons();
-        }
-      });
+      wrap.style.display = 'flex';
+      if (hint) hint.textContent = t('rec_exists');
+    } else {
+      wrap.style.display = 'none';
+      if (hint) hint.textContent = t('rec_tap');
     }
   }
 
-  document.getElementById('rec-play')?.addEventListener('click', () => {
-    const a = document.getElementById('aff-audio');
-    a.src = currentRecording; a.volume = state.settings.affVolume; a.playbackRate = state.settings.playbackRate; a.play();
-  });
+  document.getElementById('rec-play')?.addEventListener('click', playPreview);
   document.getElementById('rec-delete')?.addEventListener('click', () => {
     if (confirm(t('confirm_erase_rec'))) {
       currentRecording = null;
@@ -4881,6 +4882,27 @@ function openAffModal(existing, defaultGroupId) {
       refreshRecButtons();
     }
   });
+
+  // Fonction appelée après chaque nouvel enregistrement (handlers déjà attachés plus haut)
+  // On s'assure que les handlers sont bien là sur rec-play / rec-delete en les ré-attachant
+  function reattachPlaybackHandlers() {
+    const playBtn = document.getElementById('rec-play');
+    const delBtn = document.getElementById('rec-delete');
+    if (playBtn) {
+      playBtn.onclick = playPreview;
+    }
+    if (delBtn) {
+      delBtn.onclick = () => {
+        if (confirm(t('confirm_erase_rec'))) {
+          currentRecording = null;
+          currentDuration = 0;
+          recTimer.textContent = formatDur(0);
+          refreshRecButtons();
+        }
+      };
+    }
+  }
+  reattachPlaybackHandlers();
 
   document.getElementById('aff-save').addEventListener('click', () => {
     const title = document.getElementById('aff-title').value.trim();
