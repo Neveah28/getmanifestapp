@@ -1602,6 +1602,247 @@ input[type="range"]::-moz-range-thumb {
 /* ===================================================
    CHALLENGE
    =================================================== */
+/* MODE NUIT (SATS) */
+.night-mode-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.night-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--text-dim);
+  padding: 8px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.night-toggle.active {
+  background: linear-gradient(135deg, #2a1a4a, #1a1030);
+  border-color: #7855c4;
+  color: #e0cdf5;
+  box-shadow: 0 0 20px rgba(168, 133, 224, 0.4);
+}
+.night-toggle:active { transform: scale(0.96); }
+.night-icon { font-size: 15px; }
+.night-timer-row {
+  display: flex;
+  gap: 6px;
+}
+.night-timer-chip {
+  background: rgba(168, 133, 224, 0.12);
+  border: 1px solid rgba(168, 133, 224, 0.3);
+  color: #c4a3ed;
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+.night-timer-chip.active {
+  background: linear-gradient(135deg, #7855c4, #a885e0);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(168, 133, 224, 0.4);
+}
+.night-timer-chip:active { transform: scale(0.95); }
+
+/* Quand le mode nuit est actif, on tinte doucement l'orbe */
+body.night-mode .orb-ring {
+  background: radial-gradient(circle, rgba(168, 133, 224, 0.35) 0%, transparent 70%);
+}
+
+/* TARGET CHIPS */
+.target-chips {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.target-chip {
+  background: var(--input-bg);
+  border: 1.5px solid var(--line);
+  color: var(--text-dim);
+  padding: 10px 4px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.target-chip.active {
+  background: var(--accent);
+  color: var(--btn-text);
+  border-color: var(--accent);
+}
+.target-chip:active { transform: scale(0.96); }
+
+/* CHECKLIST pour sélectionner plusieurs affirmations */
+.aff-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.aff-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.aff-check-item:has(input:checked) {
+  background: var(--tab-active-bg);
+  border-color: var(--accent);
+}
+.aff-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.aff-check-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+/* Affichage des affirmations sélectionnées */
+.challenge-aff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.challenge-aff-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border-radius: 10px;
+}
+.challenge-aff-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.challenge-aff-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  flex: 1;
+}
+
+/* AJOUT MANUEL (compteur à main) */
+.manual-add-wrap {
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.manual-add-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.manual-add-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+.manual-add-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.manual-add-btn {
+  background: var(--card-bg);
+  border: 1.5px solid var(--line);
+  color: var(--accent);
+  padding: 10px 4px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.manual-add-btn:active {
+  transform: scale(0.95);
+  background: var(--accent);
+  color: var(--btn-text);
+}
+.manual-add-custom {
+  display: flex;
+  gap: 6px;
+}
+.manual-add-custom input {
+  flex: 1;
+  background: var(--card-bg);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.manual-add-custom input::-webkit-outer-spin-button,
+.manual-add-custom input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.manual-add-custom input:focus { border-color: var(--accent); }
+.manual-add-go {
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  width: 44px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.manual-add-go:active { transform: scale(0.95); }
+
 .challenge-aff-card {
   background: var(--card-bg);
   border-radius: 18px;
@@ -2111,6 +2352,10 @@ const TRANSLATIONS = {
     dark_mode: 'Mode sombre',
     on: 'ON',
     off: 'OFF',
+    night_mode: 'Mode Nuit',
+    night_on: 'Mode Nuit · ON',
+    night_off: 'Mode Nuit',
+    night_timer_set: 'Timer réglé sur {n} min 🌙',
     audio: 'Audio',
     aff_volume: 'Volume des affirmations',
     aff_volume_sub: 'Volume de ta voix enregistrée',
@@ -2260,6 +2505,10 @@ const TRANSLATIONS = {
     dark_mode: 'Dark mode',
     on: 'ON',
     off: 'OFF',
+    night_mode: 'Night Mode',
+    night_on: 'Night Mode · ON',
+    night_off: 'Night Mode',
+    night_timer_set: 'Timer set to {n} min 🌙',
     audio: 'Audio',
     aff_volume: 'Affirmations volume',
     aff_volume_sub: 'Volume of your recorded voice',
@@ -2374,20 +2623,26 @@ Object.assign(TRANSLATIONS.fr, {
   stats_just_now: "à l'instant",
   // Share
   // Challenge
-  challenge_main_title: '10K Challenge',
-  challenge_desc: 'Challenge 10 000 pour imprégner ton subconscient plus vite.',
-  challenge_change_aff: 'Changer d\'affirmation',
+  challenge_main_title: 'Challenge',
+  challenge_desc: 'Répète ton affirmation un max de fois pour imprégner ton subconscient.',
+  challenge_change_aff: 'Changer la sélection',
   challenge_remaining: 'restantes',
   challenge_start: 'Lancer le challenge',
   challenge_pause: 'Mettre en pause',
   challenge_resume: 'Reprendre',
   challenge_reset: 'Reset le challenge',
   challenge_confirm_reset: 'Reset le compteur à 0 ?',
-  challenge_done: 'Challenge terminé ! 10 000 affirmations',
+  challenge_done: 'Challenge terminé ! Objectif atteint ✨',
   challenge_started: 'Challenge démarré',
   challenge_select_hint: 'Toutes les répétitions sont comptées, même en Player.',
-  challenge_this_aff: 'Cette affirmation',
-  challenge_select_prompt: 'Choisis parmi mes affirmations',
+  challenge_this_aff: 'Mes affirmations du challenge',
+  challenge_select_prompt: 'Choisis jusqu\'à 4 affirmations',
+  challenge_target_label: 'Objectif',
+  challenge_max_affs: 'Max 4 affirmations',
+  challenge_manual_add: 'Ajouter manuellement',
+  challenge_manual_sub: 'Si tu comptes avec ton compteur à main',
+  challenge_manual_custom: 'Autre',
+  challenge_added: '+{n} ajoutée(s) ✓',
   challenge_or: 'ou',
   challenge_record_new: 'Enregistrer une affirmation',
   ch_title_placeholder: 'Titre de l\'affirmation',
@@ -2457,20 +2712,26 @@ Object.assign(TRANSLATIONS.en, {
   stats_hours_ago: '{n}h ago',
   stats_mins_ago: '{n}min ago',
   stats_just_now: 'just now',
-  challenge_main_title: '10K Challenge',
-  challenge_desc: '10,000 challenge to imprint your subconscious faster.',
-  challenge_change_aff: 'Change affirmation',
+  challenge_main_title: 'Challenge',
+  challenge_desc: 'Repeat your affirmation as many times as you want to imprint your subconscious.',
+  challenge_change_aff: 'Change selection',
   challenge_remaining: 'remaining',
   challenge_start: 'Start challenge',
   challenge_pause: 'Pause',
   challenge_resume: 'Resume',
   challenge_reset: 'Reset challenge',
   challenge_confirm_reset: 'Reset the counter to 0?',
-  challenge_done: 'Challenge complete! 10,000 affirmations',
+  challenge_done: 'Challenge complete! Target reached ✨',
   challenge_started: 'Challenge started',
   challenge_select_hint: 'All repetitions count, even in Player mode.',
-  challenge_this_aff: 'This affirmation',
-  challenge_select_prompt: 'Pick from my affirmations',
+  challenge_this_aff: 'My challenge affirmations',
+  challenge_select_prompt: 'Pick up to 4 affirmations',
+  challenge_target_label: 'Target',
+  challenge_max_affs: 'Max 4 affirmations',
+  challenge_manual_add: 'Add manually',
+  challenge_manual_sub: 'If you count with a hand clicker',
+  challenge_manual_custom: 'Other',
+  challenge_added: '+{n} added ✓',
   challenge_or: 'or',
   challenge_record_new: 'Record an affirmation',
   ch_title_placeholder: 'Affirmation title',
@@ -2551,11 +2812,14 @@ function defaultState() {
       language: null,
       kofiUrl: 'https://ko-fi.com/getmanifestapp',
       darkMode: true,
+      nightMode: false,       // Mode SATS pour s'endormir
+      nightTimer: 30,         // Minutes avant arrêt auto (15, 30, 45, 60)
     },
     challenge: {
-      affirmationId: null,
+      affirmationIds: [],   // jusqu'à 4 affirmations qui tournent en boucle
+      currentIdx: 0,        // index de l'aff en cours dans la rotation
       count: 0,
-      target: 10000,
+      target: 10000,        // 10000, 20000, 30000, 40000 ou 50000
       startedAt: null,
       playing: false,
     },
@@ -2583,12 +2847,19 @@ function loadState() {
     const settings = Object.assign(d.settings, p.settings || {});
     // Migration : l'ancien mode 'playlist' n'existe plus → bascule sur 'none'
     if (settings.musicMode === 'playlist') settings.musicMode = 'none';
+    const challenge = Object.assign(d.challenge, p.challenge || {});
+    // Migration : ancien champ affirmationId (string) → affirmationIds (array)
+    if (!challenge.affirmationIds || !Array.isArray(challenge.affirmationIds)) {
+      challenge.affirmationIds = challenge.affirmationId ? [challenge.affirmationId] : [];
+      delete challenge.affirmationId;
+    }
+    if (typeof challenge.currentIdx !== 'number') challenge.currentIdx = 0;
     return {
       groups: p.groups || d.groups,
       affirmations: p.affirmations !== undefined ? p.affirmations : d.affirmations,
       settings: settings,
       stats: Object.assign(d.stats, p.stats || {}),
-      challenge: Object.assign(d.challenge, p.challenge || {}),
+      challenge: challenge,
       onboardingDone: p.onboardingDone || false,
     };
   } catch(e) { return defaultState(); }
@@ -2605,6 +2876,8 @@ function applyTheme() {
   if (theme === 'tech') { theme = 'ocean'; state.settings.theme = 'ocean'; saveState(); }
   const dark = state.settings.darkMode ? '-dark' : '';
   document.documentElement.setAttribute('data-theme', theme + dark);
+  // Classe body pour le mode nuit (tinte l'orbe en violet)
+  document.body.classList.toggle('night-mode', state.settings.nightMode === true);
 }
 
 function uid() { return 'id_' + Math.random().toString(36).slice(2, 10); }
@@ -2703,6 +2976,21 @@ function renderPlayer() {
         </select>
       </div>
 
+      <!-- MODE NUIT (SATS) : toggle + timer -->
+      <div class="night-mode-wrap">
+        <button class="night-toggle ${s.nightMode?'active':''}" id="night-toggle" aria-label="${t('night_mode')}">
+          <span class="night-icon">${s.nightMode?'🌙':'☀️'}</span>
+          <span class="night-label">${s.nightMode?t('night_on'):t('night_off')}</span>
+        </button>
+        ${s.nightMode ? `
+          <div class="night-timer-row">
+            ${[15, 30, 45, 60].map(min => `
+              <button class="night-timer-chip ${s.nightTimer===min?'active':''}" data-night-timer="${min}">${min}m</button>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+
       <div class="player-main">
         <div class="now-playing" id="now-playing">
           ${availableAffs.length === 0 ? t('no_recordings') : (currentAff ? escapeHtml(currentAff.title) : t('ready'))}
@@ -2766,6 +3054,38 @@ function renderPlayer() {
   document.getElementById('pause-btn')?.addEventListener('click', pausePlayback);
   document.getElementById('resume-btn')?.addEventListener('click', resumePlayback);
   document.getElementById('end-btn')?.addEventListener('click', endPlaybackSession);
+
+  // Mode Nuit toggle
+  document.getElementById('night-toggle')?.addEventListener('click', () => {
+    state.settings.nightMode = !state.settings.nightMode;
+    saveState();
+    // Si on désactive pendant la lecture, retire aussi le timer
+    if (!state.settings.nightMode) {
+      clearNightTimer();
+    } else if (playerState.playing) {
+      // Si on active pendant la lecture, démarre le timer
+      startNightTimer();
+    }
+    // Applique immédiatement l'effet audio
+    applyNightMode(state.settings.nightMode);
+    applyTheme();  // toggle la classe night-mode sur le body
+    renderPlayer();
+  });
+
+  // Timer de nuit (chips 15/30/45/60)
+  document.querySelectorAll('[data-night-timer]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mins = parseInt(btn.dataset.nightTimer, 10);
+      state.settings.nightTimer = mins;
+      saveState();
+      // Si lecture en cours, relance le timer avec la nouvelle durée
+      if (playerState.playing && state.settings.nightMode) {
+        startNightTimer();
+      }
+      renderPlayer();
+      toast(t('night_timer_set', { n: mins }));
+    });
+  });
   document.getElementById('live-speed')?.addEventListener('input', (e) => {
     const v = parseFloat(e.target.value);
     state.settings.playbackRate = v;
@@ -2810,6 +3130,8 @@ function startPlayback() {
   saveState();
   startMusic();
   playNext();
+  // Si mode nuit activé, démarre le timer d'auto-stop
+  if (state.settings.nightMode) startNightTimer();
   renderPlayer();
 }
 
@@ -2819,6 +3141,7 @@ function pausePlayback() {
   const audio = document.getElementById('aff-audio');
   audio.pause();
   if (playerState.pauseTimeout) { clearTimeout(playerState.pauseTimeout); playerState.pauseTimeout = null; }
+  clearNightTimer();
   stopMusic();
   renderPlayer();
 }
@@ -2828,6 +3151,7 @@ function resumePlayback() {
   playerState.paused = false;
   startMusic();
   playNext();
+  if (state.settings.nightMode) startNightTimer();
   renderPlayer();
 }
 
@@ -2843,6 +3167,7 @@ function endPlaybackSession() {
   audio.pause();
   audio.currentTime = 0;
   if (playerState.pauseTimeout) { clearTimeout(playerState.pauseTimeout); playerState.pauseTimeout = null; }
+  clearNightTimer();
   stopMusic();
   renderPlayer();
 }
@@ -2856,6 +3181,126 @@ function stopPlayback(fully = true) {
   }
 }
 
+// ============================================================
+// NIGHT MODE : chaîne audio dreamy (low pass + 2 échos qui s'estompent)
+// ============================================================
+let playerAudioCtx = null;
+let playerSource = null;
+let playerLowpass = null;
+let playerDryGain = null;
+let playerDelay1 = null;
+let playerDelay1Gain = null;
+let playerDelay2 = null;
+let playerDelay2Gain = null;
+let playerFadeGain = null;
+let nightTimerHandle = null;
+let nightFadeHandle = null;
+
+function ensurePlayerChain() {
+  if (playerAudioCtx) return true;
+  try {
+    const audio = document.getElementById('aff-audio');
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return false;
+    playerAudioCtx = new Ctx();
+    playerSource = playerAudioCtx.createMediaElementSource(audio);
+
+    // Gain master pour fade-out du timer de nuit
+    playerFadeGain = playerAudioCtx.createGain();
+    playerFadeGain.gain.value = 1;
+
+    // Low pass : bypass par défaut (20kHz)
+    playerLowpass = playerAudioCtx.createBiquadFilter();
+    playerLowpass.type = 'lowpass';
+    playerLowpass.frequency.value = 20000;
+    playerLowpass.Q.value = 0.7;
+
+    // Voix principale (dry)
+    playerDryGain = playerAudioCtx.createGain();
+    playerDryGain.gain.value = 1;
+
+    // Écho 1 : court et plus présent (400ms, 40%)
+    playerDelay1 = playerAudioCtx.createDelay(2.0);
+    playerDelay1.delayTime.value = 0.4;
+    playerDelay1Gain = playerAudioCtx.createGain();
+    playerDelay1Gain.gain.value = 0;
+
+    // Écho 2 : long et discret (900ms, 15%)
+    playerDelay2 = playerAudioCtx.createDelay(2.0);
+    playerDelay2.delayTime.value = 0.9;
+    playerDelay2Gain = playerAudioCtx.createGain();
+    playerDelay2Gain.gain.value = 0;
+
+    // Routing
+    playerSource.connect(playerLowpass);
+    playerLowpass.connect(playerDryGain);
+    playerDryGain.connect(playerFadeGain);
+    playerLowpass.connect(playerDelay1);
+    playerDelay1.connect(playerDelay1Gain);
+    playerDelay1Gain.connect(playerFadeGain);
+    playerLowpass.connect(playerDelay2);
+    playerDelay2.connect(playerDelay2Gain);
+    playerDelay2Gain.connect(playerFadeGain);
+    playerFadeGain.connect(playerAudioCtx.destination);
+    return true;
+  } catch(e) {
+    console.warn('Night chain init failed', e);
+    return false;
+  }
+}
+
+function applyNightMode(enable) {
+  if (!ensurePlayerChain()) return;
+  const now = playerAudioCtx.currentTime;
+  if (enable) {
+    playerLowpass.frequency.linearRampToValueAtTime(2800, now + 0.4);
+    playerDryGain.gain.linearRampToValueAtTime(0.65, now + 0.4);
+    playerDelay1Gain.gain.linearRampToValueAtTime(0.4, now + 0.4);
+    playerDelay2Gain.gain.linearRampToValueAtTime(0.18, now + 0.4);
+  } else {
+    playerLowpass.frequency.linearRampToValueAtTime(20000, now + 0.3);
+    playerDryGain.gain.linearRampToValueAtTime(1, now + 0.3);
+    playerDelay1Gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    playerDelay2Gain.gain.linearRampToValueAtTime(0, now + 0.3);
+  }
+}
+
+function startNightTimer() {
+  clearNightTimer();
+  const minutes = state.settings.nightTimer || 30;
+  nightTimerHandle = setTimeout(() => {
+    // Fade out progressif sur 15 sec, puis stop
+    if (playerAudioCtx && playerFadeGain) {
+      const now = playerAudioCtx.currentTime;
+      playerFadeGain.gain.linearRampToValueAtTime(0, now + 15);
+    }
+    // Fade aussi la musique de fond
+    if (musicMasterGain && musicCtx) {
+      const now = musicCtx.currentTime;
+      musicMasterGain.gain.linearRampToValueAtTime(0, now + 15);
+    }
+    nightFadeHandle = setTimeout(() => {
+      if (playerState.playing) stopPlayback(false);
+      // Restaure le gain pour la session suivante
+      if (playerFadeGain && playerAudioCtx) {
+        playerFadeGain.gain.value = 1;
+      }
+    }, 15500);
+  }, minutes * 60 * 1000);
+}
+
+function clearNightTimer() {
+  if (nightTimerHandle) { clearTimeout(nightTimerHandle); nightTimerHandle = null; }
+  if (nightFadeHandle) { clearTimeout(nightFadeHandle); nightFadeHandle = null; }
+  // Restaure le gain si on avait commencé le fade
+  if (playerFadeGain && playerAudioCtx) {
+    try {
+      playerFadeGain.gain.cancelScheduledValues(playerAudioCtx.currentTime);
+      playerFadeGain.gain.value = 1;
+    } catch(e){}
+  }
+}
+
 function playNext() {
   if (!playerState.playing) return;
   const audio = document.getElementById('aff-audio');
@@ -2865,6 +3310,8 @@ function playNext() {
   audio.src = aff.recording;
   audio.volume = state.settings.affVolume;
   audio.playbackRate = state.settings.playbackRate;
+  // Appliquer le mode nuit si activé
+  applyNightMode(state.settings.nightMode === true);
   audio.play().catch(e => { toast(t('toast_play_error')); stopPlayback(); });
 
   const npEl = document.getElementById('now-playing');
@@ -3512,26 +3959,55 @@ let challengeTimeout = null;
 function renderChallenge() {
   const c = state.challenge;
   const s = state.settings;
-  const aff = c.affirmationId ? state.affirmations.find(a => a.id === c.affirmationId && a.recording) : null;
+  const selectedAffs = (c.affirmationIds || [])
+    .map(id => state.affirmations.find(a => a.id === id && a.recording))
+    .filter(Boolean);
+  const hasSelection = selectedAffs.length > 0;
   const pct = Math.min(100, (c.count / c.target) * 100);
   const remaining = Math.max(0, c.target - c.count);
   const available = state.affirmations.filter(a => a.recording);
+  const TARGET_CHOICES = [10000, 20000, 30000, 40000, 50000];
 
   document.getElementById('page-challenge').innerHTML = `
     <h1 class="h1">${t('challenge_title_1')} <span class="dot">${t('challenge_title_2')}</span></h1>
     <p class="sublabel" style="margin-bottom:20px; max-width: 440px">${t('challenge_desc')}</p>
 
+    <!-- OBJECTIF (toujours visible) -->
+    <div class="h3">${t('challenge_target_label')}</div>
+    <div class="target-chips" style="margin-bottom: 18px">
+      ${TARGET_CHOICES.map(n => `
+        <button class="target-chip ${c.target === n ? 'active' : ''}" data-target="${n}">
+          ${(n/1000) + 'K'}
+        </button>
+      `).join('')}
+    </div>
+
+    <!-- SÉLECTION DES AFFIRMATIONS -->
     <div class="challenge-aff-card">
-      ${aff ? `
-        <div class="challenge-aff-label">${t('challenge_this_aff')}</div>
-        <div class="challenge-aff-title">${escapeHtml(aff.title)}</div>
+      ${hasSelection ? `
+        <div class="challenge-aff-label">${t('challenge_this_aff')} (${selectedAffs.length})</div>
+        <div class="challenge-aff-list">
+          ${selectedAffs.map((a, i) => `
+            <div class="challenge-aff-item">
+              <span class="challenge-aff-dot">${i+1}</span>
+              <span class="challenge-aff-name">${escapeHtml(a.title)}</span>
+            </div>
+          `).join('')}
+        </div>
         <button class="btn-secondary" id="ch-change-aff" style="margin-top:12px">${t('challenge_change_aff')}</button>
       ` : `
         ${available.length > 0 ? `
-          <select class="input-select" id="ch-select" style="margin-bottom: 14px">
-            <option value="">${t('challenge_select_prompt')}</option>
-            ${available.map(a => `<option value="${a.id}">${escapeHtml(a.title)}</option>`).join('')}
-          </select>
+          <div class="h3" style="margin-top:0">${t('challenge_select_prompt')}</div>
+          <div class="aff-check-list">
+            ${available.map(a => `
+              <label class="aff-check-item">
+                <input type="checkbox" class="aff-check" value="${a.id}" />
+                <span class="aff-check-name">${escapeHtml(a.title)}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="sublabel" style="margin-top:8px; font-size: 11px">${t('challenge_max_affs')}</div>
+          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${t('ch_use_this')}</button>
           <div class="challenge-divider"><span>${t('challenge_or')}</span></div>
         ` : ''}
 
@@ -3550,7 +4026,7 @@ function renderChallenge() {
       `}
     </div>
 
-    ${aff ? `
+    ${hasSelection ? `
       <div class="challenge-progress-wrap">
         ${c.startedAt ? `<div class="challenge-started">${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</div>` : ''}
         <div class="challenge-progress-stats">
@@ -3588,11 +4064,27 @@ function renderChallenge() {
           </div>
         ` : ''}
 
+        <!-- AJOUT MANUEL (compteur à main) -->
+        <div class="manual-add-wrap">
+          <div class="manual-add-label">${t('challenge_manual_add')}</div>
+          <div class="manual-add-sub">${t('challenge_manual_sub')}</div>
+          <div class="manual-add-btns">
+            <button class="manual-add-btn" data-add="1">+1</button>
+            <button class="manual-add-btn" data-add="10">+10</button>
+            <button class="manual-add-btn" data-add="50">+50</button>
+            <button class="manual-add-btn" data-add="100">+100</button>
+          </div>
+          <div class="manual-add-custom">
+            <input type="number" id="ch-manual-input" placeholder="${t('challenge_manual_custom')}" min="1" max="10000" />
+            <button class="manual-add-go" id="ch-manual-go">+</button>
+          </div>
+        </div>
+
         <button class="btn-secondary danger" id="ch-reset" style="margin-top:8px">${t('challenge_reset')}</button>
       </div>
     ` : ''}
 
-    ${aff ? `
+    ${hasSelection ? `
       <button class="player-fab" id="ch-settings-btn" aria-label="${t('player_sheet_btn')}">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
@@ -3602,30 +4094,97 @@ function renderChallenge() {
     ` : ''}
   `;
 
-  // Handlers
-  document.getElementById('ch-select')?.addEventListener('change', (e) => {
-    if (!e.target.value) return;
-    state.challenge.affirmationId = e.target.value;
+  // ====== HANDLERS ======
+
+  // Choix de l'objectif (chips)
+  document.querySelectorAll('[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.challenge.target = parseInt(btn.dataset.target, 10);
+      saveState();
+      render();
+    });
+  });
+
+  // Sélection multiple des affirmations (max 4)
+  const checkboxes = document.querySelectorAll('.aff-check');
+  const confirmBtn = document.getElementById('ch-confirm-affs');
+  const updateConfirmBtn = () => {
+    const checked = Array.from(checkboxes).filter(c => c.checked);
+    if (!confirmBtn) return;
+    if (checked.length > 0 && checked.length <= 4) {
+      confirmBtn.disabled = false;
+      confirmBtn.style.opacity = '1';
+    } else {
+      confirmBtn.disabled = true;
+      confirmBtn.style.opacity = '0.5';
+    }
+  };
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const checkedCount = Array.from(checkboxes).filter(c => c.checked).length;
+      // Bloque à 4 max
+      if (checkedCount > 4) {
+        cb.checked = false;
+        toast(t('challenge_max_affs'));
+      }
+      updateConfirmBtn();
+    });
+  });
+
+  // Confirmer la sélection multiple
+  confirmBtn?.addEventListener('click', () => {
+    const picked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+    if (picked.length === 0) return;
+    state.challenge.affirmationIds = picked;
+    state.challenge.currentIdx = 0;
     state.challenge.count = 0;
     state.challenge.startedAt = Date.now();
     saveState();
     render();
   });
+
+  // Changer la sélection (reset)
   document.getElementById('ch-change-aff')?.addEventListener('click', () => {
     stopChallenge();
-    state.challenge.affirmationId = null;
+    state.challenge.affirmationIds = [];
+    state.challenge.currentIdx = 0;
     saveState();
     render();
   });
+
   document.getElementById('ch-toggle')?.addEventListener('click', toggleChallenge);
   document.getElementById('ch-settings-btn')?.addEventListener('click', openPlayerSheet);
   document.getElementById('ch-reset')?.addEventListener('click', () => {
     if (confirm(t('challenge_confirm_reset'))) {
       stopChallenge();
       state.challenge.count = 0;
+      state.challenge.currentIdx = 0;
       saveState();
       render();
     }
+  });
+
+  // Ajout manuel (compteur à main)
+  const addToCount = (n) => {
+    if (!n || n < 1) return;
+    state.challenge.count = Math.min(state.challenge.target, state.challenge.count + n);
+    saveState();
+    toast(t('challenge_added', { n: n }));
+    if (state.challenge.count >= state.challenge.target) {
+      stopChallenge();
+      toast(t('challenge_done'));
+    }
+    render();
+  };
+  document.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addToCount(parseInt(btn.dataset.add, 10)));
+  });
+  document.getElementById('ch-manual-go')?.addEventListener('click', () => {
+    const input = document.getElementById('ch-manual-input');
+    const n = parseInt(input.value, 10);
+    if (isNaN(n) || n < 1) return;
+    input.value = '';
+    addToCount(n);
   });
 
   // Live speed slider pendant lecture
@@ -3962,10 +4521,17 @@ function toggleChallenge() {
 }
 
 function startChallenge() {
-  const aff = state.affirmations.find(a => a.id === state.challenge.affirmationId && a.recording);
-  if (!aff) { toast(t('toast_no_recordings')); return; }
+  const ids = state.challenge.affirmationIds || [];
+  const validAffs = ids
+    .map(id => state.affirmations.find(a => a.id === id && a.recording))
+    .filter(Boolean);
+  if (validAffs.length === 0) { toast(t('toast_no_recordings')); return; }
   state.challenge.playing = true;
   if (!state.challenge.startedAt) state.challenge.startedAt = Date.now();
+  // Reset l'index pour partir du début de la rotation
+  if (typeof state.challenge.currentIdx !== 'number' || state.challenge.currentIdx >= validAffs.length) {
+    state.challenge.currentIdx = 0;
+  }
   saveState();
   startMusic();
   playChallenge();
@@ -3984,8 +4550,16 @@ function stopChallenge() {
 
 function playChallenge() {
   if (!state.challenge.playing) return;
-  const aff = state.affirmations.find(a => a.id === state.challenge.affirmationId && a.recording);
-  if (!aff) { stopChallenge(); return; }
+  // Récupère la liste des affirmations valides dans l'ordre de la sélection
+  const ids = state.challenge.affirmationIds || [];
+  const validAffs = ids
+    .map(id => state.affirmations.find(a => a.id === id && a.recording))
+    .filter(Boolean);
+  if (validAffs.length === 0) { stopChallenge(); return; }
+
+  // L'affirmation courante selon currentIdx
+  const idx = state.challenge.currentIdx % validAffs.length;
+  const aff = validAffs[idx];
 
   const audio = document.getElementById('aff-audio');
   audio.src = aff.recording;
@@ -3998,6 +4572,8 @@ function playChallenge() {
     if (!state.challenge.playing) return;
 
     state.challenge.count++;
+    // Rotation : on passe à l'aff suivante
+    state.challenge.currentIdx = (state.challenge.currentIdx + 1) % validAffs.length;
     trackPlay(aff);
     saveState();
 
