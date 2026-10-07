@@ -3329,11 +3329,12 @@ function startNightTimer() {
       const now = playerAudioCtx.currentTime;
       playerFadeGain.gain.linearRampToValueAtTime(0, now + 15);
     }
-    // Fade aussi la musique de fond
+    // Fade aussi la musique de fond (générative ou fichier)
     if (musicMasterGain && musicCtx) {
       const now = musicCtx.currentTime;
       musicMasterGain.gain.linearRampToValueAtTime(0, now + 15);
     }
+    fadeOutMusicFile(15);
     nightFadeHandle = setTimeout(() => {
       if (playerState.playing) stopPlayback(false);
       // Restaure le gain pour la session suivante
@@ -3416,6 +3417,8 @@ let musicMasterGain = null;
 let musicLFOs = [];
 
 const AMBIANCES = {
+  healing: { name: '🌸 Healing Touch', color: '#f0a0a8', file: 'audio/healing-touch.mp3' },
+  clouds: { name: '☁️ From the Clouds', color: '#d4e5f0', file: 'audio/from-the-clouds.mp3' },
   ocean: { name: '🌊 Vagues océan', color: '#4bb5d6' },
   rain: { name: '🌧️ Pluie douce', color: '#88a5b8' },
   hz432: { name: '✨ 432 Hz', color: '#c4a3ed' },
@@ -3423,6 +3426,10 @@ const AMBIANCES = {
   bowl: { name: '🔔 Bol tibétain', color: '#d4b89a' },
   drone: { name: '🌙 Drone doux', color: '#a89d8f' },
 };
+
+// Audio element pour les ambiances fichier (healing, clouds...)
+let musicFileAudio = null;
+let musicFileFadeInterval = null;
 
 function startMusic() {
   const mode = state.settings.musicMode;
@@ -3436,6 +3443,21 @@ function stopMusic() { stopAmbiance(); }
 
 function startAmbiance(id) {
   stopAmbiance();
+  const amb = AMBIANCES[id];
+  if (!amb) return;
+
+  // Si c'est une ambiance fichier (healing, clouds...), on utilise un <audio> en boucle
+  if (amb.file) {
+    try {
+      musicFileAudio = new Audio(amb.file);
+      musicFileAudio.loop = true;
+      musicFileAudio.volume = state.settings.musicVolume * 0.5;
+      musicFileAudio.play().catch(e => console.warn('music file play error', e));
+    } catch(e) { console.warn('file ambiance error', e); }
+    return;
+  }
+
+  // Sinon : chaîne Web Audio générative
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     musicCtx = new AudioCtx();
@@ -3456,6 +3478,17 @@ function startAmbiance(id) {
 }
 
 function stopAmbiance() {
+  // Stop le fichier audio s'il tourne
+  if (musicFileAudio) {
+    try { musicFileAudio.pause(); } catch(e){}
+    musicFileAudio = null;
+  }
+  if (musicFileFadeInterval) {
+    clearInterval(musicFileFadeInterval);
+    musicFileFadeInterval = null;
+  }
+
+  // Stop la chaîne Web Audio générative
   musicLFOs.forEach(lfo => { try { lfo.stop(); } catch(e){} });
   musicLFOs = [];
   musicNodes.forEach(n => {
@@ -3480,6 +3513,26 @@ function updateMusicVolume() {
   if (musicMasterGain && musicCtx) {
     try { musicMasterGain.gain.value = state.settings.musicVolume * 0.4; } catch(e){}
   }
+  if (musicFileAudio) {
+    try { musicFileAudio.volume = state.settings.musicVolume * 0.5; } catch(e){}
+  }
+}
+
+// Fade out progressif du fichier audio (pour le timer du mode nuit)
+function fadeOutMusicFile(seconds) {
+  if (!musicFileAudio) return;
+  const startVol = musicFileAudio.volume;
+  const steps = 60;
+  const stepMs = (seconds * 1000) / steps;
+  let i = 0;
+  if (musicFileFadeInterval) clearInterval(musicFileFadeInterval);
+  musicFileFadeInterval = setInterval(() => {
+    i++;
+    if (!musicFileAudio) { clearInterval(musicFileFadeInterval); return; }
+    const t = i / steps;
+    musicFileAudio.volume = Math.max(0, startVol * (1 - t));
+    if (i >= steps) clearInterval(musicFileFadeInterval);
+  }, stepMs);
 }
 
 // Alias pour compat
