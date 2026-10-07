@@ -2355,7 +2355,7 @@ const TRANSLATIONS = {
     night_mode: 'Mode Nuit',
     night_on: 'Mode Nuit · ON',
     night_off: 'Mode Nuit',
-    night_timer_set: 'Timer réglé sur {n} min 🌙',
+    night_timer_set: 'Timer réglé sur {n}h 🌙',
     audio: 'Audio',
     aff_volume: 'Volume des affirmations',
     aff_volume_sub: 'Volume de ta voix enregistrée',
@@ -2508,7 +2508,7 @@ const TRANSLATIONS = {
     night_mode: 'Night Mode',
     night_on: 'Night Mode · ON',
     night_off: 'Night Mode',
-    night_timer_set: 'Timer set to {n} min 🌙',
+    night_timer_set: 'Timer set to {n}h 🌙',
     audio: 'Audio',
     aff_volume: 'Affirmations volume',
     aff_volume_sub: 'Volume of your recorded voice',
@@ -2813,7 +2813,7 @@ function defaultState() {
       kofiUrl: 'https://ko-fi.com/getmanifestapp',
       darkMode: true,
       nightMode: false,       // Mode SATS pour s'endormir
-      nightTimer: 30,         // Minutes avant arrêt auto (15, 30, 45, 60)
+      nightTimer: 60,         // Minutes avant arrêt auto (60, 120, 240, 480 = 1h/2h/4h/8h)
     },
     challenge: {
       affirmationIds: [],   // jusqu'à 4 affirmations qui tournent en boucle
@@ -2984,8 +2984,8 @@ function renderPlayer() {
         </button>
         ${s.nightMode ? `
           <div class="night-timer-row">
-            ${[15, 30, 45, 60].map(min => `
-              <button class="night-timer-chip ${s.nightTimer===min?'active':''}" data-night-timer="${min}">${min}m</button>
+            ${[60, 120, 240, 480].map(min => `
+              <button class="night-timer-chip ${s.nightTimer===min?'active':''}" data-night-timer="${min}">${min/60}h</button>
             `).join('')}
           </div>
         ` : ''}
@@ -3083,7 +3083,7 @@ function renderPlayer() {
         startNightTimer();
       }
       renderPlayer();
-      toast(t('night_timer_set', { n: mins }));
+      toast(t('night_timer_set', { n: mins/60 }));
     });
   });
   document.getElementById('live-speed')?.addEventListener('input', (e) => {
