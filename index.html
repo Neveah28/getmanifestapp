@@ -38,6 +38,28 @@
   --input-bg: #ffffff;
 }
 
+[data-theme="rose"] {
+  --bg-grad: linear-gradient(170deg, #ffeaf2 0%, #fcc8dc 50%, #e478a0 100%);
+  --bg-solid: #ffeaf2;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(228, 120, 160, 0.2);
+  --text: #6b1f3e;
+  --text-strong: #4a1028;
+  --text-dim: #c48ba3;
+  --text-faint: #e8bdcf;
+  --accent: #e478a0;
+  --accent-light: #ec93b4;
+  --accent-glow: rgba(228, 120, 160, 0.55);
+  --orb-grad: linear-gradient(135deg, #ec93b4 0%, #e478a0 50%, #c45583 100%);
+  --tab-bg: rgba(255,255,255,0.95);
+  --tab-border: rgba(228, 120, 160, 0.2);
+  --tab-active-bg: rgba(228, 120, 160, 0.18);
+  --line: rgba(228, 120, 160, 0.25);
+  --btn-text: #ffffff;
+  --danger: #d44b3d;
+  --input-bg: #fff5f8;
+}
+
 [data-theme="boho"] {
   --bg-grad: linear-gradient(170deg, #f5ede3 0%, #ead8c4 60%, #d4b89a 100%);
   --bg-solid: #f5ede3;
@@ -167,6 +189,28 @@
   --tab-active-bg: rgba(240, 160, 168, 0.15);
   --line: rgba(240, 160, 168, 0.2);
   --btn-text: #1a1410;
+  --danger: #f08080;
+  --input-bg: rgba(255,255,255,0.05);
+}
+
+[data-theme="rose-dark"] {
+  --bg-grad: linear-gradient(170deg, #1a0812 0%, #2d1020 60%, #4a1534 100%);
+  --bg-solid: #1a0812;
+  --card-bg: #2a1120;
+  --card-shadow: 0 4px 20px rgba(228, 120, 160, 0.2);
+  --text: #f8d4e2;
+  --text-strong: #ffeaf2;
+  --text-dim: #c48ba3;
+  --text-faint: #78556a;
+  --accent: #ec93b4;
+  --accent-light: #f0a0a8;
+  --accent-glow: rgba(236, 147, 180, 0.6);
+  --orb-grad: linear-gradient(135deg, #f5b5cf 0%, #ec93b4 50%, #c45583 100%);
+  --tab-bg: rgba(26, 8, 18, 0.95);
+  --tab-border: rgba(236, 147, 180, 0.25);
+  --tab-active-bg: rgba(236, 147, 180, 0.18);
+  --line: rgba(236, 147, 180, 0.22);
+  --btn-text: #1a0812;
   --danger: #f08080;
   --input-bg: rgba(255,255,255,0.05);
 }
@@ -1311,6 +1355,8 @@ input[type="range"]::-moz-range-thumb {
 /* Light chips (par défaut) */
 .theme-chip.doux { background: linear-gradient(135deg, #fff5ef, #f5c8c3); color: #3d2a28; }
 .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
+.theme-chip.rose { background: linear-gradient(135deg, #ffeaf2, #e478a0); color: #4a1028; }
+.theme-chip.rose .theme-chip-orb { background: linear-gradient(135deg, #ec93b4, #c45583); }
 .theme-chip.boho { background: linear-gradient(135deg, #f5ede3, #d4b89a); color: #4a3523; }
 .theme-chip.boho .theme-chip-orb { background: linear-gradient(135deg, #d4916e, #8b4a2d); }
 .theme-chip.ocean { background: linear-gradient(135deg, #e3f2f7, #88c5d8); color: #0a2d3d; }
@@ -1326,6 +1372,8 @@ input[type="range"]::-moz-range-thumb {
 /* Dark chips (quand l'app est en mode sombre) */
 .theme-picker.dark-preview .theme-chip.doux { background: linear-gradient(135deg, #1a1410, #2d1f1a); color: #faeae0; }
 .theme-picker.dark-preview .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
+.theme-picker.dark-preview .theme-chip.rose { background: linear-gradient(135deg, #1a0812, #4a1534); color: #ffeaf2; }
+.theme-picker.dark-preview .theme-chip.rose .theme-chip-orb { background: linear-gradient(135deg, #ec93b4, #c45583); }
 .theme-picker.dark-preview .theme-chip.boho { background: linear-gradient(135deg, #1a1310, #3a2a1c); color: #f8ead3; }
 .theme-picker.dark-preview .theme-chip.boho .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #b86842); }
 .theme-picker.dark-preview .theme-chip.ocean { background: linear-gradient(135deg, #031420, #0a3550); color: #e8f5fa; }
@@ -2351,6 +2399,7 @@ body.night-mode .orb-ring {
 const STORAGE_KEY = 'repeat_v1';
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
+  { id: 'rose', name: 'Rose Vif' },
   { id: 'boho', name: 'Boho' },
   { id: 'ocean', name: 'Océan' },
   { id: 'mini', name: 'Mini' },
