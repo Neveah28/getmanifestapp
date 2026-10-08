@@ -4212,10 +4212,40 @@ function renderChallenge() {
     render();
   });
 
-  // Ajout manuel (compteur à main)
+  // Ajout manuel (compteur à main) : compte dans le challenge + stats globales
   const addToCount = (n) => {
     if (!n || n < 1) return;
     state.challenge.count = Math.min(state.challenge.target, state.challenge.count + n);
+
+    // === Track dans les stats globales ===
+    const key = todayKey();
+    if (!state.stats.byDay[key]) state.stats.byDay[key] = { plays: 0, loops: 0, seconds: 0 };
+    state.stats.byDay[key].plays += n;
+    state.stats.totalPlays += n;
+    if (state.stats.byDay[key].plays > (state.stats.bestDay?.plays || 0)) {
+      state.stats.bestDay = { date: key, plays: state.stats.byDay[key].plays };
+    }
+    updateStreak();
+
+    // Répartir équitablement sur les affs sélectionnées pour les stats détaillées
+    const selectedIds = state.challenge.affirmationIds || [];
+    if (selectedIds.length > 0) {
+      const perAff = Math.floor(n / selectedIds.length);
+      const remainder = n - perAff * selectedIds.length;
+      selectedIds.forEach((id, idx) => {
+        const add = perAff + (idx === 0 ? remainder : 0);
+        if (add === 0) return;
+        if (!state.stats.byAffirmation[id]) state.stats.byAffirmation[id] = { plays: 0, lastPlayed: 0 };
+        state.stats.byAffirmation[id].plays += add;
+        state.stats.byAffirmation[id].lastPlayed = Date.now();
+        const aff = state.affirmations.find(a => a.id === id);
+        if (aff && aff.groupId) {
+          if (!state.stats.byPlaylist[aff.groupId]) state.stats.byPlaylist[aff.groupId] = { plays: 0 };
+          state.stats.byPlaylist[aff.groupId].plays += add;
+        }
+      });
+    }
+
     saveState();
     toast(t('challenge_added', { n: n }));
     if (state.challenge.count >= state.challenge.target) {
