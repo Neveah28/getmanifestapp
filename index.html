@@ -3711,6 +3711,19 @@ function todayKey() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
+// Met à jour l'ETA du challenge en live (sans re-render complet)
+function updateChallengeEtaLive() {
+  const el = document.querySelector('.challenge-eta');
+  if (!el) return;
+  const c = state.challenge;
+  const s = state.settings;
+  const selectedAffs = (c.affirmationIds || [])
+    .map(id => state.affirmations.find(a => a.id === id && a.recording))
+    .filter(Boolean);
+  const remaining = Math.max(0, c.target - c.count);
+  el.innerHTML = estimateChallengeTime(selectedAffs, remaining, s.playbackRate, s.pauseBetween);
+}
+
 // Estime le temps restant du challenge basé sur la durée moyenne des affs,
 // la vitesse de lecture et le temps de pause entre chaque
 function estimateChallengeTime(selectedAffs, remaining, rate, pauseBetween) {
@@ -3936,6 +3949,8 @@ function openPlayerSheet() {
       if (key === 'musicVolume') updateDroneVolume();
       if (key === 'affVolume') { document.getElementById('aff-audio').volume = v; }
       if (key === 'playbackRate') { document.getElementById('aff-audio').playbackRate = v; }
+      // Si vitesse ou pause change → recalcule l'ETA du challenge en live
+      if (key === 'playbackRate' || key === 'pauseBetween') updateChallengeEtaLive();
     });
   };
   bindRange('ps-aff-vol', 'affVolume', v => Math.round(v*100) + '%');
@@ -4272,6 +4287,7 @@ function renderChallenge() {
     saveState();
     document.getElementById('ch-live-speed-val').textContent = v.toFixed(2) + 'x';
     document.getElementById('aff-audio').playbackRate = v;
+    updateChallengeEtaLive();  // Recalcule l'ETA en temps réel
   });
 
   // Enregistrement direct dans l'onglet 10K
