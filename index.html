@@ -1129,6 +1129,41 @@ body.player-active .mini-header { display: none; }
 .setting-row:last-child { border-bottom: none; }
 .setting-row.col { flex-direction: column; align-items: stretch; gap: 10px; }
 .setting-label { font-size: 14px; font-weight: 600; color: var(--text-strong); }
+
+/* === Bottom sheet moderne : icône + titre + valeur sur une ligne, puis slider === */
+.ps-row {
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.ps-row-last { border-bottom: none; }
+.ps-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ps-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.ps-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-strong);
+  flex: 1;
+  letter-spacing: 0.2px;
+}
+.ps-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  background: var(--input-bg);
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+}
 .setting-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 500; line-height: 1.4; }
 .setting-val { color: var(--accent); font-weight: 800; font-size: 18px; }
 
@@ -3758,57 +3793,49 @@ function openPlayerSheet() {
       <div class="modal-handle"></div>
       <div class="modal-title">${t('player_sheet_title')}</div>
 
-      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
-        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
-          <div>
-            <div class="setting-label">${t('aff_volume')}</div>
-            <div class="setting-sub">${t('aff_volume_sub')}</div>
-          </div>
-          <div class="setting-val" id="ps-val-aff-vol">${Math.round(s.affVolume*100)}%</div>
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎙️</span>
+          <span class="ps-label">${t('aff_volume')}</span>
+          <span class="ps-val" id="ps-val-aff-vol">${Math.round(s.affVolume*100)}%</span>
         </div>
         <input type="range" id="ps-aff-vol" min="0" max="1" step="0.05" value="${s.affVolume}" />
       </div>
 
-      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
-        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
-          <div>
-            <div class="setting-label">${t('music_volume')}</div>
-            <div class="setting-sub">${t('music_volume_sub')}</div>
-          </div>
-          <div class="setting-val" id="ps-val-music-vol">${Math.round(s.musicVolume*100)}%</div>
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎵</span>
+          <span class="ps-label">${t('music_volume')}</span>
+          <span class="ps-val" id="ps-val-music-vol">${Math.round(s.musicVolume*100)}%</span>
         </div>
         <input type="range" id="ps-music-vol" min="0" max="1" step="0.05" value="${s.musicVolume}" />
       </div>
 
-      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
-        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
-          <div>
-            <div class="setting-label">${t('play_speed')}</div>
-            <div class="setting-sub">${t('play_speed_sub')}</div>
-          </div>
-          <div class="setting-val" id="ps-val-rate">${s.playbackRate.toFixed(2)}x</div>
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">⚡</span>
+          <span class="ps-label">${t('play_speed')}</span>
+          <span class="ps-val" id="ps-val-rate">${s.playbackRate.toFixed(2)}x</span>
         </div>
         <input type="range" id="ps-rate" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
       </div>
 
-      <div class="setting-row col" style="padding: 10px 0; border-bottom: 1px solid var(--line)">
-        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-end">
-          <div>
-            <div class="setting-label">${t('pause_between')}</div>
-            <div class="setting-sub">${t('pause_between_sub')}</div>
-          </div>
-          <div class="setting-val" id="ps-val-pause">${s.pauseBetween}s</div>
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">⏸️</span>
+          <span class="ps-label">${t('pause_between')}</span>
+          <span class="ps-val" id="ps-val-pause">${s.pauseBetween}s</span>
         </div>
         <input type="range" id="ps-pause" min="0" max="15" step="1" value="${s.pauseBetween}" />
       </div>
 
-      <!-- Objectif Challenge -->
-      <div class="setting-row col" style="padding: 14px 0; border-bottom: 1px solid var(--line)">
-        <div>
-          <div class="setting-label">${t('challenge_target_label')} ${t('tab_challenge')}</div>
-          <div class="setting-sub">Nombre d'affirmations à atteindre</div>
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎯</span>
+          <span class="ps-label">Objectif Challenge</span>
+          <span class="ps-val">${(state.challenge.target/1000)}K</span>
         </div>
-        <div class="target-chips" style="margin-top: 10px">
+        <div class="target-chips">
           ${[10000, 20000, 30000, 40000, 50000].map(n => `
             <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-ps-target="${n}">
               ${(n/1000) + 'K'}
@@ -3817,18 +3844,18 @@ function openPlayerSheet() {
         </div>
       </div>
 
-      <div class="setting-row col" style="padding: 14px 0">
-        <div>
-          <div class="setting-label">${t('ambiance')}</div>
-          <div class="setting-sub">${t('music_type_sub')}</div>
+      <div class="ps-row ps-row-last">
+        <div class="ps-head">
+          <span class="ps-icon">🎧</span>
+          <span class="ps-label">${t('ambiance')}</span>
         </div>
-        <div class="music-mode-row two" style="margin-top:8px">
+        <div class="music-mode-row two">
           <button class="music-mode-btn ${s.musicMode==='none'?'active':''}" data-ps-music-mode="none">${t('none')}</button>
           <button class="music-mode-btn ${s.musicMode==='drone'?'active':''}" data-ps-music-mode="drone">${t('ambiance')}</button>
         </div>
 
         ${s.musicMode === 'drone' ? `
-          <div class="ambiance-grid" style="margin-top: 12px">
+          <div class="ambiance-grid" style="margin-top: 10px">
             ${Object.entries(AMBIANCES).map(([id, amb]) => `
               <button class="ambiance-btn ${s.ambianceId===id?'active':''}" data-ambiance="${id}" style="--amb-color: ${amb.color}">
                 ${amb.name}
