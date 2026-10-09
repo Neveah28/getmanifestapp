@@ -2773,7 +2773,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.5.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.5.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -4457,7 +4457,7 @@ function renderChallenge() {
             `).join('')}
           </div>
           <div class="sublabel" style="margin-top:8px; font-size: 11px">${t('challenge_max_affs')}</div>
-          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${t('ch_use_this')}</button>
+          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${editing ? 'Modifier' : t('ch_use_this')}</button>
           <div class="challenge-divider"><span>${t('challenge_or')}</span></div>
         ` : ''}
 
