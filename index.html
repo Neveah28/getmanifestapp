@@ -2811,7 +2811,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.6.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.7.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -3382,9 +3382,20 @@ function defaultState() {
       language: null,
       kofiUrl: 'https://ko-fi.com/getmanifestapp',
       darkMode: true,
-      nightMode: false,       // Mode SATS pour s'endormir
+      nightMode: false,       // Mode SATS pour s'endormir (PLAYER)
       nightTimer: 60,         // Minutes avant arrêt auto (60, 120, 240, 480 = 1h/2h/4h/8h)
       silentMode: false,      // Mode silencieux : remplace la voix par un bip (double bip au changement d'aff)
+      // === Paramètres INDÉPENDANTS du Challenge (ch* = challenge) ===
+      // Permet d'avoir des réglages différents en Player et en Challenge
+      chAffVolume: 0.9,
+      chMusicVolume: 0.35,
+      chPlaybackRate: 1.0,
+      chPauseBetween: 0,
+      chMusicMode: 'none',
+      chAmbianceId: 'healing',
+      chSilentMode: false,
+      chNightMode: false,
+      chNightTimer: 60,
     },
     challenge: {
       affirmationIds: [],   // jusqu'à 4 affirmations qui tournent en boucle
@@ -3421,6 +3432,21 @@ function loadState() {
     if (settings.musicMode === 'playlist') settings.musicMode = 'none';
     // Migration : anciennes ambiances supprimées → healing par défaut
     if (!['healing', 'clouds'].includes(settings.ambianceId)) settings.ambianceId = 'healing';
+    // Migration v1.6.1 : si pas de params ch* sauvegardés, copie les params Player → Challenge
+    // pour que la première ouverture après maj garde le même feel
+    const prevSettings = p.settings || {};
+    const hadChSettings = 'chAffVolume' in prevSettings || 'chPlaybackRate' in prevSettings;
+    if (!hadChSettings) {
+      settings.chAffVolume = settings.affVolume;
+      settings.chMusicVolume = settings.musicVolume;
+      settings.chPlaybackRate = settings.playbackRate;
+      settings.chPauseBetween = settings.pauseBetween;
+      settings.chMusicMode = settings.musicMode;
+      settings.chAmbianceId = settings.ambianceId;
+      settings.chSilentMode = settings.silentMode || false;
+      settings.chNightMode = settings.nightMode || false;
+      settings.chNightTimer = settings.nightTimer || 60;
+    }
     const challenge = Object.assign(d.challenge, p.challenge || {});
     // Migration : ancien champ affirmationId (string) → affirmationIds (array)
     if (!challenge.affirmationIds || !Array.isArray(challenge.affirmationIds)) {
@@ -3863,9 +3889,9 @@ function applyNightMode(enable) {
   }
 }
 
-function startNightTimer() {
+function startNightTimer(ctx = 'player') {
   clearNightTimer();
-  const minutes = state.settings.nightTimer || 30;
+  const minutes = cfgFor(ctx).nightTimer || 30;
   nightTimerHandle = setTimeout(() => {
     // Fade out progressif sur 15 sec, puis stop
     if (playerAudioCtx && playerFadeGain) {
@@ -3879,7 +3905,12 @@ function startNightTimer() {
     }
     fadeOutMusicFile(15);
     nightFadeHandle = setTimeout(() => {
-      if (playerState.playing) stopPlayback(false);
+      // Stoppe le bon contexte selon qui a lancé le timer
+      if (ctx === 'challenge') {
+        if (state.challenge.playing) stopChallenge();
+      } else {
+        if (playerState.playing) stopPlayback(false);
+      }
       // Restaure le gain pour la session suivante
       if (playerFadeGain && playerAudioCtx) {
         playerFadeGain.gain.value = 1;
@@ -3911,12 +3942,10 @@ function playNext() {
   const stEl = document.getElementById('np-state');
   if (stEl) stEl.textContent = t('playing');
 
-  // Mode silencieux : bip au lieu de la voix
+  // Mode silencieux : bip au lieu de la voix (côté Player)
   if (state.settings.silentMode) {
-    // Détecte si c'est un changement d'aff (currentRepeat remis à 0 = nouvelle aff)
     const isChange = (playerState.currentRepeat || 0) === 0;
-    playBeep(isChange);
-    // Simuler onended après un délai court
+    playBeep(isChange, state.settings.affVolume);
     setTimeout(() => {
       if (!playerState.playing) return;
       handlePlayNextEnd(aff);
@@ -3996,36 +4025,69 @@ const AMBIANCES = {
 let musicFileAudio = null;
 let musicFileFadeInterval = null;
 
-function startMusic() {
-  const mode = state.settings.musicMode;
-  if (mode === 'none') return;
-  // Tout autre mode (drone / ambiance) joue l'ambiance générée
-  const ambiance = state.settings.ambianceId || 'healing';
-  startAmbiance(ambiance);
+// activeAudioCtx = 'player' ou 'challenge' : indique quel contexte a lancé la musique en cours
+let activeAudioCtx = 'player';
+
+// Helper : récupère les paramètres audio du contexte (player ou challenge)
+function cfgFor(ctx) {
+  const s = state.settings;
+  if (ctx === 'challenge') {
+    return {
+      affVolume: s.chAffVolume ?? s.affVolume,
+      musicVolume: s.chMusicVolume ?? s.musicVolume,
+      playbackRate: s.chPlaybackRate ?? s.playbackRate,
+      pauseBetween: s.chPauseBetween ?? s.pauseBetween,
+      musicMode: s.chMusicMode ?? s.musicMode,
+      ambianceId: s.chAmbianceId ?? s.ambianceId,
+      silentMode: s.chSilentMode ?? false,
+      nightMode: s.chNightMode ?? false,
+      nightTimer: s.chNightTimer ?? 60,
+    };
+  }
+  return {
+    affVolume: s.affVolume,
+    musicVolume: s.musicVolume,
+    playbackRate: s.playbackRate,
+    pauseBetween: s.pauseBetween,
+    musicMode: s.musicMode,
+    ambianceId: s.ambianceId,
+    silentMode: s.silentMode ?? false,
+    nightMode: s.nightMode ?? false,
+    nightTimer: s.nightTimer ?? 60,
+  };
+}
+
+function startMusic(ctx = 'player') {
+  activeAudioCtx = ctx;
+  const c = cfgFor(ctx);
+  if (c.musicMode === 'none') return;
+  startAmbiance(c.ambianceId || 'healing', c.musicVolume);
 }
 
 function stopMusic() { stopAmbiance(); }
 
-function startAmbiance(id) {
+function startAmbiance(id, musicVol) {
   stopAmbiance();
   const amb = AMBIANCES[id] || AMBIANCES.healing;
   if (!amb || !amb.file) return;
   try {
     musicFileAudio = new Audio(amb.file);
     musicFileAudio.loop = true;
-    musicFileAudio.volume = state.settings.musicVolume * 0.5;
+    const vol = (musicVol !== undefined) ? musicVol : state.settings.musicVolume;
+    musicFileAudio.volume = vol * 0.5;
     musicFileAudio.play().catch(e => console.warn('music file play error', e));
   } catch(e) { console.warn('ambiance error', e); }
 }
 
 // === BIP (mode silencieux) ===
 // Génère un bip court. Si isChange=true, double bip (indique changement d'aff)
-function playBeep(isChange) {
+function playBeep(isChange, affVol) {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
     const ctx = new Ctx();
-    const vol = state.settings.affVolume * 0.3;
+    const baseVol = (affVol !== undefined) ? affVol : state.settings.affVolume;
+    const vol = baseVol * 0.3;
     const now = ctx.currentTime;
     const makeBeep = (startAt, freq = 880) => {
       const osc = ctx.createOscillator();
@@ -4107,11 +4169,13 @@ function stopAmbiance() {
 }
 
 function updateMusicVolume() {
+  // Prend le volume du contexte actif (player ou challenge)
+  const vol = cfgFor(activeAudioCtx).musicVolume;
   if (musicMasterGain && musicCtx) {
-    try { musicMasterGain.gain.value = state.settings.musicVolume * 0.4; } catch(e){}
+    try { musicMasterGain.gain.value = vol * 0.4; } catch(e){}
   }
   if (musicFileAudio) {
-    try { musicFileAudio.volume = state.settings.musicVolume * 0.5; } catch(e){}
+    try { musicFileAudio.volume = vol * 0.5; } catch(e){}
   }
 }
 
@@ -4232,12 +4296,12 @@ function updateChallengeEtaLive() {
   const el = document.querySelector('.challenge-eta');
   if (!el) return;
   const c = state.challenge;
-  const s = state.settings;
+  const cfg = cfgFor('challenge');
   const selectedAffs = (c.affirmationIds || [])
     .map(id => state.affirmations.find(a => a.id === id && a.recording))
     .filter(Boolean);
   const remaining = Math.max(0, c.target - c.count);
-  el.innerHTML = estimateChallengeTime(selectedAffs, remaining, s.playbackRate, s.pauseBetween);
+  el.innerHTML = estimateChallengeTime(selectedAffs, remaining, cfg.playbackRate, cfg.pauseBetween);
 }
 
 // Estime le temps restant du challenge basé sur la durée moyenne des affs,
@@ -4502,11 +4566,11 @@ function openPlayerSheet() {
     });
   });
 
-  // Silent mode toggle
+  // Silent mode toggle (PLAYER uniquement — le Challenge a son propre toggle)
   document.getElementById('ps-silent-mode')?.addEventListener('change', (e) => {
     state.settings.silentMode = e.target.checked;
     saveState();
-    toast(e.target.checked ? '🔕 Mode silencieux activé' : '🔔 Mode voix activé');
+    toast(e.target.checked ? '🔕 Player en mode silencieux' : '🔔 Player en mode voix');
   });
 
   document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
@@ -4515,6 +4579,7 @@ function openPlayerSheet() {
 
 // ============================================================
 // CHALLENGE SETTINGS BOTTOM SHEET
+// Paramètres INDÉPENDANTS du Player (clés ch* dans state.settings)
 // ============================================================
 function openChallengeSheet() {
   const s = state.settings;
@@ -4529,7 +4594,7 @@ function openChallengeSheet() {
       <div class="ps-row">
         <div class="ps-head">
           <span class="ps-icon">🎯</span>
-          <span class="ps-label">Objectif Challenge</span>
+          <span class="ps-label">Objectif</span>
           <span class="ps-val">${(state.challenge.target/1000)}K</span>
         </div>
         <div class="target-chips">
@@ -4543,14 +4608,89 @@ function openChallengeSheet() {
 
       <div class="ps-row">
         <div class="ps-head">
+          <span class="ps-icon">🎙️</span>
+          <span class="ps-label">${t('aff_volume')}</span>
+          <span class="ps-val" id="cs-val-aff-vol">${Math.round(s.chAffVolume*100)}%</span>
+        </div>
+        <input type="range" id="cs-aff-vol" min="0" max="1" step="0.05" value="${s.chAffVolume}" />
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎵</span>
+          <span class="ps-label">${t('music_volume')}</span>
+          <span class="ps-val" id="cs-val-music-vol">${Math.round(s.chMusicVolume*100)}%</span>
+        </div>
+        <input type="range" id="cs-music-vol" min="0" max="1" step="0.05" value="${s.chMusicVolume}" />
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">⚡</span>
+          <span class="ps-label">${t('play_speed')}</span>
+          <span class="ps-val" id="cs-val-rate">${s.chPlaybackRate.toFixed(2)}x</span>
+        </div>
+        <input type="range" id="cs-rate" min="0.5" max="3" step="0.05" value="${s.chPlaybackRate}" />
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">⏸️</span>
+          <span class="ps-label">${t('pause_between')}</span>
+          <span class="ps-val" id="cs-val-pause">${s.chPauseBetween}s</span>
+        </div>
+        <input type="range" id="cs-pause" min="0" max="15" step="1" value="${s.chPauseBetween}" />
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎧</span>
+          <span class="ps-label">${t('ambiance')}</span>
+        </div>
+        <div class="music-mode-row two">
+          <button class="music-mode-btn ${s.chMusicMode==='none'?'active':''}" data-cs-music-mode="none">${t('none')}</button>
+          <button class="music-mode-btn ${s.chMusicMode==='drone'?'active':''}" data-cs-music-mode="drone">${t('ambiance')}</button>
+        </div>
+
+        ${s.chMusicMode === 'drone' ? `
+          <div class="ambiance-grid" style="margin-top: 10px">
+            ${Object.entries(AMBIANCES).map(([id, amb]) => `
+              <button class="ambiance-btn ${s.chAmbianceId===id?'active':''}" data-cs-ambiance="${id}" style="--amb-color: ${amb.color}">
+                ${amb.name}
+              </button>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
           <span class="ps-icon">🔕</span>
           <span class="ps-label">${t('silent_mode')}</span>
           <label class="ps-switch">
-            <input type="checkbox" id="cs-silent-mode" ${s.silentMode ? 'checked' : ''}>
+            <input type="checkbox" id="cs-silent-mode" ${s.chSilentMode ? 'checked' : ''}>
             <span class="ps-switch-slider"></span>
           </label>
         </div>
         <div class="ps-sub">${t('silent_mode_sub')}</div>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🌙</span>
+          <span class="ps-label">${t('night_mode')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="cs-night-mode" ${s.chNightMode ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        ${s.chNightMode ? `
+          <div class="night-timer-chips" style="margin-top:10px">
+            ${[60, 120, 240, 480].map(min => `
+              <button class="night-timer-chip ${s.chNightTimer===min?'active':''}" data-cs-night-timer="${min}">${min/60}h</button>
+            `).join('')}
+          </div>
+        ` : ''}
       </div>
 
       <div class="ps-row ps-row-last">
@@ -4566,7 +4706,57 @@ function openChallengeSheet() {
   `;
   document.body.appendChild(overlay);
 
-  // Objectif Challenge chips
+  // Binding des sliders challenge (clés ch* indépendantes)
+  const bindRange = (id, key, format, extra) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', (e) => {
+      const v = parseFloat(e.target.value);
+      state.settings[key] = v;
+      saveState();
+      document.getElementById('cs-val-' + id.replace('cs-', '')).textContent = format(v);
+      if (extra) extra(v);
+    });
+  };
+  bindRange('cs-aff-vol', 'chAffVolume', v => Math.round(v*100) + '%', v => {
+    // Si c'est le challenge qui joue, applique immédiatement
+    if (state.challenge.playing && challengeAudio) challengeAudio.volume = v;
+  });
+  bindRange('cs-music-vol', 'chMusicVolume', v => Math.round(v*100) + '%', () => {
+    if (activeAudioCtx === 'challenge') updateMusicVolume();
+  });
+  bindRange('cs-rate', 'chPlaybackRate', v => v.toFixed(2) + 'x', v => {
+    if (state.challenge.playing && challengeAudio) challengeAudio.playbackRate = v;
+    updateChallengeEtaLive();
+  });
+  bindRange('cs-pause', 'chPauseBetween', v => v + 's', () => updateChallengeEtaLive());
+
+  // Helper pour relancer la musique challenge si on est en lecture
+  const restartChallengeMusicIfActive = () => {
+    if (!state.challenge.playing) return;
+    stopMusic();
+    if (state.settings.chMusicMode === 'drone') startMusic('challenge');
+  };
+
+  overlay.querySelectorAll('[data-cs-music-mode]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.chMusicMode = b.dataset.csMusicMode;
+      saveState();
+      overlay.remove();
+      openChallengeSheet();
+      restartChallengeMusicIfActive();
+    });
+  });
+
+  overlay.querySelectorAll('[data-cs-ambiance]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.chAmbianceId = b.dataset.csAmbiance;
+      saveState();
+      overlay.querySelectorAll('[data-cs-ambiance]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      restartChallengeMusicIfActive();
+    });
+  });
+
   overlay.querySelectorAll('[data-cs-target]').forEach(b => {
     b.addEventListener('click', () => {
       state.challenge.target = parseInt(b.dataset.csTarget, 10);
@@ -4578,11 +4768,34 @@ function openChallengeSheet() {
     });
   });
 
-  // Silent mode toggle
+  // Silent mode toggle (CHALLENGE uniquement)
   document.getElementById('cs-silent-mode')?.addEventListener('change', (e) => {
-    state.settings.silentMode = e.target.checked;
+    state.settings.chSilentMode = e.target.checked;
     saveState();
-    toast(e.target.checked ? '🔕 Mode silencieux activé' : '🔔 Mode voix activé');
+    toast(e.target.checked ? '🔕 Challenge en mode silencieux' : '🔔 Challenge en mode voix');
+  });
+
+  // Night mode toggle (CHALLENGE uniquement)
+  document.getElementById('cs-night-mode')?.addEventListener('change', (e) => {
+    state.settings.chNightMode = e.target.checked;
+    saveState();
+    if (state.challenge.playing) {
+      applyNightMode(e.target.checked);
+      if (e.target.checked) startNightTimer('challenge'); else clearNightTimer();
+    }
+    overlay.remove();
+    openChallengeSheet();
+  });
+
+  overlay.querySelectorAll('[data-cs-night-timer]').forEach(b => {
+    b.addEventListener('click', () => {
+      const mins = parseInt(b.dataset.csNightTimer, 10);
+      state.settings.chNightTimer = mins;
+      saveState();
+      overlay.querySelectorAll('[data-cs-night-timer]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (state.challenge.playing && state.settings.chNightMode) startNightTimer('challenge');
+    });
   });
 
   // Reset Challenge (double-tap confirm)
@@ -4599,7 +4812,6 @@ function openChallengeSheet() {
       }, 3000);
       return;
     }
-    // Confirmé
     if (state.challenge.playing) {
       state.challenge.playing = false;
       if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
@@ -4629,6 +4841,7 @@ let challengeTimeout = null;
 function renderChallenge() {
   const c = state.challenge;
   const s = state.settings;
+  const chCfg = cfgFor('challenge');  // Paramètres du Challenge (indépendants du Player)
   const selectedAffs = (c.affirmationIds || [])
     .map(id => state.affirmations.find(a => a.id === id && a.recording))
     .filter(Boolean);
@@ -4710,7 +4923,7 @@ function renderChallenge() {
           <span>${pct.toFixed(1)}%</span>
           <span>${remaining.toLocaleString('fr-FR')} ${t('challenge_remaining')}</span>
         </div>
-        ${c.playing ? `<div class="challenge-eta">${estimateChallengeTime(selectedAffs, remaining, s.playbackRate, s.pauseBetween)}</div>` : ''}
+        ${c.playing ? `<div class="challenge-eta">${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}</div>` : ''}
       </div>
 
       <div class="challenge-controls">
@@ -4728,9 +4941,9 @@ function renderChallenge() {
           <div class="live-speed">
             <div class="live-speed-label">
               <span>${t('play_speed')}</span>
-              <span class="live-speed-val" id="ch-live-speed-val">${s.playbackRate.toFixed(2)}x</span>
+              <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
             </div>
-            <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
+            <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
           </div>
         ` : ''}
 
@@ -4911,10 +5124,10 @@ function renderChallenge() {
     addToCount(n);
   });
 
-  // Live speed slider pendant lecture
+  // Live speed slider pendant lecture (modifie uniquement la vitesse CHALLENGE)
   document.getElementById('ch-live-speed')?.addEventListener('input', (e) => {
     const v = parseFloat(e.target.value);
-    state.settings.playbackRate = v;
+    state.settings.chPlaybackRate = v;
     saveState();
     document.getElementById('ch-live-speed-val').textContent = v.toFixed(2) + 'x';
     document.getElementById('aff-audio').playbackRate = v;
@@ -5149,14 +5362,15 @@ function startChallenge() {
   if (validAffs.length === 0) { toast(t('toast_no_recordings')); return; }
   state.challenge.playing = true;
   if (!state.challenge.startedAt) state.challenge.startedAt = Date.now();
-  // Reset l'index pour partir du début de la rotation
   if (typeof state.challenge.currentIdx !== 'number' || state.challenge.currentIdx >= validAffs.length) {
     state.challenge.currentIdx = 0;
   }
   saveState();
-  startMusic();
+  startMusic('challenge');
   playChallenge();
   render();
+  // Mode nuit indépendant pour le Challenge
+  if (cfgFor('challenge').nightMode) startNightTimer('challenge');
   toast(t('challenge_started'));
 }
 
@@ -5164,6 +5378,7 @@ function stopChallenge() {
   state.challenge.playing = false;
   if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
   if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+  clearNightTimer();
   stopMusic();
   saveState();
   render();
@@ -5182,10 +5397,12 @@ function playChallenge() {
   const idx = state.challenge.currentIdx % validAffs.length;
   const aff = validAffs[idx];
 
+  const cfg = cfgFor('challenge');
+
   // Mode silencieux : bip au lieu de la voix
-  if (state.settings.silentMode) {
+  if (cfg.silentMode) {
     const isChange = (state.challenge.currentRepeat || 0) === 0;
-    playBeep(isChange);
+    playBeep(isChange, cfg.affVolume);
     challengeAudio = null;
     challengeTimeout = setTimeout(() => {
       if (!state.challenge.playing) return;
@@ -5196,8 +5413,10 @@ function playChallenge() {
 
   const audio = document.getElementById('aff-audio');
   audio.src = aff.recording;
-  audio.volume = state.settings.affVolume;
-  audio.playbackRate = state.settings.playbackRate;
+  audio.volume = cfg.affVolume;
+  audio.playbackRate = cfg.playbackRate;
+  // Mode nuit Challenge (indépendant du mode nuit Player)
+  applyNightMode(cfg.nightMode === true);
   audio.play().catch(() => { toast(t('toast_play_error')); stopChallenge(); });
   challengeAudio = audio;
 
@@ -5211,6 +5430,7 @@ function playChallenge() {
 function handleChallengeEnd(aff, validAffs) {
   if (!state.challenge.playing) return;
 
+  const cfg = cfgFor('challenge');
   const oldCount = state.challenge.count;
   state.challenge.count++;
   const newCount = state.challenge.count;
@@ -5252,7 +5472,7 @@ function handleChallengeEnd(aff, validAffs) {
   challengeTimeout = setTimeout(() => {
     if (!state.challenge.playing) return;
     playChallenge();
-  }, state.settings.pauseBetween * 1000);
+  }, cfg.pauseBetween * 1000);
 }
 
 // ============================================================
