@@ -2477,6 +2477,179 @@ body.night-mode .orb-ring {
   gap: 10px;
 }
 
+/* ===============================================================
+   CHALLENGE ORB (nouvelle UI — lune / orbite)
+   =============================================================== */
+.challenge-orb-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0 24px;
+}
+
+.challenge-eta-top {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-style: italic;
+  letter-spacing: 0.3px;
+  padding: 0 10px;
+}
+.challenge-eta-top strong {
+  color: var(--accent);
+  font-weight: 800;
+  font-style: normal;
+}
+.challenge-eta-top em {
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+.challenge-orb {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 6px 0 4px;
+}
+
+/* Halo rose derrière la lune */
+.challenge-orb::before {
+  content: '';
+  position: absolute;
+  inset: -32px;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 28%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 42%,
+    transparent 72%);
+  z-index: 0;
+  border-radius: 50%;
+  animation: orb-glow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.challenge-orb.playing::before {
+  animation: orb-glow 2.6s ease-in-out infinite;
+}
+@keyframes orb-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: visible;
+}
+.orb-ring .orb-track {
+  stroke: var(--line);
+  stroke-width: 4;
+  opacity: 0.5;
+}
+.orb-ring .orb-progress {
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 40%, transparent));
+}
+
+.orb-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.orb-count {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--text-strong);
+  line-height: 1;
+  letter-spacing: -0.5px;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+.orb-target {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+}
+.orb-play-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: transform 0.15s, box-shadow 0.2s;
+  margin: 4px 0 2px;
+}
+.challenge-orb:active .orb-play-icon {
+  transform: scale(0.9);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.orb-pct {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Infos sous l'orbe */
+.orb-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.orb-remaining {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.orb-remaining strong {
+  color: var(--text-strong);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.orb-started {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+
+/* Mobile */
+@media (max-width: 400px) {
+  .challenge-orb { width: 220px; height: 220px; }
+  .orb-count { font-size: 38px; }
+  .orb-play-icon { width: 42px; height: 42px; }
+}
+
 /* Toggle Dark mode */
 .dark-toggle {
   display: flex;
@@ -2811,7 +2984,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.7.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.8.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -4298,7 +4471,8 @@ function todayKey() {
 
 // Met à jour l'ETA du challenge en live (sans re-render complet)
 function updateChallengeEtaLive() {
-  const el = document.querySelector('.challenge-eta');
+  // Nouveau sélecteur en priorité (orb), fallback sur l'ancien
+  const el = document.getElementById('ch-eta-top') || document.querySelector('.challenge-eta');
   if (!el) return;
   const c = state.challenge;
   const cfg = cfgFor('challenge');
@@ -4307,6 +4481,33 @@ function updateChallengeEtaLive() {
     .filter(Boolean);
   const remaining = Math.max(0, c.target - c.count);
   el.innerHTML = estimateChallengeTime(selectedAffs, remaining, cfg.playbackRate, cfg.pauseBetween);
+}
+
+// Met à jour les éléments de l'orbe (compteur, pct, remaining, ring)
+// Appelé après chaque tick (lecture ou ajout manuel) pour éviter un re-render complet
+function updateChallengeOrbUI() {
+  const c = state.challenge;
+  const RING_R = 110;
+  const RING_C = 2 * Math.PI * RING_R;
+  const pct = Math.min(100, (c.count / c.target) * 100);
+  const remaining = Math.max(0, c.target - c.count);
+
+  const countEl = document.querySelector('.orb-count');
+  if (countEl) countEl.textContent = c.count.toLocaleString('fr-FR');
+
+  const pctEl = document.querySelector('.orb-pct');
+  if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
+
+  const remEl = document.querySelector('.orb-remaining');
+  if (remEl) {
+    remEl.innerHTML = `<strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}`;
+  }
+
+  const progEl = document.querySelector('.orb-progress');
+  if (progEl) {
+    const offset = RING_C * (1 - pct / 100);
+    progEl.setAttribute('stroke-dashoffset', offset.toFixed(2));
+  }
 }
 
 // Estime le temps restant du challenge basé sur la durée moyenne des affs,
@@ -4680,24 +4881,6 @@ function openChallengeSheet() {
         <div class="ps-sub">${t('silent_mode_sub')}</div>
       </div>
 
-      <div class="ps-row">
-        <div class="ps-head">
-          <span class="ps-icon">🌙</span>
-          <span class="ps-label">${t('night_mode')}</span>
-          <label class="ps-switch">
-            <input type="checkbox" id="cs-night-mode" ${s.chNightMode ? 'checked' : ''}>
-            <span class="ps-switch-slider"></span>
-          </label>
-        </div>
-        ${s.chNightMode ? `
-          <div class="night-timer-chips" style="margin-top:10px">
-            ${[60, 120, 240, 480].map(min => `
-              <button class="night-timer-chip ${s.chNightTimer===min?'active':''}" data-cs-night-timer="${min}">${min/60}h</button>
-            `).join('')}
-          </div>
-        ` : ''}
-      </div>
-
       <div class="ps-row ps-row-last">
         <div class="ps-head">
           <span class="ps-icon">🔄</span>
@@ -4778,29 +4961,6 @@ function openChallengeSheet() {
     state.settings.chSilentMode = e.target.checked;
     saveState();
     toast(e.target.checked ? '🔕 Challenge en mode silencieux' : '🔔 Challenge en mode voix');
-  });
-
-  // Night mode toggle (CHALLENGE uniquement)
-  document.getElementById('cs-night-mode')?.addEventListener('change', (e) => {
-    state.settings.chNightMode = e.target.checked;
-    saveState();
-    if (state.challenge.playing) {
-      applyNightMode(e.target.checked);
-      if (e.target.checked) startNightTimer('challenge'); else clearNightTimer();
-    }
-    overlay.remove();
-    openChallengeSheet();
-  });
-
-  overlay.querySelectorAll('[data-cs-night-timer]').forEach(b => {
-    b.addEventListener('click', () => {
-      const mins = parseInt(b.dataset.csNightTimer, 10);
-      state.settings.chNightTimer = mins;
-      saveState();
-      overlay.querySelectorAll('[data-cs-night-timer]').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      if (state.challenge.playing && state.settings.chNightMode) startNightTimer('challenge');
-    });
   });
 
   // Reset Challenge (double-tap confirm)
@@ -4913,59 +5073,76 @@ function renderChallenge() {
       `}
     </div>
 
-    ${hasSelection ? `
-      <div class="challenge-progress-wrap">
-        ${c.startedAt ? `<div class="challenge-started">${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</div>` : ''}
-        <div class="challenge-progress-stats">
-          <div class="challenge-count-main">${c.count.toLocaleString('fr-FR')}</div>
-          <div class="challenge-count-sep">/</div>
-          <div class="challenge-count-target">${c.target.toLocaleString('fr-FR')}</div>
-        </div>
-        <div class="challenge-progress-bar">
-          <div class="challenge-progress-fill" style="width:${pct}%"></div>
-        </div>
-        <div class="challenge-progress-info">
-          <span>${pct.toFixed(1)}%</span>
-          <span>${remaining.toLocaleString('fr-FR')} ${t('challenge_remaining')}</span>
-        </div>
-        ${c.playing ? `<div class="challenge-eta">${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}</div>` : ''}
-      </div>
-
-      <div class="challenge-controls">
-        <button class="action-card primary" id="ch-toggle">
-          <div class="action-card-icon">
-            ${c.playing ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>'}
-          </div>
-          <div class="action-card-text">
-            <div class="action-card-title">${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}</div>
-            <div class="action-card-sub">${t('challenge_select_hint')}</div>
-          </div>
-        </button>
-
-        ${c.playing ? `
-          <div class="live-speed">
-            <div class="live-speed-label">
-              <span>${t('play_speed')}</span>
-              <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
+    ${hasSelection ? (() => {
+      // === Nouveau design : orbe (lune) avec progression circulaire ===
+      const RING_R = 110;
+      const RING_C = 2 * Math.PI * RING_R;
+      const ringOffset = RING_C * (1 - Math.min(100, pct) / 100);
+      const playIconSvg = c.playing
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>';
+      return `
+        <div class="challenge-orb-wrap">
+          ${c.playing ? `
+            <div class="challenge-eta-top" id="ch-eta-top">
+              ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
             </div>
-            <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
-          </div>
-        ` : ''}
+          ` : ''}
 
-        <!-- AJOUT MANUEL compact : label mini + boutons + input inline sur une ligne -->
-        <div class="manual-add-wrap">
-          <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
-          <div class="manual-add-row">
-            <button class="manual-add-btn" data-add="1">+1</button>
-            <button class="manual-add-btn" data-add="10">+10</button>
-            <button class="manual-add-btn" data-add="50">+50</button>
-            <button class="manual-add-btn" data-add="100">+100</button>
-            <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
-            <button class="manual-add-go" id="ch-manual-go">+</button>
+          <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
+                  aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
+            <svg class="orb-ring" viewBox="0 0 240 240">
+              <defs>
+                <linearGradient id="orbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--accent)" />
+                  <stop offset="100%" stop-color="var(--accent-light, var(--accent))" />
+                </linearGradient>
+              </defs>
+              <circle class="orb-track" cx="120" cy="120" r="${RING_R}" fill="none" />
+              <circle class="orb-progress" cx="120" cy="120" r="${RING_R}" fill="none"
+                      stroke="url(#orbGrad)"
+                      stroke-dasharray="${RING_C.toFixed(2)}"
+                      stroke-dashoffset="${ringOffset.toFixed(2)}"
+                      transform="rotate(-90 120 120)" />
+            </svg>
+            <div class="orb-content">
+              <div class="orb-count">${c.count.toLocaleString('fr-FR')}</div>
+              <div class="orb-target">/ ${c.target.toLocaleString('fr-FR')}</div>
+              <div class="orb-play-icon">${playIconSvg}</div>
+              <div class="orb-pct">${pct.toFixed(1)}%</div>
+            </div>
+          </button>
+
+          <div class="orb-info">
+            <div class="orb-remaining"><strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}</div>
+            ${c.startedAt ? `<div class="orb-started">${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</div>` : ''}
+          </div>
+
+          ${c.playing ? `
+            <div class="live-speed" style="width:100%; max-width: 320px">
+              <div class="live-speed-label">
+                <span>${t('play_speed')}</span>
+                <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
+              </div>
+              <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
+            </div>
+          ` : ''}
+
+          <!-- AJOUT MANUEL compact -->
+          <div class="manual-add-wrap" style="width:100%; max-width: 360px">
+            <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
+            <div class="manual-add-row">
+              <button class="manual-add-btn" data-add="1">+1</button>
+              <button class="manual-add-btn" data-add="10">+10</button>
+              <button class="manual-add-btn" data-add="50">+50</button>
+              <button class="manual-add-btn" data-add="100">+100</button>
+              <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
+              <button class="manual-add-go" id="ch-manual-go">+</button>
+            </div>
           </div>
         </div>
-      </div>
-    ` : ''}
+      `;
+    })() : ''}
 
     ${hasSelection ? `
       <button class="ch-settings-mini" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
@@ -5374,8 +5551,6 @@ function startChallenge() {
   startMusic('challenge');
   playChallenge();
   render();
-  // Mode nuit indépendant pour le Challenge
-  if (cfgFor('challenge').nightMode) startNightTimer('challenge');
   toast(t('challenge_started'));
 }
 
@@ -5424,8 +5599,8 @@ function playChallenge() {
   audio.src = aff.recording;
   audio.volume = cfg.affVolume;
   audio.playbackRate = cfg.playbackRate;
-  // Mode nuit Challenge (indépendant du mode nuit Player)
-  applyNightMode(cfg.nightMode === true);
+  // Pas de mode nuit sur le Challenge (voix normale, pas d'EQ)
+  applyNightMode(false);
   audio.play().catch(() => { toast(t('toast_play_error')); stopChallenge(); });
   challengeAudio = audio;
 
@@ -5460,15 +5635,8 @@ function handleChallengeEnd(aff, validAffs) {
   // Toasts "Bravo" à chaque palier atteint
   celebrateMilestoneIfReached(oldCount, newCount);
 
-  // Update UI
-  const el = document.querySelector('.challenge-count-main');
-  if (el) el.textContent = state.challenge.count.toLocaleString();
-  const fill = document.querySelector('.challenge-progress-fill');
-  if (fill) fill.style.width = Math.min(100, (state.challenge.count / state.challenge.target) * 100) + '%';
-  const pctEl = document.querySelector('.challenge-progress-info span:first-child');
-  if (pctEl) pctEl.textContent = ((state.challenge.count / state.challenge.target) * 100).toFixed(1) + '%';
-  const remEl = document.querySelector('.challenge-progress-info span:last-child');
-  if (remEl) remEl.textContent = Math.max(0, state.challenge.target - state.challenge.count).toLocaleString() + ' ' + t('challenge_remaining');
+  // Update UI (nouveau orb)
+  updateChallengeOrbUI();
   updateChallengeEtaLive();
 
   if (state.challenge.count >= state.challenge.target) {
