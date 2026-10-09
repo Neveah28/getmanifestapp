@@ -656,6 +656,12 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 .page.active { display: block; animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Page Challenge en mode "sélection faite" : pas de scroll, tout rentre */
+#page-challenge.active.ch-selected {
+  overflow: hidden;
+  max-height: calc(100vh - 110px);
+}
+
 /* ===================================================
    PLAYER - plein écran, pas de scroll
    =================================================== */
@@ -2575,8 +2581,61 @@ body.night-mode .orb-ring {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin: 10px 0 12px;
+  gap: 16px;
+  margin: 14px 0 18px;
+}
+
+/* === Aff en cours : titre affiché seul, glow fade in/out à chaque changement === */
+.orb-current-aff {
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-strong);
+  padding: 4px 20px;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 420px;
+  transition: opacity 0.35s ease-out, filter 0.35s ease-out;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.orb-current-aff.glowing {
+  text-shadow:
+    0 0 20px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 40px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.orb-current-aff.fade-out {
+  opacity: 0;
+  filter: blur(5px);
+}
+.orb-current-aff.fade-in {
+  animation: aff-glow-in 1.1s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@keyframes aff-glow-in {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    text-shadow:
+      0 0 60px var(--accent),
+      0 0 20px color-mix(in srgb, var(--accent) 80%, transparent);
+  }
+  45% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow:
+      0 0 35px color-mix(in srgb, var(--accent) 70%, transparent),
+      0 0 15px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow:
+      0 0 20px color-mix(in srgb, var(--accent) 45%, transparent),
+      0 0 40px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
 }
 
 /* Ligne meta constante au-dessus de l'orbe (jamais vide → pas de décalage) */
@@ -2587,6 +2646,11 @@ body.night-mode .orb-ring {
   letter-spacing: 0.2px;
   text-align: center;
   padding: 0 10px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 .orb-meta-line strong {
   color: var(--text-strong);
@@ -2597,6 +2661,26 @@ body.night-mode .orb-ring {
   color: var(--text-faint);
   font-style: italic;
   font-weight: 500;
+}
+.ch-edit-affs-mini {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--accent);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s;
+  margin-left: 2px;
+}
+.ch-edit-affs-mini:active {
+  background: var(--accent);
+  color: var(--btn-text);
+  transform: scale(0.9);
 }
 
 .challenge-eta-top {
@@ -3095,7 +3179,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.8.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.9.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -4370,35 +4454,41 @@ function startAmbiance(id, musicVol) {
 
 // === BIP (mode silencieux) ===
 // Génère un bip court. Si isChange=true, double bip (indique changement d'aff)
+// AudioContext global pour les bips : évite les pops/clicks qu'on avait en recréant/fermant
+let beepCtx = null;
 function playBeep(isChange, affVol) {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
-    const ctx = new Ctx();
+    if (!beepCtx) beepCtx = new Ctx();
+    if (beepCtx.state === 'suspended') beepCtx.resume();
+    const ctx = beepCtx;
     const baseVol = (affVol !== undefined) ? affVol : state.settings.affVolume;
-    const vol = baseVol * 0.3;
-    const now = ctx.currentTime;
+    const vol = Math.max(0.001, baseVol * 0.25); // Jamais 0 brut
+    const now = ctx.currentTime + 0.005; // Petit buffer pour éviter le clic au départ
     const makeBeep = (startAt, freq = 880) => {
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.value = freq;
-      g.gain.setValueAtTime(0, startAt);
-      g.gain.linearRampToValueAtTime(vol, startAt + 0.01);
-      g.gain.linearRampToValueAtTime(0, startAt + 0.15);
+      osc.frequency.setValueAtTime(freq, startAt);
+      // Enveloppe douce pour éliminer les clics : attack 25ms, sustain, release 50ms
+      g.gain.setValueAtTime(0.0001, startAt);
+      g.gain.exponentialRampToValueAtTime(vol, startAt + 0.025);
+      g.gain.setValueAtTime(vol, startAt + 0.12);
+      g.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.19);
       osc.connect(g); g.connect(ctx.destination);
       osc.start(startAt);
-      osc.stop(startAt + 0.18);
+      osc.stop(startAt + 0.21);
+      // Nettoyage automatique quand l'oscillateur termine
+      osc.onended = () => { try { osc.disconnect(); g.disconnect(); } catch(e){} };
     };
     if (isChange) {
-      // Double bip : 2 notes différentes qui marquent le changement d'aff
       makeBeep(now, 880);
-      makeBeep(now + 0.18, 1100);
+      makeBeep(now + 0.24, 1100);
     } else {
-      // Simple bip
       makeBeep(now, 880);
     }
-    setTimeout(() => { try { ctx.close(); } catch(e){} }, 500);
+    // Ne JAMAIS fermer beepCtx — ça causait les pops
   } catch(e) { console.warn('beep error', e); }
 }
 
@@ -4599,6 +4689,25 @@ function updateChallengeEtaLive() {
     .filter(Boolean);
   const remaining = Math.max(0, c.target - c.count);
   el.innerHTML = estimateChallengeTime(selectedAffs, remaining, cfg.playbackRate, cfg.pauseBetween);
+}
+
+// Anime le titre de l'aff courante : fade out → changement → fade in avec glow
+// Appelé quand une NOUVELLE aff démarre dans le Challenge
+function animateCurrentAff(title) {
+  const el = document.getElementById('orb-current-aff');
+  if (!el) return;
+  // Si c'est le même texte, on ne fait rien (évite les flashes inutiles)
+  if (el.textContent.trim() === title.trim()) return;
+  el.classList.remove('fade-in');
+  el.classList.add('fade-out');
+  setTimeout(() => {
+    el.textContent = title;
+    el.classList.remove('fade-out');
+    // Force reflow pour relancer l'animation
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+    setTimeout(() => el.classList.remove('fade-in'), 1200);
+  }, 350);
 }
 
 // Met à jour les éléments de l'orbe (compteur, pct, remaining, ring)
@@ -5138,29 +5247,14 @@ function renderChallenge() {
   // IDs déjà sélectionnés (pour pré-cocher en mode édition)
   const preCheckedIds = new Set(c.affirmationIds || []);
 
-  document.getElementById('page-challenge').innerHTML = `
+  const pageEl = document.getElementById('page-challenge');
+  pageEl.classList.toggle('ch-selected', hasSelection);
+  pageEl.innerHTML = `
     ${hasSelection ? '' : `<p class="sublabel" style="margin-bottom:14px; max-width: 440px">${t('challenge_desc')}</p>`}
 
-    <!-- SÉLECTION DES AFFIRMATIONS -->
-    <div class="challenge-aff-card">
-      ${hasSelection ? `
-        <div class="challenge-aff-header">
-          <div class="challenge-aff-label">${t('challenge_this_aff')} (${selectedAffs.length})</div>
-          <button class="ch-edit-affs" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-            </svg>
-          </button>
-        </div>
-        <div class="challenge-aff-list">
-          ${selectedAffs.map((a, i) => `
-            <div class="challenge-aff-item">
-              <span class="challenge-aff-dot">${i+1}</span>
-              <span class="challenge-aff-name">${escapeHtml(a.title)}</span>
-            </div>
-          `).join('')}
-        </div>
-      ` : `
+    <!-- SÉLECTION DES AFFIRMATIONS (seulement en mode édition ou pas de sélection) -->
+    ${!hasSelection ? `
+      <div class="challenge-aff-card">
         ${available.length > 0 ? `
           <div class="h3" style="margin-top:0">${t('challenge_select_prompt')}</div>
           <div class="aff-check-list">
@@ -5188,8 +5282,8 @@ function renderChallenge() {
           </div>
         </div>
         <button class="btn-primary" id="ch-create" disabled style="margin-top: 10px; opacity: 0.5">${t('ch_use_this')}</button>
-      `}
-    </div>
+      </div>
+    ` : ''}
 
     ${hasSelection ? (() => {
       // === Design orbe (lune) avec progression circulaire ===
@@ -5199,11 +5293,24 @@ function renderChallenge() {
       const playIconSvg = c.playing
         ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'
         : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>';
+      // L'aff courante dans la rotation
+      const curIdx = (c.currentIdx || 0) % selectedAffs.length;
+      const currentAff = selectedAffs[curIdx] || selectedAffs[0];
       return `
         <div class="challenge-orb-wrap">
-          <!-- Meta line : restantes + commencé le (constante — pas de décalage de l'orbe) -->
+          <!-- Aff en cours : titre affiché seul, glow fade à chaque changement -->
+          <div class="orb-current-aff ${c.playing ? 'glowing' : ''}" id="orb-current-aff">
+            ${escapeHtml(currentAff ? currentAff.title : '')}
+          </div>
+
+          <!-- Meta line : restantes + commencé le + bouton edit (constante) -->
           <div class="orb-meta-line">
             <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
+            <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </button>
           </div>
 
           <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
@@ -5692,6 +5799,12 @@ function playChallenge() {
   // L'affirmation courante selon currentIdx
   const idx = state.challenge.currentIdx % validAffs.length;
   const aff = validAffs[idx];
+
+  // Animation glow fade quand on commence une NOUVELLE aff (pas une répétition)
+  // On s'appuie sur currentRepeat === 0 : chaque passage par 0 marque une nouvelle aff
+  if ((state.challenge.currentRepeat || 0) === 0) {
+    animateCurrentAff(aff.title);
+  }
 
   const cfg = cfgFor('challenge');
 
