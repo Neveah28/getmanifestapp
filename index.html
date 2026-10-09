@@ -580,6 +580,11 @@ body.player-active {
   overflow: hidden;
   height: 100vh;
 }
+/* Pareil pour le challenge en mode "sélection faite" */
+body.ch-active {
+  overflow: hidden;
+  height: 100dvh;
+}
 
 .app {
   max-width: 500px;
@@ -672,28 +677,38 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   gap: 0;
   min-height: 0; /* permet aux enfants de rétrécir au lieu de forcer un overflow */
 }
-/* Groupes haut/centre/bas pour répartir avec space-between */
-.ch-top, .ch-bottom {
+/* Groupes haut/centre/bas pour répartir : ch-top et ch-bottom se partagent l'espace,
+   l'orbe reste au vrai centre vertical de l'écran */
+.ch-top {
+  flex: 1 0 0;  /* prend l'espace disponible au-dessus */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  justify-content: center;  /* aff en cours centrée verticalement dans son espace */
+  padding: 10px 0;
+  min-height: 0;
 }
 .ch-middle {
+  flex-shrink: 0;  /* orb hauteur fixe */
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 auto;
-  min-height: 180px;
 }
-.ch-top { padding-bottom: 4px; }
-.ch-bottom { padding-top: 4px; gap: 10px; }
+.ch-bottom {
+  flex: 1 0 0;  /* même espace que ch-top → orb au vrai centre */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;  /* contenu commence juste sous l'orbe */
+  gap: 10px;
+  padding-top: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
 
 /* Écran très court (iPhone SE etc.) : orbe plus petite + aff courante plus condensée */
 @media (max-height: 700px) {
   #page-challenge.active.ch-selected { height: calc(100dvh - 150px - env(safe-area-inset-bottom, 0px)); }
-  .ch-middle { min-height: 160px; }
   .challenge-orb { width: 200px; height: 200px; }
   .orb-count { font-size: 36px; }
   .orb-current-aff { min-height: 40px; font-size: 17px; padding: 2px 16px; }
@@ -3029,6 +3044,27 @@ body.night-mode .orb-ring {
   font-weight: 800;
   color: var(--accent);
 }
+/* Bloc Vitesse qui contient l'ETA en dessous du slider */
+.speed-eta-block { padding: 10px 14px; margin-top: 0; }
+.speed-eta-block .live-speed-label { margin-bottom: 6px; }
+.speed-eta-text {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  font-style: italic;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+}
+.speed-eta-text strong {
+  color: var(--accent);
+  font-weight: 800;
+  font-style: normal;
+}
+.speed-eta-text em {
+  font-style: italic;
+  color: var(--text-faint);
+}
 
 /* Divider "ou" dans challenge */
 .challenge-divider {
@@ -3287,7 +3323,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.11.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.11.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -3986,6 +4022,8 @@ function switchTab(tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + tab).classList.add('active');
   document.body.classList.toggle('player-active', tab === 'player');
+  // ch-active : no-scroll quand on est sur Challenge avec une sélection faite
+  document.body.classList.toggle('ch-active', tab === 'challenge' && (state.challenge.affirmationIds || []).some(id => state.affirmations.find(a => a.id === id && a.recording)) && !window.editingChallengeSelection);
   // scroll to top quand on change d'onglet
   window.scrollTo(0, 0);
   render();
@@ -5375,6 +5413,8 @@ function renderChallenge() {
 
   const pageEl = document.getElementById('page-challenge');
   pageEl.classList.toggle('ch-selected', hasSelection);
+  // body.ch-active pour couper le scroll global quand le challenge a une sélection
+  document.body.classList.toggle('ch-active', currentTab === 'challenge' && hasSelection);
   pageEl.innerHTML = `
     ${hasSelection ? '' : `<p class="sublabel" style="margin-bottom:14px; max-width: 440px">${t('challenge_desc')}</p>`}
 
@@ -5458,27 +5498,29 @@ function renderChallenge() {
             </button>
           </div>
 
-          <!-- BAS : meta line + ETA/slider (quand play) + ajout manuel -->
+          <!-- BAS : meta line (sous l'orbe, proche) + bloc vitesse+ETA + ajout manuel -->
           <div class="ch-bottom">
+            <!-- Meta ligne juste sous l'orbe : restantes · commencé le · edit -->
             <div class="orb-meta-line">
               <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
               <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                 </svg>
-              </button>
+            </button>
             </div>
 
+            <!-- Bloc Vitesse qui contient AUSSI l'ETA (seulement quand ça joue) -->
             ${c.playing ? `
-              <div class="challenge-eta-top" id="ch-eta-top">
-                ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
-              </div>
-              <div class="live-speed" style="width:100%; max-width: 320px">
+              <div class="live-speed speed-eta-block" style="width:100%; max-width: 340px">
                 <div class="live-speed-label">
                   <span>${t('play_speed')}</span>
                   <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
                 </div>
                 <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
+                <div class="speed-eta-text" id="ch-eta-top">
+                  ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
+                </div>
               </div>
             ` : ''}
 
@@ -6547,7 +6589,7 @@ function renderSettings() {
       </a>
       <div class="contact-signature-wrap">
         <div class="contact-bisous">${t('contact_bisous')}</div>
-        <div class="contact-signature">Perrine K.</div>
+        <div class="contact-signature">Perrine</div>
       </div>
     </div>
 
