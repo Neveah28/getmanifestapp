@@ -1,0 +1,12 @@
+{
+  "name": "getmanifestapp",
+  "version": "1.12.0",
+  "description": "GetManifest ✦ — PWA de manifestation (affirmations en boucle avec ta propre voix)",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0"
+  }
+}
