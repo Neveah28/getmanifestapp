@@ -677,10 +677,10 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   gap: 0;
   min-height: 0; /* permet aux enfants de rétrécir au lieu de forcer un overflow */
 }
-/* Groupes haut/centre/bas pour répartir : ch-top et ch-bottom se partagent l'espace,
-   l'orbe reste au vrai centre vertical de l'écran */
+/* Groupes haut/centre/bas : l'orbe est au centre MAIS vers le HAUT.
+   Pour ça ch-top prend moins d'espace que ch-bottom (ratio ~0.6 vs 1) */
 .ch-top {
-  flex: 1 0 0;  /* prend l'espace disponible au-dessus */
+  flex: 0.6 0 0;  /* prend ~37% de l'espace restant */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -695,7 +695,7 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   justify-content: center;
 }
 .ch-bottom {
-  flex: 1 0 0;  /* même espace que ch-top → orb au vrai centre */
+  flex: 1 0 0;  /* prend ~63% de l'espace restant → l'orbe se trouve vers le haut */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2708,8 +2708,10 @@ body.night-mode .orb-ring {
   margin: 14px 0 18px;
 }
 
-/* === Aff en cours : titre affiché seul, glow fade in/out à chaque changement === */
+/* === Aff en cours : titre affiché seul, avec un gros halo rose derrière === */
 .orb-current-aff {
+  position: relative;
+  z-index: 1;
   font-size: 19px;
   font-weight: 700;
   text-align: center;
@@ -2723,12 +2725,35 @@ body.night-mode .orb-ring {
   justify-content: center;
   max-width: 420px;
   transition: opacity 0.35s ease-out, filter 0.35s ease-out;
-  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+/* Halo rose diffus derrière le texte, qui respire doucement */
+.orb-current-aff::before {
+  content: '';
+  position: absolute;
+  inset: -24px -50px;
+  background: radial-gradient(ellipse,
+    color-mix(in srgb, var(--accent) 32%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 15%, transparent) 35%,
+    color-mix(in srgb, var(--accent) 5%, transparent) 60%,
+    transparent 80%);
+  z-index: -1;
+  filter: blur(12px);
+  border-radius: 50%;
+  animation: aff-halo-pulse 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes aff-halo-pulse {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
 }
 .orb-current-aff.glowing {
   text-shadow:
-    0 0 20px color-mix(in srgb, var(--accent) 45%, transparent),
-    0 0 40px color-mix(in srgb, var(--accent) 20%, transparent);
+    0 0 22px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 44px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.orb-current-aff.glowing::before {
+  animation: aff-halo-pulse 2.4s ease-in-out infinite;
 }
 .orb-current-aff.fade-out {
   opacity: 0;
@@ -3323,7 +3348,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.11.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.11.3';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
