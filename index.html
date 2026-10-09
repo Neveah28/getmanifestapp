@@ -2831,6 +2831,29 @@ body.night-mode .orb-ring {
   transform: scale(0.9);
 }
 
+/* Bouton Paramètres en bas de la page Challenge (remplace celui du haut) */
+.ch-settings-bottom {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+.ch-settings-bottom:active {
+  transform: scale(0.95);
+  background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+}
+
 .challenge-eta-top {
   text-align: center;
   font-size: 12.5px;
@@ -3335,9 +3358,14 @@ body.night-mode .orb-ring {
   </button>
   <button class="tab" data-tab="settings">
     <span class="tab-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      <!-- Sliders horizontaux (ajustements/réglages) : différent de l'engrenage -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+        <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+        <line x1="1" y1="14" x2="7" y2="14"/>
+        <line x1="9" y1="8" x2="15" y2="8"/>
+        <line x1="17" y1="16" x2="23" y2="16"/>
       </svg>
     </span>
     <span class="tab-label">Régl.</span>
@@ -3348,7 +3376,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.11.4';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.12.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -5297,6 +5325,21 @@ function openChallengeSheet() {
         <div class="ps-sub">${t('silent_mode_sub')}</div>
       </div>
 
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">✋</span>
+          <span class="ps-label">${t('challenge_manual_add')}</span>
+        </div>
+        <div class="manual-add-row" style="margin-top:4px">
+          <button class="manual-add-btn" data-cs-add="1">+1</button>
+          <button class="manual-add-btn" data-cs-add="10">+10</button>
+          <button class="manual-add-btn" data-cs-add="50">+50</button>
+          <button class="manual-add-btn" data-cs-add="100">+100</button>
+          <input type="number" id="cs-manual-input" placeholder="n" min="1" max="10000" />
+          <button class="manual-add-go" id="cs-manual-go">+</button>
+        </div>
+      </div>
+
       <div class="ps-row ps-row-last">
         <div class="ps-head">
           <span class="ps-icon">🔄</span>
@@ -5309,6 +5352,26 @@ function openChallengeSheet() {
     </div>
   `;
   document.body.appendChild(overlay);
+
+  // Handler pour l'ajout manuel dans la sheet (relaie à addToCountFromSheet qu'on expose)
+  const addFromSheet = (n) => {
+    if (typeof window.chAddToCount === 'function') {
+      window.chAddToCount(n);
+      // Rafraîchir la sheet pour montrer le nouveau total si on y reste
+      overlay.remove();
+      openChallengeSheet();
+    }
+  };
+  overlay.querySelectorAll('[data-cs-add]').forEach(b => {
+    b.addEventListener('click', () => addFromSheet(parseInt(b.dataset.csAdd, 10)));
+  });
+  document.getElementById('cs-manual-go')?.addEventListener('click', () => {
+    const input = document.getElementById('cs-manual-input');
+    const n = parseInt(input.value, 10);
+    if (isNaN(n) || n < 1) return;
+    input.value = '';
+    addFromSheet(n);
+  });
 
   // Binding des sliders challenge (clés ch* indépendantes)
   const bindRange = (id, key, format, extra) => {
@@ -5547,30 +5610,19 @@ function renderChallenge() {
               </div>
             </div>
 
-            <div class="manual-add-wrap" style="width:100%; max-width: 360px">
-              <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
-              <div class="manual-add-row">
-                <button class="manual-add-btn" data-add="1">+1</button>
-                <button class="manual-add-btn" data-add="10">+10</button>
-                <button class="manual-add-btn" data-add="50">+50</button>
-                <button class="manual-add-btn" data-add="100">+100</button>
-                <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
-                <button class="manual-add-go" id="ch-manual-go">+</button>
-              </div>
-            </div>
+            <!-- Bouton Paramètres en BAS de la page Challenge -->
+            <button class="ch-settings-bottom" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>${t('challenge_sheet_title')}</span>
+            </button>
           </div>
         </div>
       `;
     })() : ''}
 
-    ${hasSelection ? `
-      <button class="ch-settings-mini" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
-    ` : ''}
   `;
 
   // ====== HANDLERS ======
@@ -5668,6 +5720,7 @@ function renderChallenge() {
   });
 
   // Ajout manuel (compteur à main) : compte dans le challenge + stats globales
+  // Expose aussi globalement pour que la bottom sheet puisse l'appeler
   const addToCount = (n) => {
     if (!n || n < 1) return;
     const oldCount = state.challenge.count;
@@ -5714,16 +5767,8 @@ function renderChallenge() {
     }
     render();
   };
-  document.querySelectorAll('[data-add]').forEach(btn => {
-    btn.addEventListener('click', () => addToCount(parseInt(btn.dataset.add, 10)));
-  });
-  document.getElementById('ch-manual-go')?.addEventListener('click', () => {
-    const input = document.getElementById('ch-manual-input');
-    const n = parseInt(input.value, 10);
-    if (isNaN(n) || n < 1) return;
-    input.value = '';
-    addToCount(n);
-  });
+  // Expose pour la bottom sheet (bouton ✋ dans les paramètres)
+  window.chAddToCount = addToCount;
 
   // Live speed slider pendant lecture (modifie uniquement la vitesse CHALLENGE)
   document.getElementById('ch-live-speed')?.addEventListener('input', (e) => {
