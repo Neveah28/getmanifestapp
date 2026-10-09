@@ -2234,6 +2234,33 @@ body.night-mode .orb-ring {
   color: var(--text-dim);
   margin-bottom: 6px;
 }
+.challenge-aff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.challenge-aff-header .challenge-aff-label {
+  margin-bottom: 0;
+}
+.ch-edit-affs {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.ch-edit-affs:active {
+  background: var(--accent);
+  color: var(--btn-text);
+  transform: scale(0.9);
+}
 .challenge-aff-title {
   font-size: 18px;
   font-weight: 700;
@@ -4293,7 +4320,14 @@ function renderChallenge() {
     <!-- SÉLECTION DES AFFIRMATIONS -->
     <div class="challenge-aff-card">
       ${hasSelection ? `
-        <div class="challenge-aff-label">${t('challenge_this_aff')} (${selectedAffs.length})</div>
+        <div class="challenge-aff-header">
+          <div class="challenge-aff-label">${t('challenge_this_aff')} (${selectedAffs.length})</div>
+          <button class="ch-edit-affs" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </button>
+        </div>
         <div class="challenge-aff-list">
           ${selectedAffs.map((a, i) => `
             <div class="challenge-aff-item">
@@ -4302,7 +4336,6 @@ function renderChallenge() {
             </div>
           `).join('')}
         </div>
-        <button class="btn-secondary" id="ch-change-aff" style="margin-top:12px">${t('challenge_change_aff')}</button>
       ` : `
         ${available.length > 0 ? `
           <div class="h3" style="margin-top:0">${t('challenge_select_prompt')}</div>
@@ -4432,14 +4465,19 @@ function renderChallenge() {
   });
 
   // Confirmer la sélection multiple
+  // On NE reset PAS le count (préserve la progression). Pour reset : bouton "Reset le challenge"
   confirmBtn?.addEventListener('click', () => {
     const picked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
     if (picked.length === 0) return;
+    const isFirstSelection = (state.challenge.affirmationIds || []).length === 0 && state.challenge.count === 0;
     state.challenge.affirmationIds = picked;
     state.challenge.currentIdx = 0;
-    state.challenge.count = 0;
-    state.challenge.startedAt = Date.now();
+    // Only set startedAt if it's a brand new challenge (never started before)
+    if (isFirstSelection || !state.challenge.startedAt) {
+      state.challenge.startedAt = Date.now();
+    }
     saveState();
+    toast('Sélection enregistrée ✓');
     render();
   });
 
@@ -5405,6 +5443,8 @@ function importData(e) {
       if (data.affirmations) state.affirmations = data.affirmations;
       if (data.settings) state.settings = Object.assign(defaultState().settings, data.settings);
       if (data.stats) state.stats = data.stats;
+      // Patch partiel du challenge (ex: restaurer le compteur sans toucher aux stats)
+      if (data.challenge) state.challenge = Object.assign(state.challenge, data.challenge);
       saveState();
       applyTheme();
       applyLangTabs();
