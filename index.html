@@ -1533,6 +1533,53 @@ body.player-active .mini-header { display: none; }
 }
 .setting-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 500; line-height: 1.4; }
 .setting-val { color: var(--accent); font-weight: 800; font-size: 18px; }
+/* Sous-texte dans une ps-row (description d'un toggle) */
+.ps-sub {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  padding-left: 34px;
+  margin-top: -4px;
+}
+/* Toggle switch moderne */
+.ps-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.ps-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.ps-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--line);
+  border-radius: 24px;
+  transition: 0.2s;
+}
+.ps-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.ps-switch input:checked + .ps-switch-slider {
+  background: var(--accent);
+}
+.ps-switch input:checked + .ps-switch-slider:before {
+  transform: translateX(20px);
+}
 
 input[type="range"] {
   -webkit-appearance: none;
@@ -2231,84 +2278,81 @@ body.night-mode .orb-ring {
   min-width: 0;
 }
 
-/* AJOUT MANUEL (compteur à main) */
+/* AJOUT MANUEL (compteur à main) - compact */
 .manual-add-wrap {
-  margin-top: 16px;
-  padding: 14px;
+  margin-top: 12px;
+  padding: 10px 12px;
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 12px;
 }
 .manual-add-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-strong);
-}
-.manual-add-sub {
   font-size: 11px;
+  font-weight: 700;
   color: var(--text-dim);
-  margin-top: 2px;
-  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
-.manual-add-btns {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 8px;
+.manual-add-row {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
 }
 .manual-add-btn {
+  flex: 1;
+  min-width: 0;
   background: var(--card-bg);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   color: var(--accent);
-  padding: 10px 4px;
-  border-radius: 10px;
+  padding: 7px 2px;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.15s;
 }
 .manual-add-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
   background: var(--accent);
   color: var(--btn-text);
 }
-.manual-add-custom {
-  display: flex;
-  gap: 6px;
-}
-.manual-add-custom input {
-  flex: 1;
+.manual-add-row input[type="number"] {
+  width: 42px;
+  flex-shrink: 0;
   background: var(--card-bg);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   color: var(--text);
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 7px 6px;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   outline: none;
+  text-align: center;
   -moz-appearance: textfield;
 }
-.manual-add-custom input::-webkit-outer-spin-button,
-.manual-add-custom input::-webkit-inner-spin-button {
+.manual-add-row input[type="number"]::-webkit-outer-spin-button,
+.manual-add-row input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.manual-add-custom input:focus { border-color: var(--accent); }
+.manual-add-row input[type="number"]:focus { border-color: var(--accent); }
 .manual-add-go {
   background: var(--accent);
   color: var(--btn-text);
   border: none;
-  width: 44px;
-  border-radius: 10px;
+  width: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.15s;
 }
-.manual-add-go:active { transform: scale(0.95); }
+.manual-add-go:active { transform: scale(0.9); }
 
 .challenge-aff-card {
   background: var(--card-bg);
@@ -2401,27 +2445,21 @@ body.night-mode .orb-ring {
 }
 .challenge-eta {
   text-align: center;
-  font-size: 14px;
-  color: #fff;
-  margin-top: 14px;
-  padding: 12px 16px;
-  font-weight: 700;
-  line-height: 1.5;
-  background: linear-gradient(135deg, var(--accent-light), var(--accent));
-  border-radius: 14px;
-  box-shadow: 0 4px 16px var(--accent-glow);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 10px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 .challenge-eta strong {
-  color: #fff;
-  font-weight: 900;
-  font-size: 17px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  color: var(--accent);
+  font-weight: 800;
+  font-style: normal;
 }
 .challenge-eta em {
   font-style: italic;
-  font-size: 13px;
-  color: rgba(255,255,255,0.9);
-  font-weight: 600;
+  color: var(--text-faint);
 }
 
 .challenge-progress-info {
@@ -2773,7 +2811,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.5.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.6.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -3178,6 +3216,9 @@ Object.assign(TRANSLATIONS.fr, {
   // Player bottom sheet (réglages dans player)
   player_sheet_title: 'Réglages de lecture',
   player_sheet_btn: 'Réglages',
+  challenge_sheet_title: 'Réglages du challenge',
+  silent_mode: 'Mode silencieux',
+  silent_mode_sub: 'Un bip au lieu de la voix (double bip au changement d\'aff)',
   // Share
   share: 'Partager',
   share_playlist: 'Partager cette playlist',
@@ -3266,6 +3307,9 @@ Object.assign(TRANSLATIONS.en, {
   ch_use_this: 'Use this affirmation',
   player_sheet_title: 'Playback settings',
   player_sheet_btn: 'Settings',
+  challenge_sheet_title: 'Challenge settings',
+  silent_mode: 'Silent mode',
+  silent_mode_sub: 'A beep instead of your voice (double beep on aff change)',
   share: 'Share',
   share_playlist: 'Share this playlist',
   share_sub: 'Send the file to a friend so they can import your affirmations.',
@@ -3340,6 +3384,7 @@ function defaultState() {
       darkMode: true,
       nightMode: false,       // Mode SATS pour s'endormir
       nightTimer: 60,         // Minutes avant arrêt auto (60, 120, 240, 480 = 1h/2h/4h/8h)
+      silentMode: false,      // Mode silencieux : remplace la voix par un bip (double bip au changement d'aff)
     },
     challenge: {
       affirmationIds: [],   // jusqu'à 4 affirmations qui tournent en boucle
@@ -3360,6 +3405,7 @@ function defaultState() {
       bestDay: { date: null, plays: 0 },
       streak: 0,
       lastActiveDay: null,
+      completedChallenges: [], // [{ target, startedAt, completedAt }]
     }
   };
 }
@@ -3860,6 +3906,24 @@ function playNext() {
   const aff = playerState.queue[playerState.currentIdx];
   if (!aff) return;
 
+  const npEl = document.getElementById('now-playing');
+  if (npEl) npEl.textContent = aff.title;
+  const stEl = document.getElementById('np-state');
+  if (stEl) stEl.textContent = t('playing');
+
+  // Mode silencieux : bip au lieu de la voix
+  if (state.settings.silentMode) {
+    // Détecte si c'est un changement d'aff (currentRepeat remis à 0 = nouvelle aff)
+    const isChange = (playerState.currentRepeat || 0) === 0;
+    playBeep(isChange);
+    // Simuler onended après un délai court
+    setTimeout(() => {
+      if (!playerState.playing) return;
+      handlePlayNextEnd(aff);
+    }, isChange ? 500 : 300);
+    return;
+  }
+
   audio.src = aff.recording;
   audio.volume = state.settings.affVolume;
   audio.playbackRate = state.settings.playbackRate;
@@ -3867,48 +3931,49 @@ function playNext() {
   applyNightMode(state.settings.nightMode === true);
   audio.play().catch(e => { toast(t('toast_play_error')); stopPlayback(); });
 
-  const npEl = document.getElementById('now-playing');
-  if (npEl) npEl.textContent = aff.title;
-  const stEl = document.getElementById('np-state');
-  if (stEl) stEl.textContent = t('playing');
-
   audio.onended = () => {
     if (!playerState.playing) return;
-
-    playerState.totalPlayed++;
-
-    // Track play stats pour l'affirmation qu'on vient de terminer
-    trackPlay(aff);
-
-    // Gestion des répétitions : chaque aff peut être répétée N fois de suite
-    const repeatTarget = aff.repeatCount || 1;
-    if (!playerState.currentRepeat) playerState.currentRepeat = 0;
-    playerState.currentRepeat++;
-    if (playerState.currentRepeat < repeatTarget) {
-      // Rejouer la même aff (ne pas avancer l'index)
-    } else {
-      playerState.currentRepeat = 0;  // Reset pour la prochaine aff
-      playerState.currentIdx++;
-      if (playerState.currentIdx >= playerState.queue.length) {
-        playerState.currentIdx = 0;
-        playerState.loopCount++;
-        trackLoop();
-      }
-    }
-
-    saveState();
-    const lc = document.getElementById('loop-counter');
-    if (lc) lc.textContent = playerState.loopCount;
-    const tc = document.getElementById('total-counter');
-    if (tc) tc.textContent = playerState.totalPlayed;
-
-    const stEl2 = document.getElementById('np-state');
-    if (stEl2) stEl2.textContent = t('pause_wait', { s: state.settings.pauseBetween });
-    playerState.pauseTimeout = setTimeout(() => {
-      if (!playerState.playing) return;
-      playNext();
-    }, state.settings.pauseBetween * 1000);
+    handlePlayNextEnd(aff);
   };
+}
+
+// Extrait la logique de fin de lecture pour la partager entre audio et bip
+function handlePlayNextEnd(aff) {
+  if (!playerState.playing) return;
+
+  playerState.totalPlayed++;
+
+  // Track play stats pour l'affirmation qu'on vient de terminer
+  trackPlay(aff);
+
+  // Gestion des répétitions : chaque aff peut être répétée N fois de suite
+  const repeatTarget = aff.repeatCount || 1;
+  if (!playerState.currentRepeat) playerState.currentRepeat = 0;
+  playerState.currentRepeat++;
+  if (playerState.currentRepeat < repeatTarget) {
+    // Rejouer la même aff (ne pas avancer l'index)
+  } else {
+    playerState.currentRepeat = 0;  // Reset pour la prochaine aff
+    playerState.currentIdx++;
+    if (playerState.currentIdx >= playerState.queue.length) {
+      playerState.currentIdx = 0;
+      playerState.loopCount++;
+      trackLoop();
+    }
+  }
+
+  saveState();
+  const lc = document.getElementById('loop-counter');
+  if (lc) lc.textContent = playerState.loopCount;
+  const tc = document.getElementById('total-counter');
+  if (tc) tc.textContent = playerState.totalPlayed;
+
+  const stEl2 = document.getElementById('np-state');
+  if (stEl2) stEl2.textContent = t('pause_wait', { s: state.settings.pauseBetween });
+  playerState.pauseTimeout = setTimeout(() => {
+    if (!playerState.playing) return;
+    playNext();
+  }, state.settings.pauseBetween * 1000);
 }
 
 // ============================================================
@@ -3951,6 +4016,62 @@ function startAmbiance(id) {
     musicFileAudio.volume = state.settings.musicVolume * 0.5;
     musicFileAudio.play().catch(e => console.warn('music file play error', e));
   } catch(e) { console.warn('ambiance error', e); }
+}
+
+// === BIP (mode silencieux) ===
+// Génère un bip court. Si isChange=true, double bip (indique changement d'aff)
+function playBeep(isChange) {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const vol = state.settings.affVolume * 0.3;
+    const now = ctx.currentTime;
+    const makeBeep = (startAt, freq = 880) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, startAt);
+      g.gain.linearRampToValueAtTime(vol, startAt + 0.01);
+      g.gain.linearRampToValueAtTime(0, startAt + 0.15);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(startAt);
+      osc.stop(startAt + 0.18);
+    };
+    if (isChange) {
+      // Double bip : 2 notes différentes qui marquent le changement d'aff
+      makeBeep(now, 880);
+      makeBeep(now + 0.18, 1100);
+    } else {
+      // Simple bip
+      makeBeep(now, 880);
+    }
+    setTimeout(() => { try { ctx.close(); } catch(e){} }, 500);
+  } catch(e) { console.warn('beep error', e); }
+}
+
+// Toast de félicitations à chaque palier (10K, 20K, 30K, 40K, 50K)
+function celebrateMilestoneIfReached(oldCount, newCount) {
+  const milestones = [10000, 20000, 30000, 40000, 50000];
+  for (const m of milestones) {
+    if (oldCount < m && newCount >= m) {
+      toast(`👏 Bravo ! ${m.toLocaleString('fr-FR')} affirmations ✨`);
+      break;  // Un seul milestone par incrément
+    }
+  }
+}
+
+// Enregistre la complétion d'un challenge dans les stats
+function recordChallengeCompletion() {
+  if (!state.stats.completedChallenges) state.stats.completedChallenges = [];
+  state.stats.completedChallenges.push({
+    target: state.challenge.target,
+    startedAt: state.challenge.startedAt,
+    completedAt: Date.now(),
+    affirmationIds: [...(state.challenge.affirmationIds || [])],
+  });
+  saveState();
 }
 
 function stopAmbiance() {
@@ -4245,7 +4366,7 @@ function previewAff(aff) {
 }
 
 // ============================================================
-// PLAYER SETTINGS BOTTOM SHEET
+// PLAYER / AFFIRMATIONS SETTINGS BOTTOM SHEET
 // ============================================================
 function openPlayerSheet() {
   const s = state.settings;
@@ -4295,21 +4416,6 @@ function openPlayerSheet() {
 
       <div class="ps-row">
         <div class="ps-head">
-          <span class="ps-icon">🎯</span>
-          <span class="ps-label">Objectif Challenge</span>
-          <span class="ps-val">${(state.challenge.target/1000)}K</span>
-        </div>
-        <div class="target-chips">
-          ${[10000, 20000, 30000, 40000, 50000].map(n => `
-            <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-ps-target="${n}">
-              ${(n/1000) + 'K'}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-
-      <div class="ps-row ps-row-last">
-        <div class="ps-head">
           <span class="ps-icon">🎧</span>
           <span class="ps-label">${t('ambiance')}</span>
         </div>
@@ -4327,6 +4433,18 @@ function openPlayerSheet() {
             `).join('')}
           </div>
         ` : ''}
+      </div>
+
+      <div class="ps-row ps-row-last">
+        <div class="ps-head">
+          <span class="ps-icon">🔕</span>
+          <span class="ps-label">${t('silent_mode')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="ps-silent-mode" ${s.silentMode ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="ps-sub">${t('silent_mode_sub')}</div>
       </div>
 
       <button class="btn-secondary" id="ps-close" style="margin-top:16px">${t('cancel') === 'Annuler' ? 'Fermer' : 'Close'}</button>
@@ -4384,20 +4502,121 @@ function openPlayerSheet() {
     });
   });
 
+  // Silent mode toggle
+  document.getElementById('ps-silent-mode')?.addEventListener('change', (e) => {
+    state.settings.silentMode = e.target.checked;
+    saveState();
+    toast(e.target.checked ? '🔕 Mode silencieux activé' : '🔔 Mode voix activé');
+  });
+
+  document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ============================================================
+// CHALLENGE SETTINGS BOTTOM SHEET
+// ============================================================
+function openChallengeSheet() {
+  const s = state.settings;
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.id = 'challenge-sheet';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${t('challenge_sheet_title')}</div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎯</span>
+          <span class="ps-label">Objectif Challenge</span>
+          <span class="ps-val">${(state.challenge.target/1000)}K</span>
+        </div>
+        <div class="target-chips">
+          ${[10000, 20000, 30000, 40000, 50000].map(n => `
+            <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-cs-target="${n}">
+              ${(n/1000) + 'K'}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🔕</span>
+          <span class="ps-label">${t('silent_mode')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="cs-silent-mode" ${s.silentMode ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="ps-sub">${t('silent_mode_sub')}</div>
+      </div>
+
+      <div class="ps-row ps-row-last">
+        <div class="ps-head">
+          <span class="ps-icon">🔄</span>
+          <span class="ps-label">Reset le challenge</span>
+        </div>
+        <button class="btn-secondary danger" id="cs-ch-reset" style="width:100%; margin-top:4px">${t('challenge_reset')}</button>
+      </div>
+
+      <button class="btn-secondary" id="cs-close" style="margin-top:16px">${t('cancel') === 'Annuler' ? 'Fermer' : 'Close'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
   // Objectif Challenge chips
-  overlay.querySelectorAll('[data-ps-target]').forEach(b => {
+  overlay.querySelectorAll('[data-cs-target]').forEach(b => {
     b.addEventListener('click', () => {
-      state.challenge.target = parseInt(b.dataset.psTarget, 10);
+      state.challenge.target = parseInt(b.dataset.csTarget, 10);
       saveState();
-      overlay.querySelectorAll('[data-ps-target]').forEach(x => x.classList.remove('active'));
+      overlay.querySelectorAll('[data-cs-target]').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       toast('Objectif : ' + (state.challenge.target/1000) + 'K ✦');
-      // Si on est sur l'onglet challenge, refresh pour update la barre de progression
       if (currentTab === 'challenge') renderChallenge();
     });
   });
 
-  document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
+  // Silent mode toggle
+  document.getElementById('cs-silent-mode')?.addEventListener('change', (e) => {
+    state.settings.silentMode = e.target.checked;
+    saveState();
+    toast(e.target.checked ? '🔕 Mode silencieux activé' : '🔔 Mode voix activé');
+  });
+
+  // Reset Challenge (double-tap confirm)
+  let csResetPending = false;
+  document.getElementById('cs-ch-reset')?.addEventListener('click', (ev) => {
+    const btn = ev.target;
+    if (!csResetPending) {
+      csResetPending = true;
+      btn.textContent = '⚠️ Confirmer reset ?';
+      toast('Tape à nouveau pour confirmer');
+      setTimeout(() => {
+        csResetPending = false;
+        btn.textContent = t('challenge_reset');
+      }, 3000);
+      return;
+    }
+    // Confirmé
+    if (state.challenge.playing) {
+      state.challenge.playing = false;
+      if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
+      if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
+      stopMusic();
+    }
+    state.challenge.count = 0;
+    state.challenge.currentIdx = 0;
+    state.challenge.currentRepeat = 0;
+    state.challenge.startedAt = null;
+    saveState();
+    toast('Compteur reset à 0 ✓');
+    overlay.remove();
+    render();
+  });
+
+  document.getElementById('cs-close').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
@@ -4491,7 +4710,7 @@ function renderChallenge() {
           <span>${pct.toFixed(1)}%</span>
           <span>${remaining.toLocaleString('fr-FR')} ${t('challenge_remaining')}</span>
         </div>
-        <div class="challenge-eta">${estimateChallengeTime(selectedAffs, remaining, s.playbackRate, s.pauseBetween)}</div>
+        ${c.playing ? `<div class="challenge-eta">${estimateChallengeTime(selectedAffs, remaining, s.playbackRate, s.pauseBetween)}</div>` : ''}
       </div>
 
       <div class="challenge-controls">
@@ -4515,28 +4734,23 @@ function renderChallenge() {
           </div>
         ` : ''}
 
-        <!-- AJOUT MANUEL (compteur à main) -->
+        <!-- AJOUT MANUEL compact : label mini + boutons + input inline sur une ligne -->
         <div class="manual-add-wrap">
-          <div class="manual-add-label">${t('challenge_manual_add')}</div>
-          <div class="manual-add-sub">${t('challenge_manual_sub')}</div>
-          <div class="manual-add-btns">
+          <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
+          <div class="manual-add-row">
             <button class="manual-add-btn" data-add="1">+1</button>
             <button class="manual-add-btn" data-add="10">+10</button>
             <button class="manual-add-btn" data-add="50">+50</button>
             <button class="manual-add-btn" data-add="100">+100</button>
-          </div>
-          <div class="manual-add-custom">
-            <input type="number" id="ch-manual-input" placeholder="${t('challenge_manual_custom')}" min="1" max="10000" />
+            <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
             <button class="manual-add-go" id="ch-manual-go">+</button>
           </div>
         </div>
-
-        <button class="btn-secondary danger" id="ch-reset" style="margin-top:8px">${t('challenge_reset')}</button>
       </div>
     ` : ''}
 
     ${hasSelection ? `
-      <button class="ch-settings-mini" id="ch-settings-btn" aria-label="${t('player_sheet_btn')}">
+      <button class="ch-settings-mini" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -4610,7 +4824,7 @@ function renderChallenge() {
   });
 
   document.getElementById('ch-toggle')?.addEventListener('click', toggleChallenge);
-  document.getElementById('ch-settings-btn')?.addEventListener('click', openPlayerSheet);
+  document.getElementById('ch-settings-btn')?.addEventListener('click', openChallengeSheet);
   // Reset du compteur : utilise un toast de confirmation (confirm() natif ne marche pas en PWA)
   let resetPending = false;
   document.getElementById('ch-reset')?.addEventListener('click', (ev) => {
@@ -4642,7 +4856,9 @@ function renderChallenge() {
   // Ajout manuel (compteur à main) : compte dans le challenge + stats globales
   const addToCount = (n) => {
     if (!n || n < 1) return;
+    const oldCount = state.challenge.count;
     state.challenge.count = Math.min(state.challenge.target, state.challenge.count + n);
+    const newCount = state.challenge.count;
 
     // === Track dans les stats globales ===
     const key = todayKey();
@@ -4675,7 +4891,10 @@ function renderChallenge() {
 
     saveState();
     toast(t('challenge_added', { n: n }));
+    // Toasts "Bravo" à chaque palier atteint (10K, 20K, 30K...)
+    celebrateMilestoneIfReached(oldCount, newCount);
     if (state.challenge.count >= state.challenge.target) {
+      recordChallengeCompletion();
       stopChallenge();
       toast(t('challenge_done'));
     }
@@ -4963,6 +5182,18 @@ function playChallenge() {
   const idx = state.challenge.currentIdx % validAffs.length;
   const aff = validAffs[idx];
 
+  // Mode silencieux : bip au lieu de la voix
+  if (state.settings.silentMode) {
+    const isChange = (state.challenge.currentRepeat || 0) === 0;
+    playBeep(isChange);
+    challengeAudio = null;
+    challengeTimeout = setTimeout(() => {
+      if (!state.challenge.playing) return;
+      handleChallengeEnd(aff, validAffs);
+    }, isChange ? 500 : 300);
+    return;
+  }
+
   const audio = document.getElementById('aff-audio');
   audio.src = aff.recording;
   audio.volume = state.settings.affVolume;
@@ -4972,44 +5203,56 @@ function playChallenge() {
 
   audio.onended = () => {
     if (!state.challenge.playing) return;
-
-    state.challenge.count++;
-    // Gestion des répétitions : chaque aff peut être répétée N fois de suite
-    const repeatTarget = aff.repeatCount || 1;
-    if (!state.challenge.currentRepeat) state.challenge.currentRepeat = 0;
-    state.challenge.currentRepeat++;
-    if (state.challenge.currentRepeat < repeatTarget) {
-      // Rejouer la même aff (ne pas avancer l'index)
-    } else {
-      state.challenge.currentRepeat = 0;
-      state.challenge.currentIdx = (state.challenge.currentIdx + 1) % validAffs.length;
-    }
-    trackPlay(aff);
-    saveState();
-
-    // Update UI
-    const el = document.querySelector('.challenge-count-main');
-    if (el) el.textContent = state.challenge.count.toLocaleString();
-    const fill = document.querySelector('.challenge-progress-fill');
-    if (fill) fill.style.width = Math.min(100, (state.challenge.count / state.challenge.target) * 100) + '%';
-    const pctEl = document.querySelector('.challenge-progress-info span:first-child');
-    if (pctEl) pctEl.textContent = ((state.challenge.count / state.challenge.target) * 100).toFixed(1) + '%';
-    const remEl = document.querySelector('.challenge-progress-info span:last-child');
-    if (remEl) remEl.textContent = Math.max(0, state.challenge.target - state.challenge.count).toLocaleString() + ' ' + t('challenge_remaining');
-    // Mise à jour de l'ETA (temps restant) à chaque nouvelle lecture
-    updateChallengeEtaLive();
-
-    if (state.challenge.count >= state.challenge.target) {
-      stopChallenge();
-      toast(t('challenge_done'));
-      return;
-    }
-
-    challengeTimeout = setTimeout(() => {
-      if (!state.challenge.playing) return;
-      playChallenge();
-    }, state.settings.pauseBetween * 1000);
+    handleChallengeEnd(aff, validAffs);
   };
+}
+
+// Extrait la logique fin lecture challenge pour partager entre audio + bip
+function handleChallengeEnd(aff, validAffs) {
+  if (!state.challenge.playing) return;
+
+  const oldCount = state.challenge.count;
+  state.challenge.count++;
+  const newCount = state.challenge.count;
+
+  // Gestion des répétitions : chaque aff peut être répétée N fois de suite
+  const repeatTarget = aff.repeatCount || 1;
+  if (!state.challenge.currentRepeat) state.challenge.currentRepeat = 0;
+  state.challenge.currentRepeat++;
+  if (state.challenge.currentRepeat < repeatTarget) {
+    // Rejouer la même aff
+  } else {
+    state.challenge.currentRepeat = 0;
+    state.challenge.currentIdx = (state.challenge.currentIdx + 1) % validAffs.length;
+  }
+  trackPlay(aff);
+  saveState();
+
+  // Toasts "Bravo" à chaque palier atteint
+  celebrateMilestoneIfReached(oldCount, newCount);
+
+  // Update UI
+  const el = document.querySelector('.challenge-count-main');
+  if (el) el.textContent = state.challenge.count.toLocaleString();
+  const fill = document.querySelector('.challenge-progress-fill');
+  if (fill) fill.style.width = Math.min(100, (state.challenge.count / state.challenge.target) * 100) + '%';
+  const pctEl = document.querySelector('.challenge-progress-info span:first-child');
+  if (pctEl) pctEl.textContent = ((state.challenge.count / state.challenge.target) * 100).toFixed(1) + '%';
+  const remEl = document.querySelector('.challenge-progress-info span:last-child');
+  if (remEl) remEl.textContent = Math.max(0, state.challenge.target - state.challenge.count).toLocaleString() + ' ' + t('challenge_remaining');
+  updateChallengeEtaLive();
+
+  if (state.challenge.count >= state.challenge.target) {
+    recordChallengeCompletion();
+    stopChallenge();
+    toast(t('challenge_done'));
+    return;
+  }
+
+  challengeTimeout = setTimeout(() => {
+    if (!state.challenge.playing) return;
+    playChallenge();
+  }, state.settings.pauseBetween * 1000);
 }
 
 // ============================================================
@@ -5139,6 +5382,25 @@ function renderStats() {
             <div class="top-count">${p.plays}×</div>
           </div>
         `).join('')}
+      ` : ''}
+
+      ${(s.completedChallenges || []).length > 0 ? `
+        <div class="h3" style="margin-top:28px">🏆 Challenges terminés</div>
+        ${[...s.completedChallenges].reverse().map((cc) => {
+          const dt = new Date(cc.completedAt);
+          const started = cc.startedAt ? new Date(cc.startedAt) : null;
+          const days = started ? Math.max(1, Math.round((cc.completedAt - cc.startedAt) / 86400000)) : null;
+          return `
+            <div class="top-row">
+              <div class="top-rank">✨</div>
+              <div class="top-content">
+                <div class="top-title">${(cc.target/1000)}K affirmations</div>
+                <div class="top-sub">Terminé le ${dt.toLocaleDateString('fr-FR')}${days ? ` · ${days}j` : ''}</div>
+              </div>
+              <div class="top-count">${cc.target.toLocaleString('fr-FR')}</div>
+            </div>
+          `;
+        }).join('')}
       ` : ''}
     `}
   `;
