@@ -3348,7 +3348,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.11.3';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.11.4';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -5535,19 +5535,17 @@ function renderChallenge() {
             </button>
             </div>
 
-            <!-- Bloc Vitesse qui contient AUSSI l'ETA (seulement quand ça joue) -->
-            ${c.playing ? `
-              <div class="live-speed speed-eta-block" style="width:100%; max-width: 340px">
-                <div class="live-speed-label">
-                  <span>${t('play_speed')}</span>
-                  <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
-                </div>
-                <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
-                <div class="speed-eta-text" id="ch-eta-top">
-                  ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
-                </div>
+            <!-- Bloc Vitesse (visible tout le temps) + ETA -->
+            <div class="live-speed speed-eta-block" style="width:100%; max-width: 340px">
+              <div class="live-speed-label">
+                <span>${t('play_speed')}</span>
+                <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
               </div>
-            ` : ''}
+              <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
+              <div class="speed-eta-text" id="ch-eta-top">
+                ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
+              </div>
+            </div>
 
             <div class="manual-add-wrap" style="width:100%; max-width: 360px">
               <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
