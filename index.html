@@ -4839,6 +4839,8 @@ function playChallenge() {
     if (pctEl) pctEl.textContent = ((state.challenge.count / state.challenge.target) * 100).toFixed(1) + '%';
     const remEl = document.querySelector('.challenge-progress-info span:last-child');
     if (remEl) remEl.textContent = Math.max(0, state.challenge.target - state.challenge.count).toLocaleString() + ' ' + t('challenge_remaining');
+    // Mise à jour de l'ETA (temps restant) à chaque nouvelle lecture
+    updateChallengeEtaLive();
 
     if (state.challenge.count >= state.challenge.target) {
       stopChallenge();
