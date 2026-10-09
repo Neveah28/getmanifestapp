@@ -3216,7 +3216,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.9.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.9.3';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -4351,7 +4351,8 @@ function playNext() {
   // Le bip reste court mais on attend la durée RÉELLE de l'aff (ajustée par la vitesse)
   // pour que le rythme corresponde à ce qu'on aurait eu avec la voix.
   if (state.settings.silentMode) {
-    const isChange = (playerState.currentRepeat || 0) === 0;
+    // Double bip SEULEMENT si plusieurs affs dans la queue ET nouvelle aff
+    const isChange = (playerState.currentRepeat || 0) === 0 && (playerState.queue?.length || 0) > 1;
     playBeep(isChange, state.settings.affVolume);
     const affDuration = (aff.duration || 3) * 1000; // ms (fallback 3s)
     const rate = state.settings.playbackRate || 1;
@@ -5853,7 +5854,8 @@ function playChallenge() {
   // Mode silencieux : bip au lieu de la voix
   // Le bip reste court mais on attend la durée RÉELLE de l'aff (ajustée par la vitesse)
   if (cfg.silentMode) {
-    const isChange = (state.challenge.currentRepeat || 0) === 0;
+    // Double bip SEULEMENT s'il y a plusieurs affs ET qu'on passe à une nouvelle
+    const isChange = (state.challenge.currentRepeat || 0) === 0 && validAffs.length > 1;
     playBeep(isChange, cfg.affVolume);
     challengeAudio = null;
     const affDuration = (aff.duration || 3) * 1000;
