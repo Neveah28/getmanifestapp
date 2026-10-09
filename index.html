@@ -2243,36 +2243,36 @@ body.night-mode .orb-ring {
 .challenge-aff-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 4px;
 }
 .challenge-aff-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 5px 10px;
   background: var(--input-bg);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .challenge-aff-dot {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--accent);
   color: var(--btn-text);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 800;
   flex-shrink: 0;
 }
 .challenge-aff-name {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-strong);
   flex: 1;
-  line-height: 1.4;
+  line-height: 1.3;
   word-wrap: break-word;
   overflow-wrap: break-word;
   min-width: 0;
@@ -2280,18 +2280,18 @@ body.night-mode .orb-ring {
 
 /* AJOUT MANUEL (compteur à main) - compact */
 .manual-add-wrap {
-  margin-top: 12px;
-  padding: 10px 12px;
+  margin-top: 6px;
+  padding: 7px 10px;
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
 }
 .manual-add-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--text-dim);
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-transform: uppercase;
 }
 .manual-add-row {
@@ -2356,9 +2356,9 @@ body.night-mode .orb-ring {
 
 .challenge-aff-card {
   background: var(--card-bg);
-  border-radius: 18px;
-  padding: 18px 20px;
-  margin-bottom: 20px;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
   box-shadow: var(--card-shadow);
 }
 .challenge-aff-label {
@@ -2478,14 +2478,125 @@ body.night-mode .orb-ring {
 }
 
 /* ===============================================================
+   STATS — Challenges terminés (card détaillée)
+   =============================================================== */
+.challenges-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ch-stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--card-shadow);
+}
+.ch-stat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ch-stat-trophy {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ch-stat-head-text { flex: 1; min-width: 0; }
+.ch-stat-target {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-strong);
+  letter-spacing: -0.2px;
+}
+.ch-stat-done {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.ch-stat-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--input-bg);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.ch-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.ch-stat-row span {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.ch-stat-row strong {
+  color: var(--text-strong);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.ch-stat-affs {
+  padding: 8px 10px;
+  background: var(--input-bg);
+  border-radius: 10px;
+}
+.ch-stat-affs-label {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ch-stat-aff-item {
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 1px 0;
+}
+
+/* ===============================================================
    CHALLENGE ORB (nouvelle UI — lune / orbite)
    =============================================================== */
 .challenge-orb-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  margin: 20px 0 24px;
+  gap: 10px;
+  margin: 10px 0 12px;
+}
+
+/* Ligne meta constante au-dessus de l'orbe (jamais vide → pas de décalage) */
+.orb-meta-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-align: center;
+  padding: 0 10px;
+}
+.orb-meta-line strong {
+  color: var(--text-strong);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.orb-meta-line em {
+  color: var(--text-faint);
+  font-style: italic;
+  font-weight: 500;
 }
 
 .challenge-eta-top {
@@ -2508,8 +2619,8 @@ body.night-mode .orb-ring {
 
 .challenge-orb {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: 220px;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2519,7 +2630,7 @@ body.night-mode .orb-ring {
   background: transparent;
   border: none;
   padding: 0;
-  margin: 6px 0 4px;
+  margin: 2px 0;
 }
 
 /* Halo rose derrière la lune */
@@ -2577,7 +2688,7 @@ body.night-mode .orb-ring {
 }
 
 .orb-count {
-  font-size: 44px;
+  font-size: 40px;
   font-weight: 800;
   color: var(--text-strong);
   line-height: 1;
@@ -2586,15 +2697,15 @@ body.night-mode .orb-ring {
   font-variant-numeric: tabular-nums;
 }
 .orb-target {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-dim);
   font-weight: 600;
   letter-spacing: 0.4px;
   margin-bottom: 2px;
 }
 .orb-play-icon {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
@@ -2603,7 +2714,7 @@ body.night-mode .orb-ring {
   justify-content: center;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 45%, transparent);
   transition: transform 0.15s, box-shadow 0.2s;
-  margin: 4px 0 2px;
+  margin: 2px 0;
 }
 .challenge-orb:active .orb-play-icon {
   transform: scale(0.9);
@@ -2984,7 +3095,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.8.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.8.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -4305,11 +4416,18 @@ function celebrateMilestoneIfReached(oldCount, newCount) {
 // Enregistre la complétion d'un challenge dans les stats
 function recordChallengeCompletion() {
   if (!state.stats.completedChallenges) state.stats.completedChallenges = [];
+  // Snapshot des titres des affs pour garder l'info même si elles sont supprimées plus tard
+  const affIds = [...(state.challenge.affirmationIds || [])];
+  const affTitles = affIds.map(id => {
+    const a = state.affirmations.find(x => x.id === id);
+    return a ? a.title : '(supprimée)';
+  });
   state.stats.completedChallenges.push({
     target: state.challenge.target,
     startedAt: state.challenge.startedAt,
     completedAt: Date.now(),
-    affirmationIds: [...(state.challenge.affirmationIds || [])],
+    affirmationIds: affIds,
+    affirmationTitles: affTitles,  // Snapshot pour conservation à long terme
   });
   saveState();
 }
@@ -5021,7 +5139,7 @@ function renderChallenge() {
   const preCheckedIds = new Set(c.affirmationIds || []);
 
   document.getElementById('page-challenge').innerHTML = `
-    <p class="sublabel" style="margin-bottom:18px; max-width: 440px">${t('challenge_desc')}</p>
+    ${hasSelection ? '' : `<p class="sublabel" style="margin-bottom:14px; max-width: 440px">${t('challenge_desc')}</p>`}
 
     <!-- SÉLECTION DES AFFIRMATIONS -->
     <div class="challenge-aff-card">
@@ -5074,7 +5192,7 @@ function renderChallenge() {
     </div>
 
     ${hasSelection ? (() => {
-      // === Nouveau design : orbe (lune) avec progression circulaire ===
+      // === Design orbe (lune) avec progression circulaire ===
       const RING_R = 110;
       const RING_C = 2 * Math.PI * RING_R;
       const ringOffset = RING_C * (1 - Math.min(100, pct) / 100);
@@ -5083,11 +5201,10 @@ function renderChallenge() {
         : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>';
       return `
         <div class="challenge-orb-wrap">
-          ${c.playing ? `
-            <div class="challenge-eta-top" id="ch-eta-top">
-              ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
-            </div>
-          ` : ''}
+          <!-- Meta line : restantes + commencé le (constante — pas de décalage de l'orbe) -->
+          <div class="orb-meta-line">
+            <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
+          </div>
 
           <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
                   aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
@@ -5113,12 +5230,11 @@ function renderChallenge() {
             </div>
           </button>
 
-          <div class="orb-info">
-            <div class="orb-remaining"><strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}</div>
-            ${c.startedAt ? `<div class="orb-started">${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</div>` : ''}
-          </div>
-
+          <!-- ETA : juste au-dessus du slider vitesse (sous l'orbe) -->
           ${c.playing ? `
+            <div class="challenge-eta-top" id="ch-eta-top">
+              ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
+            </div>
             <div class="live-speed" style="width:100%; max-width: 320px">
               <div class="live-speed-label">
                 <span>${t('play_speed')}</span>
@@ -5128,7 +5244,7 @@ function renderChallenge() {
             </div>
           ` : ''}
 
-          <!-- AJOUT MANUEL compact -->
+          <!-- Ajout manuel compact -->
           <div class="manual-add-wrap" style="width:100%; max-width: 360px">
             <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
             <div class="manual-add-row">
@@ -5783,21 +5899,37 @@ function renderStats() {
 
       ${(s.completedChallenges || []).length > 0 ? `
         <div class="h3" style="margin-top:28px">🏆 Challenges terminés</div>
-        ${[...s.completedChallenges].reverse().map((cc) => {
-          const dt = new Date(cc.completedAt);
-          const started = cc.startedAt ? new Date(cc.startedAt) : null;
-          const days = started ? Math.max(1, Math.round((cc.completedAt - cc.startedAt) / 86400000)) : null;
-          return `
-            <div class="top-row">
-              <div class="top-rank">✨</div>
-              <div class="top-content">
-                <div class="top-title">${(cc.target/1000)}K affirmations</div>
-                <div class="top-sub">Terminé le ${dt.toLocaleDateString('fr-FR')}${days ? ` · ${days}j` : ''}</div>
+        <div class="challenges-stats-list">
+          ${[...s.completedChallenges].reverse().map((cc) => {
+            const dt = new Date(cc.completedAt);
+            const started = cc.startedAt ? new Date(cc.startedAt) : null;
+            const durMs = started ? (cc.completedAt - cc.startedAt) : 0;
+            const days = durMs > 0 ? Math.max(1, Math.round(durMs / 86400000)) : null;
+            const titles = cc.affirmationTitles || [];
+            return `
+              <div class="ch-stat-card">
+                <div class="ch-stat-head">
+                  <div class="ch-stat-trophy">🏆</div>
+                  <div class="ch-stat-head-text">
+                    <div class="ch-stat-target">${cc.target.toLocaleString('fr-FR')} affirmations</div>
+                    <div class="ch-stat-done">Terminé ✨</div>
+                  </div>
+                </div>
+                <div class="ch-stat-meta">
+                  ${started ? `<div class="ch-stat-row"><span>📅 Commencé</span><strong>${started.toLocaleDateString('fr-FR')}</strong></div>` : ''}
+                  <div class="ch-stat-row"><span>🏁 Terminé</span><strong>${dt.toLocaleDateString('fr-FR')}</strong></div>
+                  ${days ? `<div class="ch-stat-row"><span>⏱️ Durée</span><strong>${days} jour${days > 1 ? 's' : ''}</strong></div>` : ''}
+                </div>
+                ${titles.length > 0 ? `
+                  <div class="ch-stat-affs">
+                    <div class="ch-stat-affs-label">🎙️ Affirmations utilisées (${titles.length})</div>
+                    ${titles.map(tt => `<div class="ch-stat-aff-item">• ${escapeHtml(tt)}</div>`).join('')}
+                  </div>
+                ` : ''}
               </div>
-              <div class="top-count">${cc.target.toLocaleString('fr-FR')}</div>
-            </div>
-          `;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       ` : ''}
     `}
   `;
