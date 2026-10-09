@@ -656,11 +656,38 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 .page.active { display: block; animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Page Challenge en mode "sélection faite" : pas de scroll, tout rentre */
+/* Page Challenge en mode "sélection faite" : orbe au centre, le reste réparti */
 #page-challenge.active.ch-selected {
   overflow: hidden;
-  max-height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 110px);
+  min-height: 480px;
 }
+#page-challenge.active.ch-selected .challenge-orb-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  gap: 0;
+}
+/* Groupes haut/centre/bas pour répartir avec space-between */
+.ch-top, .ch-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.ch-middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 220px;
+}
+.ch-top { padding-bottom: 10px; }
+.ch-bottom { padding-top: 10px; gap: 14px; }
 
 /* ===================================================
    PLAYER - plein écran, pas de scroll
@@ -3179,7 +3206,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.9.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.9.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -5298,69 +5325,74 @@ function renderChallenge() {
       const currentAff = selectedAffs[curIdx] || selectedAffs[0];
       return `
         <div class="challenge-orb-wrap">
-          <!-- Aff en cours : titre affiché seul, glow fade à chaque changement -->
-          <div class="orb-current-aff ${c.playing ? 'glowing' : ''}" id="orb-current-aff">
-            ${escapeHtml(currentAff ? currentAff.title : '')}
+          <!-- HAUT : aff en cours (glow fade à chaque changement) -->
+          <div class="ch-top">
+            <div class="orb-current-aff ${c.playing ? 'glowing' : ''}" id="orb-current-aff">
+              ${escapeHtml(currentAff ? currentAff.title : '')}
+            </div>
           </div>
 
-          <!-- Meta line : restantes + commencé le + bouton edit (constante) -->
-          <div class="orb-meta-line">
-            <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
-            <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          <!-- CENTRE : orbe (centrée verticalement par flex) -->
+          <div class="ch-middle">
+            <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
+                    aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
+              <svg class="orb-ring" viewBox="0 0 240 240">
+                <defs>
+                  <linearGradient id="orbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--accent)" />
+                    <stop offset="100%" stop-color="var(--accent-light, var(--accent))" />
+                  </linearGradient>
+                </defs>
+                <circle class="orb-track" cx="120" cy="120" r="${RING_R}" fill="none" />
+                <circle class="orb-progress" cx="120" cy="120" r="${RING_R}" fill="none"
+                        stroke="url(#orbGrad)"
+                        stroke-dasharray="${RING_C.toFixed(2)}"
+                        stroke-dashoffset="${ringOffset.toFixed(2)}"
+                        transform="rotate(-90 120 120)" />
               </svg>
+              <div class="orb-content">
+                <div class="orb-count">${c.count.toLocaleString('fr-FR')}</div>
+                <div class="orb-target">/ ${c.target.toLocaleString('fr-FR')}</div>
+                <div class="orb-play-icon">${playIconSvg}</div>
+                <div class="orb-pct">${pct.toFixed(1)}%</div>
+              </div>
             </button>
           </div>
 
-          <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
-                  aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
-            <svg class="orb-ring" viewBox="0 0 240 240">
-              <defs>
-                <linearGradient id="orbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--accent)" />
-                  <stop offset="100%" stop-color="var(--accent-light, var(--accent))" />
-                </linearGradient>
-              </defs>
-              <circle class="orb-track" cx="120" cy="120" r="${RING_R}" fill="none" />
-              <circle class="orb-progress" cx="120" cy="120" r="${RING_R}" fill="none"
-                      stroke="url(#orbGrad)"
-                      stroke-dasharray="${RING_C.toFixed(2)}"
-                      stroke-dashoffset="${ringOffset.toFixed(2)}"
-                      transform="rotate(-90 120 120)" />
-            </svg>
-            <div class="orb-content">
-              <div class="orb-count">${c.count.toLocaleString('fr-FR')}</div>
-              <div class="orb-target">/ ${c.target.toLocaleString('fr-FR')}</div>
-              <div class="orb-play-icon">${playIconSvg}</div>
-              <div class="orb-pct">${pct.toFixed(1)}%</div>
+          <!-- BAS : meta line + ETA/slider (quand play) + ajout manuel -->
+          <div class="ch-bottom">
+            <div class="orb-meta-line">
+              <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
+              <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+              </button>
             </div>
-          </button>
 
-          <!-- ETA : juste au-dessus du slider vitesse (sous l'orbe) -->
-          ${c.playing ? `
-            <div class="challenge-eta-top" id="ch-eta-top">
-              ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
-            </div>
-            <div class="live-speed" style="width:100%; max-width: 320px">
-              <div class="live-speed-label">
-                <span>${t('play_speed')}</span>
-                <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
+            ${c.playing ? `
+              <div class="challenge-eta-top" id="ch-eta-top">
+                ${estimateChallengeTime(selectedAffs, remaining, chCfg.playbackRate, chCfg.pauseBetween)}
               </div>
-              <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
-            </div>
-          ` : ''}
+              <div class="live-speed" style="width:100%; max-width: 320px">
+                <div class="live-speed-label">
+                  <span>${t('play_speed')}</span>
+                  <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
+                </div>
+                <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
+              </div>
+            ` : ''}
 
-          <!-- Ajout manuel compact -->
-          <div class="manual-add-wrap" style="width:100%; max-width: 360px">
-            <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
-            <div class="manual-add-row">
-              <button class="manual-add-btn" data-add="1">+1</button>
-              <button class="manual-add-btn" data-add="10">+10</button>
-              <button class="manual-add-btn" data-add="50">+50</button>
-              <button class="manual-add-btn" data-add="100">+100</button>
-              <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
-              <button class="manual-add-go" id="ch-manual-go">+</button>
+            <div class="manual-add-wrap" style="width:100%; max-width: 360px">
+              <div class="manual-add-label">✋ ${t('challenge_manual_add')}</div>
+              <div class="manual-add-row">
+                <button class="manual-add-btn" data-add="1">+1</button>
+                <button class="manual-add-btn" data-add="10">+10</button>
+                <button class="manual-add-btn" data-add="50">+50</button>
+                <button class="manual-add-btn" data-add="100">+100</button>
+                <input type="number" id="ch-manual-input" placeholder="n" min="1" max="10000" />
+                <button class="manual-add-go" id="ch-manual-go">+</button>
+              </div>
             </div>
           </div>
         </div>
