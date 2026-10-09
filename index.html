@@ -3322,6 +3322,10 @@ function escapeHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;
 let currentTab = 'player';
 
 function switchTab(tab) {
+  // Si on quitte le challenge pendant une édition, on annule l'édition
+  if (currentTab === 'challenge' && tab !== 'challenge') {
+    window.editingChallengeSelection = false;
+  }
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -4308,11 +4312,15 @@ function renderChallenge() {
   const selectedAffs = (c.affirmationIds || [])
     .map(id => state.affirmations.find(a => a.id === id && a.recording))
     .filter(Boolean);
-  const hasSelection = selectedAffs.length > 0;
+  // Mode édition : clic crayon → affiche la liste même si on a déjà une sélection
+  const editing = window.editingChallengeSelection === true;
+  const hasSelection = selectedAffs.length > 0 && !editing;
   const pct = Math.min(100, (c.count / c.target) * 100);
   const remaining = Math.max(0, c.target - c.count);
   const available = state.affirmations.filter(a => a.recording);
   const TARGET_CHOICES = [10000, 20000, 30000, 40000, 50000];
+  // IDs déjà sélectionnés (pour pré-cocher en mode édition)
+  const preCheckedIds = new Set(c.affirmationIds || []);
 
   document.getElementById('page-challenge').innerHTML = `
     <p class="sublabel" style="margin-bottom:18px; max-width: 440px">${t('challenge_desc')}</p>
@@ -4342,7 +4350,7 @@ function renderChallenge() {
           <div class="aff-check-list">
             ${available.map(a => `
               <label class="aff-check-item">
-                <input type="checkbox" class="aff-check" value="${a.id}" />
+                <input type="checkbox" class="aff-check" value="${a.id}" ${preCheckedIds.has(a.id) ? 'checked' : ''} />
                 <span class="aff-check-name">${escapeHtml(a.title)}</span>
               </label>
             `).join('')}
@@ -4464,37 +4472,39 @@ function renderChallenge() {
     });
   });
 
+  // Au chargement : si on est en mode édition et des cases sont déjà pré-cochées,
+  // activer le bouton confirmer immédiatement
+  updateConfirmBtn();
+
   // Confirmer la sélection multiple
   // On NE reset PAS le count (préserve la progression). Pour reset : bouton "Reset le challenge"
   confirmBtn?.addEventListener('click', () => {
     const picked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
     if (picked.length === 0) return;
-    const isFirstSelection = (state.challenge.affirmationIds || []).length === 0 && state.challenge.count === 0;
+    const wasEmpty = (state.challenge.affirmationIds || []).length === 0;
     state.challenge.affirmationIds = picked;
     state.challenge.currentIdx = 0;
-    // Only set startedAt if it's a brand new challenge (never started before)
-    if (isFirstSelection || !state.challenge.startedAt) {
+    // Only set startedAt if the challenge has never been started
+    if (wasEmpty || !state.challenge.startedAt) {
       state.challenge.startedAt = Date.now();
     }
+    // Sortir du mode édition
+    window.editingChallengeSelection = false;
     saveState();
     toast('Sélection enregistrée ✓');
     render();
   });
 
-  // Changer la sélection (reset) : stop playback inline + reset en 1 seul render
+  // Clic sur crayon ✏️ : passe en mode édition SANS vider la sélection (les cases restent cochées)
   document.getElementById('ch-change-aff')?.addEventListener('click', () => {
-    // Arrête tout si en lecture (inline, sans render)
+    // Stop playback si en cours (le user va modifier la queue)
     if (state.challenge.playing) {
       state.challenge.playing = false;
       if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
       if (challengeTimeout) { clearTimeout(challengeTimeout); challengeTimeout = null; }
       stopMusic();
     }
-    // Reset la sélection
-    state.challenge.affirmationIds = [];
-    state.challenge.currentIdx = 0;
-    saveState();
-    toast('Sélection vidée, choisis à nouveau ✦');
+    window.editingChallengeSelection = true;
     render();
   });
 
