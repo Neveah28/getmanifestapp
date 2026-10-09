@@ -1406,6 +1406,97 @@ body.player-active .mini-header { display: none; }
 .setting-row.col { flex-direction: column; align-items: stretch; gap: 10px; }
 .setting-label { font-size: 14px; font-weight: 600; color: var(--text-strong); }
 
+/* === Bandeau de mise à jour en haut de l'app === */
+.update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
+  color: #fff;
+  padding: 10px 14px;
+  padding-top: calc(10px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
+}
+.update-icon { font-size: 18px; flex-shrink: 0; }
+.update-text {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+}
+.update-btn {
+  background: #fff;
+  color: var(--accent);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.update-btn:active { transform: scale(0.95); }
+.update-dismiss {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.update-dismiss:active { opacity: 0.6; }
+
+.app-version-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding: 16px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* === Chips de répétition par aff === */
+.repeat-chips {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.repeat-chip {
+  background: var(--input-bg);
+  border: 1.5px solid var(--line);
+  color: var(--text-dim);
+  padding: 10px 4px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.repeat-chip.active {
+  background: var(--accent);
+  color: var(--btn-text);
+  border-color: var(--accent);
+}
+.repeat-chip:active { transform: scale(0.95); }
+
 /* === Bottom sheet moderne : icône + titre + valeur sur une ligne, puis slider === */
 .ps-row {
   padding: 14px 2px;
@@ -2682,6 +2773,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
+const APP_VERSION = '2026.10.09.3';  // Date build : bump à chaque push
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
@@ -3788,11 +3880,20 @@ function playNext() {
     // Track play stats pour l'affirmation qu'on vient de terminer
     trackPlay(aff);
 
-    playerState.currentIdx++;
-    if (playerState.currentIdx >= playerState.queue.length) {
-      playerState.currentIdx = 0;
-      playerState.loopCount++;
-      trackLoop();
+    // Gestion des répétitions : chaque aff peut être répétée N fois de suite
+    const repeatTarget = aff.repeatCount || 1;
+    if (!playerState.currentRepeat) playerState.currentRepeat = 0;
+    playerState.currentRepeat++;
+    if (playerState.currentRepeat < repeatTarget) {
+      // Rejouer la même aff (ne pas avancer l'index)
+    } else {
+      playerState.currentRepeat = 0;  // Reset pour la prochaine aff
+      playerState.currentIdx++;
+      if (playerState.currentIdx >= playerState.queue.length) {
+        playerState.currentIdx = 0;
+        playerState.loopCount++;
+        trackLoop();
+      }
     }
 
     saveState();
@@ -4873,8 +4974,16 @@ function playChallenge() {
     if (!state.challenge.playing) return;
 
     state.challenge.count++;
-    // Rotation : on passe à l'aff suivante
-    state.challenge.currentIdx = (state.challenge.currentIdx + 1) % validAffs.length;
+    // Gestion des répétitions : chaque aff peut être répétée N fois de suite
+    const repeatTarget = aff.repeatCount || 1;
+    if (!state.challenge.currentRepeat) state.challenge.currentRepeat = 0;
+    state.challenge.currentRepeat++;
+    if (state.challenge.currentRepeat < repeatTarget) {
+      // Rejouer la même aff (ne pas avancer l'index)
+    } else {
+      state.challenge.currentRepeat = 0;
+      state.challenge.currentIdx = (state.challenge.currentIdx + 1) % validAffs.length;
+    }
     trackPlay(aff);
     saveState();
 
@@ -5079,7 +5188,15 @@ function openAffModal(existing, defaultGroupId) {
         </div>
       </div>
 
-      <button class="btn-primary" id="aff-save">${isEdit ? t('save') : t('create')}</button>
+      <div class="h3">Répétitions à la suite</div>
+      <div class="sublabel" style="margin-bottom:10px; font-size:12px">Combien de fois cette aff est lue avant de passer à la suivante</div>
+      <div class="repeat-chips">
+        ${[1, 3, 5, 10, 20, 50].map(n => `
+          <button class="repeat-chip ${(aff.repeatCount||1)===n?'active':''}" data-repeat="${n}">${n}×</button>
+        `).join('')}
+      </div>
+
+      <button class="btn-primary" id="aff-save" style="margin-top:18px">${isEdit ? t('save') : t('create')}</button>
       ${isEdit ? `<button class="btn-secondary danger" id="aff-delete">${t('delete')}</button>` : ''}
       <button class="btn-secondary" id="aff-cancel">${t('cancel')}</button>
     </div>
@@ -5188,6 +5305,16 @@ function openAffModal(existing, defaultGroupId) {
   }
   reattachPlaybackHandlers();
 
+  // Chips de répétition : met à jour la valeur locale (sauvegardée au Save)
+  let selectedRepeatCount = aff.repeatCount || 1;
+  overlay.querySelectorAll('[data-repeat]').forEach(b => {
+    b.addEventListener('click', () => {
+      selectedRepeatCount = parseInt(b.dataset.repeat, 10);
+      overlay.querySelectorAll('[data-repeat]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+
   document.getElementById('aff-save').addEventListener('click', () => {
     const title = document.getElementById('aff-title').value.trim();
     const groupId = document.getElementById('aff-group').value;
@@ -5196,6 +5323,7 @@ function openAffModal(existing, defaultGroupId) {
     aff.groupId = groupId;
     aff.recording = currentRecording;
     aff.duration = currentDuration;
+    aff.repeatCount = selectedRepeatCount;
     if (!isEdit) state.affirmations.push(aff);
     saveState();
     overlay.remove();
@@ -5373,6 +5501,10 @@ function renderSettings() {
     </div>
 
     <input type="file" id="import-file" accept=".json" style="display:none" />
+
+    <div class="app-version-footer">
+      GetManifest ✦ v${APP_VERSION}
+    </div>
   `;
 
   document.querySelectorAll('[data-theme-id]').forEach(b => {
@@ -5583,6 +5715,46 @@ render();
 if (!state.onboardingDone) {
   startOnboarding();
 }
+
+// === UPDATE CHECKER : scanne version.txt pour détecter une nouvelle version ===
+async function checkForUpdate() {
+  try {
+    const url = 'version.txt?nocache=' + Date.now();
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return;
+    const latestVersion = (await res.text()).trim();
+    if (latestVersion && latestVersion !== APP_VERSION) {
+      showUpdateBanner(latestVersion);
+    }
+  } catch(e) { /* silencieux : pas de réseau, pas grave */ }
+}
+
+function showUpdateBanner(newVersion) {
+  if (document.getElementById('update-banner')) return;  // Déjà affiché
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.className = 'update-banner';
+  banner.innerHTML = `
+    <span class="update-icon">✨</span>
+    <span class="update-text">Nouvelle version dispo</span>
+    <button class="update-btn" id="update-apply">Mettre à jour</button>
+    <button class="update-dismiss" id="update-dismiss" aria-label="Fermer">×</button>
+  `;
+  document.body.appendChild(banner);
+  document.getElementById('update-apply').addEventListener('click', () => {
+    // Force reload en vidant le cache
+    const u = new URL(window.location.href);
+    u.searchParams.set('v', Date.now());
+    window.location.href = u.toString();
+  });
+  document.getElementById('update-dismiss').addEventListener('click', () => {
+    banner.remove();
+  });
+}
+
+// Check au chargement + toutes les 5 min
+checkForUpdate();
+setInterval(checkForUpdate, 5 * 60 * 1000);
 
 function applyLangTabs() {
   document.querySelectorAll('.tab').forEach(tab => {
