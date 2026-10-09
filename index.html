@@ -657,12 +657,12 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Page Challenge en mode "sélection faite" : orbe au centre, le reste réparti */
+/* dvh = dynamic viewport height (gère les barres d'adresse mobile qui apparaissent/disparaissent) */
 #page-challenge.active.ch-selected {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 110px);
-  min-height: 480px;
+  height: calc(100dvh - 170px - env(safe-area-inset-bottom, 0px));
 }
 #page-challenge.active.ch-selected .challenge-orb-wrap {
   flex: 1;
@@ -670,24 +670,34 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   flex-direction: column;
   margin: 0;
   gap: 0;
+  min-height: 0; /* permet aux enfants de rétrécir au lieu de forcer un overflow */
 }
 /* Groupes haut/centre/bas pour répartir avec space-between */
 .ch-top, .ch-bottom {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 .ch-middle {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  min-height: 220px;
+  flex: 1 1 auto;
+  min-height: 180px;
 }
-.ch-top { padding-bottom: 10px; }
-.ch-bottom { padding-top: 10px; gap: 14px; }
+.ch-top { padding-bottom: 4px; }
+.ch-bottom { padding-top: 4px; gap: 10px; }
+
+/* Écran très court (iPhone SE etc.) : orbe plus petite + aff courante plus condensée */
+@media (max-height: 700px) {
+  #page-challenge.active.ch-selected { height: calc(100dvh - 150px - env(safe-area-inset-bottom, 0px)); }
+  .ch-middle { min-height: 160px; }
+  .challenge-orb { width: 200px; height: 200px; }
+  .orb-count { font-size: 36px; }
+  .orb-current-aff { min-height: 40px; font-size: 17px; padding: 2px 16px; }
+}
 
 /* ===================================================
    PLAYER - plein écran, pas de scroll
@@ -3206,7 +3216,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.9.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.9.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
