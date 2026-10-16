@@ -1,6 +1,8 @@
 {
   "statsPatch": {
     "totalPlays": 1449,
-    "dayToday": 1449
+    "byDay": {
+      "2026-10-07": 1449
+    }
   }
 }
