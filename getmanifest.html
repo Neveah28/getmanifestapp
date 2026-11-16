@@ -4009,7 +4009,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.20.3';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.21.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4688,9 +4688,171 @@ function loadState() {
   } catch(e) { return defaultState(); }
 }
 
+// ============================================================
+// VOIX À PART (v1.21.0)
+// Les enregistrements (dataURL base64) vivent dans IndexedDB, plus dans localStorage.
+// - En mémoire rien ne change : aff.recording contient toujours le dataURL.
+// - saveState() n'écrit que le léger. Une voix reste dans localStorage tant qu'elle
+//   n'est pas CONFIRMÉE dans IndexedDB (écrite puis relue) : jamais de trou.
+// - Une aff dont la voix est dans IndexedDB porte le marqueur _v:1 dans localStorage.
+// - Si IndexedDB n'est pas dispo, voicesReady reste false : tout marche comme avant.
+// ============================================================
+const VOICE_DB = 'getmanifest_voices';
+const VOICE_STORE = 'voices';
+let voiceDb = null;
+let voicesReady = false;
+const voicesSaved = new Map();  // affId → dataURL confirmé dans IndexedDB
+let voiceSyncRunning = false;
+let voiceSyncAgain = false;
+
+function openVoiceDb() {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!window.indexedDB) { reject(new Error('no indexedDB')); return; }
+      const req = indexedDB.open(VOICE_DB, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(VOICE_STORE)) db.createObjectStore(VOICE_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('open error'));
+      req.onblocked = () => reject(new Error('open blocked'));
+    } catch(e) { reject(e); }
+  });
+}
+
+function readAllVoices() {
+  return new Promise((resolve, reject) => {
+    try {
+      const out = new Map();
+      const tx = voiceDb.transaction(VOICE_STORE, 'readonly');
+      const req = tx.objectStore(VOICE_STORE).openCursor();
+      req.onsuccess = () => {
+        const c = req.result;
+        if (c) { out.set(c.key, c.value); c.continue(); }
+      };
+      tx.oncomplete = () => resolve(out);
+      tx.onerror = () => reject(tx.error || new Error('read error'));
+      tx.onabort = () => reject(tx.error || new Error('read abort'));
+    } catch(e) { reject(e); }
+  });
+}
+
+// Copie de l'état pour localStorage : sans les voix déjà confirmées dans IndexedDB.
+// stripAll = true : enlève toutes les voix (secours si localStorage est plein).
+function stateForStorage(stripAll) {
+  const affs = (state.affirmations || []).map(a => {
+    if (!a || !a.recording) return a;
+    if (!stripAll && voicesSaved.get(a.id) !== a.recording) return a;
+    const c = Object.assign({}, a);
+    delete c.recording;
+    c._v = 1;
+    return c;
+  });
+  return Object.assign({}, state, { affirmations: affs });
+}
+
 function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e) { toast(t('toast_storage_full')); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForStorage(false))); }
+  catch(e) {
+    let ok = false;
+    if (voicesReady) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForStorage(true))); ok = true; }
+      catch(e2) {}
+    }
+    if (!ok) toast(t('toast_storage_full'));
+  }
+  if (voicesReady) syncVoices();
+}
+
+// Écrit dans IndexedDB seulement les voix qui ont changé, enlève celles qui n'existent plus.
+function syncVoices() {
+  if (!voicesReady || !voiceDb) return;
+  if (voiceSyncRunning) { voiceSyncAgain = true; return; }
+  const puts = [];
+  const dels = [];
+  const alive = new Set();
+  (state.affirmations || []).forEach(a => {
+    if (!a || !a.id || !a.recording) return;
+    alive.add(a.id);
+    if (voicesSaved.get(a.id) !== a.recording) puts.push([a.id, a.recording]);
+  });
+  voicesSaved.forEach((v, id) => { if (!alive.has(id)) dels.push(id); });
+  if (!puts.length && !dels.length) return;
+
+  voiceSyncRunning = true;
+  let finished = false;
+  const finish = (confirmed, delsOk) => {
+    if (finished) return;
+    finished = true;
+    voiceSyncRunning = false;
+    if (delsOk) dels.forEach(id => voicesSaved.delete(id));
+    confirmed.forEach(([id, rec]) => voicesSaved.set(id, rec));
+    if (confirmed.length < puts.length) {
+      logEvent('voices_sync_fail', { puts: puts.length, ok: confirmed.length });
+    }
+    const again = voiceSyncAgain;
+    voiceSyncAgain = false;
+    // Voix confirmées : on réécrit le léger (elles sortent de localStorage)
+    if (confirmed.length) saveState();
+    else if (again) syncVoices();
+  };
+
+  try {
+    const tx = voiceDb.transaction(VOICE_STORE, 'readwrite');
+    const st = tx.objectStore(VOICE_STORE);
+    dels.forEach(id => st.delete(id));
+    puts.forEach(([id, rec]) => st.put(rec, id));
+    tx.onerror = () => finish([], false);
+    tx.onabort = () => finish([], false);
+    tx.oncomplete = () => {
+      if (!puts.length) { finish([], true); return; }
+      // Relecture : une voix n'est confirmée que si on la relit à l'identique
+      try {
+        const confirmed = [];
+        const tx2 = voiceDb.transaction(VOICE_STORE, 'readonly');
+        const st2 = tx2.objectStore(VOICE_STORE);
+        puts.forEach(([id, rec]) => {
+          const r = st2.get(id);
+          r.onsuccess = () => { if (r.result === rec) confirmed.push([id, rec]); };
+        });
+        tx2.oncomplete = () => finish(confirmed, true);
+        tx2.onerror = () => finish([], true);
+        tx2.onabort = () => finish([], true);
+      } catch(e) { finish([], true); }
+    };
+  } catch(e) { finish([], false); }
+}
+
+// Au démarrage : recharge les voix depuis IndexedDB, puis déplace celles restées dans localStorage.
+async function initVoices() {
+  try {
+    voiceDb = await openVoiceDb();
+    const stored = await readAllVoices();
+    stored.forEach((v, id) => voicesSaved.set(id, v));
+    let hydrated = 0;
+    let missing = 0;
+    (state.affirmations || []).forEach(a => {
+      if (!a) return;
+      if (a._v && !a.recording) {
+        if (stored.has(a.id)) { a.recording = stored.get(a.id); hydrated++; }
+        else missing++;
+      }
+      delete a._v;
+    });
+    voicesReady = true;
+    if (missing) logEvent('voices_missing', { n: missing });
+    saveState();  // déclenche le déplacement des voix encore dans localStorage
+    if (hydrated) {
+      const inCh = currentTab === 'player' && state.ui.playerMode === 'challenge'
+        && (state.challenge.affirmationIds || []).some(id => state.affirmations.find(a => a.id === id && a.recording))
+        && !window.editingChallengeSelection;
+      document.body.classList.toggle('ch-active', inCh);
+      render();
+    }
+  } catch(e) {
+    logEvent('voices_init_fail', { msg: String(e && e.message || e) });
+  }
 }
 
 function applyTheme() {
@@ -9188,6 +9350,7 @@ document.body.classList.add('player-active'); // player est l'onglet par défaut
 })();
 render();
 setupMediaSessionHandlers();
+initVoices();
 
 // === DEBUG : hooks sur l'élément audio principal pour logger tout arrêt ===
 (function setupAudioDebugHooks() {
