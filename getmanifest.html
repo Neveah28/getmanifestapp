@@ -3803,6 +3803,24 @@ body.night-mode .orb-ring {
   box-shadow: none;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
 }
+/* v1.24.0 : étiquette « Mode silencieux » sous le rond, dans les 3 modes */
+.silent-tag {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--accent) 22%, var(--card-bg, #2a201a));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 100px;
+  padding: 4px 12px;
+  pointer-events: none;
+}
 /* v1.23.0 : orbe du Challenge = orbe de Repeat */
 .ch-orb-target {
   font-size: 13px;
@@ -4172,7 +4190,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.24.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.24.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4580,6 +4598,7 @@ Object.assign(TRANSLATIONS.fr, {
   // Player bottom sheet (réglages dans player)
   player_sheet_title: 'Ma séance Repeat',
   player_sheet_title_sats: 'Ma séance SATS',
+  silent_tag: '🔕 Mode silencieux',
   sheet_section_play: 'Lecture',
   sheet_section_counter: 'Compteur',
   sats_timer: 'Arrêt automatique',
@@ -4686,6 +4705,7 @@ Object.assign(TRANSLATIONS.en, {
   ch_use_this: 'Use this affirmation',
   player_sheet_title: 'My Repeat session',
   player_sheet_title_sats: 'My SATS session',
+  silent_tag: '🔕 Silent mode',
   sheet_section_play: 'Playback',
   sheet_section_counter: 'Counter',
   sats_timer: 'Auto stop',
@@ -5412,6 +5432,7 @@ function renderPlayer() {
           <button class="orb ${playerState.playing?'':'paused'}" id="play-btn" ${availableAffs.length === 0 ? 'disabled style="opacity:0.4"' : ''}>
             ${orbInner}
           </button>
+          ${pget('silentMode') ? `<div class="silent-tag">${t('silent_tag')}</div>` : ''}
         </div>
 
         <div class="session-counter-wrap">
@@ -7200,6 +7221,7 @@ function openPlayerSheet() {
   document.getElementById('ps-silent-mode')?.addEventListener('change', (e) => {
     state.settings[pkey('silentMode')] = e.target.checked;
     saveState();
+    renderPlayer();  // v1.24.0 : affiche ou retire l'étiquette sous le rond
     toast(e.target.checked ? '🔕 Player en mode silencieux' : '🔔 Player en mode voix');
   });
 
@@ -7482,6 +7504,7 @@ function openChallengeSheet() {
   document.getElementById('cs-silent-mode')?.addEventListener('change', (e) => {
     state.settings.chSilentMode = e.target.checked;
     saveState();
+    render();  // v1.24.0 : affiche ou retire l'étiquette sous le rond
     toast(e.target.checked ? '🔕 Challenge en mode silencieux' : '🔔 Challenge en mode voix');
   });
 
@@ -7654,6 +7677,7 @@ function renderChallenge() {
                       aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
                 ${chOrbInner}
               </button>
+              ${chCfg.silentMode ? `<div class="silent-tag">${t('silent_tag')}</div>` : ''}
             </div>
           </div>
 
