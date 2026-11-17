@@ -682,7 +682,7 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
    Pour ça ch-top prend moins d'espace que ch-bottom (ratio ~0.6 vs 1) */
 .ch-top {
   /* v1.22.0 : hauteur fixe pour que l'orbe soit au même niveau qu'en Repeat et SATS */
-  flex: 0 0 var(--ch-top-h, 168px);
+  flex: 0 0 var(--ch-top-h, 150px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3793,6 +3793,40 @@ body.night-mode .orb-ring {
   font-weight: 800;
   color: var(--accent);
 }
+/* v1.23.0 : pavé vitesse identique en Repeat, SATS et Challenge : petit, sans halo (il était coupé) */
+.live-speed.speed-compact {
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+/* v1.23.0 : orbe du Challenge = orbe de Repeat */
+.ch-orb-target {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+/* v1.23.0 : titre de Repeat/SATS avec le même halo que le Challenge */
+.now-playing { font-weight: 700; }
+.now-playing .np-text {
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 24px color-mix(in srgb, var(--accent) 32%, transparent),
+    0 0 50px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 90px color-mix(in srgb, var(--accent) 10%, transparent);
+  animation: aff-halo-breath 3.5s ease-in-out infinite;
+  transition: opacity 0.35s ease-out, filter 0.35s ease-out;
+}
+.now-playing.np-glowing .np-text { animation: aff-halo-breath 2.2s ease-in-out infinite; }
+.now-playing .np-text.fade-in { animation: aff-glow-in 1.1s cubic-bezier(0.2, 0.9, 0.3, 1); }
+/* Sans défilement, le halo peut déborder (sinon il est coupé net) */
+.now-playing:not(.has-scroll),
+.now-playing:not(.has-scroll) .now-playing-inner { overflow: visible; }
 /* Bloc Vitesse qui contient l'ETA en dessous du slider */
 .speed-eta-block { padding: 10px 14px; margin-top: 0; }
 .speed-eta-block .live-speed-label { margin-bottom: 6px; }
@@ -4138,7 +4172,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.23.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.24.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -5236,7 +5270,16 @@ function updateNowPlayingTitle(title, affDurationSec) {
   text.style.transition = '';
   inner.classList.remove('scroll-auto');
   np.classList.remove('has-scroll');
+  const titleChanged = text.textContent !== (title || '');
   text.textContent = title || '';
+  np.classList.toggle('np-glowing', !!playerState.playing);
+  // v1.23.0 : même apparition lumineuse que dans le Challenge
+  if (titleChanged && playerState.playing) {
+    text.classList.remove('fade-in');
+    void text.offsetWidth;
+    text.classList.add('fade-in');
+    setTimeout(() => text.classList.remove('fade-in'), 1200);
+  }
   // Taille selon longueur du texte
   const len = (title || '').length;
   let size = '';
@@ -5386,7 +5429,7 @@ function renderPlayer() {
         <button class="session-btn end" id="end-btn" ${(playerState.playing || playerState.sessionStart) ? '' : 'aria-hidden="true"'}>${t('session_end')}</button>
       </div>
 
-      <div class="live-speed ${playerState.playing ? '' : 'session-placeholder'}">
+      <div class="live-speed speed-eta-block speed-compact ${playerState.playing ? '' : 'session-placeholder'}">
         <div class="live-speed-label">
           <span>${t('play_speed')}</span>
           <span class="live-speed-val" id="live-speed-val">${pget('playbackRate').toFixed(2)}x</span>
@@ -6741,7 +6784,7 @@ function updateChallengeOrbUI() {
   const pct = Math.min(100, (c.count / c.target) * 100);
   const remaining = Math.max(0, c.target - c.count);
 
-  const countEl = document.querySelector('.orb-count');
+  const countEl = document.querySelector('.ch-orb-count');
   if (countEl) countEl.textContent = c.count.toLocaleString('fr-FR');
 
   const pctEl = document.querySelector('.orb-pct');
@@ -6752,9 +6795,9 @@ function updateChallengeOrbUI() {
     remEl.innerHTML = `<strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}`;
   }
 
-  const progEl = document.querySelector('.orb-progress');
+  const progEl = document.getElementById('ch-ring-progress');
   if (progEl) {
-    const offset = RING_C * (1 - pct / 100);
+    const offset = REPEAT_RING_C * (1 - pct / 100);
     progEl.setAttribute('stroke-dashoffset', offset.toFixed(2));
   }
 }
@@ -7570,13 +7613,13 @@ function renderChallenge() {
     ` : ''}
 
     ${hasSelection ? (() => {
-      // === Design orbe (lune) avec progression circulaire ===
-      const RING_R = 110;
-      const RING_C = 2 * Math.PI * RING_R;
-      const ringOffset = RING_C * (1 - Math.min(100, pct) / 100);
-      const playIconSvg = c.playing
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'
-        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>';
+      // v1.23.0 : même orbe que Repeat, avec le nombre d'affirmations au milieu et l'objectif en anneau
+      const ringOffset = REPEAT_RING_C * (1 - Math.min(100, pct) / 100);
+      const countTxt = c.count.toLocaleString('fr-FR');
+      const targetTxt = c.target.toLocaleString('fr-FR');
+      const chOrbInner = c.playing
+        ? `<span class="orb-inner"><span class="orb-clock ch-orb-count">${countTxt}</span><span class="ch-orb-target">/ ${targetTxt}</span><span class="orb-pause-hint">❚❚</span></span>`
+        : `<span class="orb-inner"><span class="orb-play">▶</span><span class="orb-clock orb-clock-small"><span class="ch-orb-count">${countTxt}</span> / ${targetTxt}</span></span>`;
       // L'aff courante dans la rotation
       const curIdx = (c.currentIdx || 0) % selectedAffs.length;
       const currentAff = selectedAffs[curIdx] || selectedAffs[0];
@@ -7591,29 +7634,27 @@ function renderChallenge() {
 
           <!-- CENTRE : orbe (centrée verticalement par flex) -->
           <div class="ch-middle">
-            <button type="button" class="challenge-orb ${c.playing ? 'playing' : ''}" id="ch-toggle"
-                    aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
-              <svg class="orb-ring" viewBox="0 0 240 240">
+            <div class="orb-container">
+              <div class="orb-ring"></div>
+              <svg class="repeat-ring" viewBox="0 0 260 260" aria-hidden="true">
                 <defs>
-                  <linearGradient id="orbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="chRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="var(--accent)" />
                     <stop offset="100%" stop-color="var(--accent-light, var(--accent))" />
                   </linearGradient>
                 </defs>
-                <circle class="orb-track" cx="120" cy="120" r="${RING_R}" fill="none" />
-                <circle class="orb-progress" cx="120" cy="120" r="${RING_R}" fill="none"
-                        stroke="url(#orbGrad)"
-                        stroke-dasharray="${RING_C.toFixed(2)}"
+                <circle class="repeat-ring-track" cx="130" cy="130" r="${REPEAT_RING_R}" fill="none" />
+                <circle class="repeat-ring-progress" id="ch-ring-progress" cx="130" cy="130" r="${REPEAT_RING_R}" fill="none"
+                        stroke="url(#chRingGrad)"
+                        stroke-dasharray="${REPEAT_RING_C.toFixed(2)}"
                         stroke-dashoffset="${ringOffset.toFixed(2)}"
-                        transform="rotate(-90 120 120)" />
+                        transform="rotate(-90 130 130)" />
               </svg>
-              <div class="orb-content">
-                <div class="orb-count">${c.count.toLocaleString('fr-FR')}</div>
-                <div class="orb-target">/ ${c.target.toLocaleString('fr-FR')}</div>
-                <div class="orb-play-icon">${playIconSvg}</div>
-                <div class="orb-pct">${pct.toFixed(1)}%</div>
-              </div>
-            </button>
+              <button type="button" class="orb ${c.playing ? '' : 'paused'}" id="ch-toggle"
+                      aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
+                ${chOrbInner}
+              </button>
+            </div>
           </div>
 
           <!-- BAS : meta line (sous l'orbe, proche) + bloc vitesse+ETA + ajout manuel -->
@@ -7628,8 +7669,8 @@ function renderChallenge() {
             </button>
             </div>
 
-            <!-- Bloc Vitesse (visible tout le temps) + ETA -->
-            <div class="live-speed speed-eta-block" style="width:100%; max-width: 340px">
+            <!-- Bloc Vitesse + ETA : seulement pendant la lecture (v1.23.0), place gardée pour que rien ne bouge -->
+            <div class="live-speed speed-eta-block speed-compact ${c.playing ? '' : 'session-placeholder'}">
               <div class="live-speed-label">
                 <span>${t('play_speed')}</span>
                 <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
