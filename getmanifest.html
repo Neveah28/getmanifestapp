@@ -681,7 +681,8 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 /* Groupes haut/centre/bas : l'orbe est au centre MAIS vers le HAUT.
    Pour ça ch-top prend moins d'espace que ch-bottom (ratio ~0.6 vs 1) */
 .ch-top {
-  flex: 0.6 0 0;  /* prend ~37% de l'espace restant */
+  /* v1.22.0 : hauteur fixe pour que l'orbe soit au même niveau qu'en Repeat et SATS */
+  flex: 0 0 var(--ch-top-h, 168px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1305,7 +1306,9 @@ body.player-active .mini-header { display: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* v1.22.0 : contenu calé en haut (et non centré) pour que l'orbe soit
+     au même niveau en Repeat, SATS et Challenge, quelle que soit la hauteur */
+  justify-content: flex-start;
   gap: 24px;
   min-height: 0;
 }
@@ -1529,6 +1532,60 @@ body.player-active .mini-header { display: none; }
 @keyframes orbPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.04); }
+}
+/* Chrono Repeat dans l'orbe (v1.23.0) */
+.orb-inner {
+  font-family: 'Nunito', -apple-system, system-ui, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.orb-clock {
+  font-size: 36px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+.orb-clock-small {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+  opacity: 0.9;
+}
+.orb-pause-hint {
+  font-size: 13px;
+  margin-top: 8px;
+  opacity: 0.8;
+  letter-spacing: 1px;
+}
+.orb-play { font-size: 44px; line-height: 1; }
+.orb-goal {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 800;
+}
+.orb-goal[hidden] { display: none; }
+.repeat-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+.repeat-ring-track { stroke: var(--line); stroke-width: 4; opacity: 0.5; }
+.repeat-ring-progress {
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 40%, transparent));
 }
 .orb-ring {
   position: absolute;
@@ -2047,6 +2104,8 @@ body.player-active .mini-header { display: none; }
   margin-bottom: 8px;
 }
 .ps-row-last { margin-bottom: 0; }
+.ps-section { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 16px 4px 8px; }
+.ps-section-first { margin-top: 2px; }
 .ps-head {
   display: flex;
   align-items: center;
@@ -3820,6 +3879,76 @@ body.night-mode .orb-ring {
   align-items: center;
   margin-bottom: 20px;
 }
+/* VERROU : écran du code d'accès (au-dessus de l'onboarding) */
+.lock-overlay {
+  z-index: 600;
+  justify-content: center;
+  align-items: center;
+}
+.lock-box {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.lock-logo {
+  font-size: 40px;
+  color: var(--accent);
+  filter: drop-shadow(0 2px 6px var(--accent-glow));
+}
+.lock-brand {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.lock-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-top: 22px;
+}
+.lock-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 10px 0 22px;
+}
+.lock-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--text-strong);
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.lock-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.lock-error {
+  min-height: 20px;
+  margin: 10px 0 14px;
+  font-size: 13px;
+  color: var(--danger);
+}
+.lock-help {
+  margin-top: 26px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+.lock-help a {
+  color: var(--accent);
+}
 .ob-step-indicator {
   font-size: 10px;
   letter-spacing: 1.5px;
@@ -4009,7 +4138,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.21.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.23.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4036,7 +4165,7 @@ const TRANSLATIONS = {
     tab_list: 'Affs',
     tab_challenge: 'Challenge',
     tab_stats: 'Stats',
-    tab_settings: 'Régl.',
+    tab_settings: 'Profil',
     // Player
     player_eyebrow: 'Lecture en boucle',
     player_title: 'Repeat',
@@ -4108,8 +4237,8 @@ const TRANSLATIONS = {
     contains: 'Contient',
     // Settings
     settings_eyebrow: 'Personnalise',
-    settings_title_1: 'Tes',
-    settings_title_2: 'réglages',
+    settings_title_1: 'Ton',
+    settings_title_2: 'profil',
     language: 'Langue',
     appearance: 'Apparence',
     dark_mode: 'Mode sombre',
@@ -4195,7 +4324,7 @@ const TRANSLATIONS = {
     tab_list: 'Affs',
     tab_challenge: 'Challenge',
     tab_stats: 'Stats',
-    tab_settings: 'Settings',
+    tab_settings: 'Profile',
     player_eyebrow: 'Loop playback',
     player_title: 'Repeat',
     player_title_1: 'Mode',
@@ -4263,7 +4392,7 @@ const TRANSLATIONS = {
     contains: 'Contains',
     settings_eyebrow: 'Customize',
     settings_title_1: 'Your',
-    settings_title_2: 'settings',
+    settings_title_2: 'profile',
     language: 'Language',
     appearance: 'Appearance',
     dark_mode: 'Dark mode',
@@ -4415,11 +4544,18 @@ Object.assign(TRANSLATIONS.fr, {
   ch_redo: '✕ Recommencer',
   ch_use_this: 'Utiliser cette affirmation',
   // Player bottom sheet (réglages dans player)
-  player_sheet_title: 'Réglages de lecture',
+  player_sheet_title: 'Ma séance Repeat',
+  player_sheet_title_sats: 'Ma séance SATS',
+  sheet_section_play: 'Lecture',
+  sheet_section_counter: 'Compteur',
+  sats_timer: 'Arrêt automatique',
+  sats_timer_sub: 'La voix s\'adoucit puis s\'arrête au bout de ce temps.',
   player_sheet_btn: 'Réglages',
-  challenge_sheet_title: 'Réglages du challenge',
+  challenge_sheet_title: 'Mon Challenge',
   silent_mode: 'Mode silencieux',
   silent_mode_sub: 'Un bip au lieu de la voix (double bip au changement d\'aff)',
+  session_duration: 'Durée de séance',
+  session_duration_sub: 'Le temps s\'affiche toujours dans le rond. Avec une durée, l\'anneau se remplit et ça vibre à la fin. La lecture continue.',
   // Share
   share: 'Partager',
   share_playlist: 'Partager cette playlist',
@@ -4514,11 +4650,18 @@ Object.assign(TRANSLATIONS.en, {
   ch_rec_hint: 'Tap to record your voice',
   ch_redo: '✕ Redo',
   ch_use_this: 'Use this affirmation',
-  player_sheet_title: 'Playback settings',
+  player_sheet_title: 'My Repeat session',
+  player_sheet_title_sats: 'My SATS session',
+  sheet_section_play: 'Playback',
+  sheet_section_counter: 'Counter',
+  sats_timer: 'Auto stop',
+  sats_timer_sub: 'The voice fades out and stops after this time.',
   player_sheet_btn: 'Settings',
-  challenge_sheet_title: 'Challenge settings',
+  challenge_sheet_title: 'My Challenge',
   silent_mode: 'Silent mode',
   silent_mode_sub: 'A beep instead of your voice (double beep on aff change)',
+  session_duration: 'Session length',
+  session_duration_sub: 'Time always shows in the circle. With a length, the ring fills up and your phone vibrates at the end. Playback keeps going.',
   share: 'Share',
   share_playlist: 'Share this playlist',
   share_sub: 'Send the file to a friend so they can import your affirmations.',
@@ -4668,6 +4811,16 @@ function loadState() {
       settings.chNightMode = settings.nightMode || false;
       settings.chNightTimer = settings.nightTimer || 60;
     }
+    // v1.23.0 : SATS prend ses propres réglages, copiés une fois depuis Repeat
+    if (!('satsPlaybackRate' in prevSettings)) {
+      settings.satsAffVolume = settings.affVolume;
+      settings.satsPlaybackRate = settings.playbackRate;
+      settings.satsPauseBetween = settings.pauseBetween;
+      settings.satsSilentMode = settings.silentMode || false;
+    }
+    // v1.22.0 : plus de musique d'ambiance fournie (droits non vérifiés) → coupée partout
+    settings.musicMode = 'none';
+    settings.chMusicMode = 'none';
     const challenge = Object.assign(d.challenge, p.challenge || {});
     // Migration : ancien champ affirmationId (string) → affirmationIds (array)
     if (!challenge.affirmationIds || !Array.isArray(challenge.affirmationIds)) {
@@ -4993,6 +5146,10 @@ let playerState = {
   repeatPending: false,
   sessionStart: null,
   sessionTimerInterval: null,
+  // Chrono Repeat (v1.23.0) : temps de lecture cumulé, hors pauses
+  elapsedMs: 0,
+  runStart: null,
+  goalNotified: false,
 };
 
 function formatSessionTime(secs) {
@@ -5003,6 +5160,66 @@ function formatSessionTime(secs) {
   if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   return `${m}:${String(s).padStart(2,'0')}`;
 }
+
+// ============================================================
+// CHRONO REPEAT (v1.23.0) : temps de lecture dans l'orbe,
+// durée de séance optionnelle (réglages) avec anneau + vibration à la fin
+// ============================================================
+function syncRepeatClock() {
+  const now = Date.now();
+  if (playerState.playing && !playerState.runStart) {
+    playerState.runStart = now;
+  } else if (!playerState.playing && playerState.runStart) {
+    playerState.elapsedMs += now - playerState.runStart;
+    playerState.runStart = null;
+  }
+}
+function getRepeatElapsedMs() {
+  syncRepeatClock();
+  return playerState.elapsedMs + (playerState.runStart ? Date.now() - playerState.runStart : 0);
+}
+function resetRepeatClock() {
+  playerState.elapsedMs = 0;
+  playerState.runStart = null;
+  playerState.goalNotified = false;
+}
+function getRepeatGoalMs() {
+  return Math.max(0, state.settings.repeatDuration || 0) * 60000;
+}
+function formatRepeatClock(ms) {
+  const secs = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+const REPEAT_RING_R = 112;
+const REPEAT_RING_C = 2 * Math.PI * REPEAT_RING_R;
+function repeatRingOffset(elapsed) {
+  const goal = getRepeatGoalMs();
+  const pct = goal > 0 ? Math.min(1, elapsed / goal) : 0;
+  return REPEAT_RING_C * (1 - pct);
+}
+function updateRepeatClock() {
+  if (state.ui.playerMode === 'sats') return;
+  const clockEl = document.getElementById('orb-clock');
+  if (!clockEl) return;
+  const elapsed = getRepeatElapsedMs();
+  clockEl.textContent = formatRepeatClock(elapsed);
+  const prog = document.getElementById('repeat-ring-progress');
+  if (prog) prog.setAttribute('stroke-dashoffset', repeatRingOffset(elapsed).toFixed(2));
+  const goal = getRepeatGoalMs();
+  if (goal > 0 && elapsed >= goal) {
+    if (!playerState.goalNotified) {
+      playerState.goalNotified = true;
+      if (playerState.playing) { try { if (navigator.vibrate) navigator.vibrate([200, 120, 200]); } catch(e){} }
+    }
+    const goalEl = document.getElementById('orb-goal');
+    if (goalEl) goalEl.removeAttribute('hidden');
+  }
+}
+setInterval(updateRepeatClock, 1000);
 
 // Met à jour le titre affiché dans .now-playing avec:
 // - font-size adaptative selon la longueur
@@ -5039,7 +5256,7 @@ function updateNowPlayingTitle(title, affDurationSec) {
       inner.classList.add('scroll-auto');
       np.classList.add('has-scroll');
       // Durée totale = durée de l'aff (ou 10s par défaut) ajustée par playbackRate
-      const rate = state.settings.playbackRate || 1;
+      const rate = pget('playbackRate') || 1;
       const totalDur = Math.max(5, (affDurationSec || 10) / rate) * 1000; // ms
       const start = performance.now();
       // Anime scroll: 10% pause top, 80% scroll down, 10% pause bottom, alterne
@@ -5081,6 +5298,40 @@ function renderPlayer() {
     ? `<div class="last-session-label">${t('last_session')} <em>${playerState.lastSessionCount}</em></div>`
     : '';
 
+  // Chrono Repeat (v1.23.0) : temps dans l'orbe ; anneau seulement si une durée est choisie
+  const isRepeatMode = state.ui.playerMode !== 'sats';
+  const repeatElapsed = getRepeatElapsedMs();
+  const repeatGoal = getRepeatGoalMs();
+  const repeatGoalReached = repeatGoal > 0 && repeatElapsed >= repeatGoal;
+  const showRepeatRing = isRepeatMode && repeatGoal > 0;
+  const repeatClock = formatRepeatClock(repeatElapsed);
+  const goalBadge = `<span class="orb-goal" id="orb-goal" ${repeatGoalReached ? '' : 'hidden'}>✓</span>`;
+  let orbInner;
+  if (!isRepeatMode) {
+    orbInner = playerState.playing ? '❚❚' : '▶';
+  } else if (playerState.playing) {
+    orbInner = `<span class="orb-inner">${goalBadge}<span class="orb-clock" id="orb-clock">${repeatClock}</span><span class="orb-pause-hint">❚❚</span></span>`;
+  } else if (playerState.sessionStart) {
+    orbInner = `<span class="orb-inner">${goalBadge}<span class="orb-play">▶</span><span class="orb-clock orb-clock-small" id="orb-clock">${repeatClock}</span></span>`;
+  } else {
+    orbInner = '▶';
+  }
+  const repeatRingSvg = showRepeatRing ? `
+          <svg class="repeat-ring" viewBox="0 0 260 260" aria-hidden="true">
+            <defs>
+              <linearGradient id="repeatRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--accent)" />
+                <stop offset="100%" stop-color="var(--accent-light, var(--accent))" />
+              </linearGradient>
+            </defs>
+            <circle class="repeat-ring-track" cx="130" cy="130" r="${REPEAT_RING_R}" fill="none" />
+            <circle class="repeat-ring-progress" id="repeat-ring-progress" cx="130" cy="130" r="${REPEAT_RING_R}" fill="none"
+                    stroke="url(#repeatRingGrad)"
+                    stroke-dasharray="${REPEAT_RING_C.toFixed(2)}"
+                    stroke-dashoffset="${repeatRingOffset(repeatElapsed).toFixed(2)}"
+                    transform="rotate(-90 130 130)" />
+          </svg>` : '';
+
   document.getElementById('page-player').innerHTML = `
     <div class="player-fullscreen">
       <div class="player-top">
@@ -5105,18 +5356,6 @@ function renderPlayer() {
         </select>
       </div>
 
-      <!-- Timer SATS : visible seulement en mode SATS (le mode nuit est activé automatiquement) -->
-      ${state.ui.playerMode === 'sats' ? `
-        <div class="night-mode-wrap">
-          <div class="sats-label">🌙 SATS · timer d'arrêt automatique</div>
-          <div class="night-timer-row">
-            ${[60, 120, 240, 480].map(min => `
-              <button class="night-timer-chip ${s.nightTimer===min?'active':''}" data-night-timer="${min}">${min/60}h</button>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-
       <div class="player-main">
         <div class="now-playing" id="now-playing">
           <div class="now-playing-inner" id="now-playing-inner">
@@ -5126,8 +5365,9 @@ function renderPlayer() {
 
         <div class="orb-container">
           <div class="orb-ring"></div>
+          ${repeatRingSvg}
           <button class="orb ${playerState.playing?'':'paused'}" id="play-btn" ${availableAffs.length === 0 ? 'disabled style="opacity:0.4"' : ''}>
-            ${playerState.playing ? '❚❚' : '▶'}
+            ${orbInner}
           </button>
         </div>
 
@@ -5136,6 +5376,8 @@ function renderPlayer() {
           <div class="session-counter-label">${t('session_affs')}</div>
           ${lastSessionLabel}
         </div>
+
+        <!-- Timer SATS : rangé dans la roue « Ma séance SATS » (v1.23.0) -->
       </div>
 
       <!-- Zone d'actions session : juste "Terminer" (pause/play = clic sur l'orb).
@@ -5147,9 +5389,9 @@ function renderPlayer() {
       <div class="live-speed ${playerState.playing ? '' : 'session-placeholder'}">
         <div class="live-speed-label">
           <span>${t('play_speed')}</span>
-          <span class="live-speed-val" id="live-speed-val">${s.playbackRate.toFixed(2)}x</span>
+          <span class="live-speed-val" id="live-speed-val">${pget('playbackRate').toFixed(2)}x</span>
         </div>
-        <input type="range" id="live-speed" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
+        <input type="range" id="live-speed" min="0.5" max="3" step="0.05" value="${pget('playbackRate')}" />
       </div>
 
     </div>
@@ -5168,7 +5410,8 @@ function renderPlayer() {
   document.getElementById('group-select').addEventListener('change', (e) => {
     s.selectedGroupId = e.target.value;
     saveState();
-    if (playerState.playing) stopPlayback(false);
+    // v1.23.0 : on termine la session (et on jette l'ancien audio), sinon Play reprenait l'ancienne playlist
+    if (playerState.playing || playerState.sessionStart) endPlaybackSession();
     playerState.lastSessionCount = 0;
     playerState.totalPlayed = 0;
     render();
@@ -5194,7 +5437,7 @@ function renderPlayer() {
   });
   document.getElementById('live-speed')?.addEventListener('input', (e) => {
     const v = parseFloat(e.target.value);
-    state.settings.playbackRate = v;
+    state.settings[pkey('playbackRate')] = v;
     saveState();
     document.getElementById('live-speed-val').textContent = v.toFixed(2) + 'x';
     document.getElementById('aff-audio').playbackRate = v;
@@ -5243,6 +5486,7 @@ async function startPlayback() {
   if (!playerState.sessionStart) {
     playerState.sessionStart = Date.now();
     playerState.totalPlayed = 0;
+    resetRepeatClock();
   }
   state.stats.sessionsCount++;
   saveState();
@@ -5255,9 +5499,9 @@ async function startPlayback() {
   // Nouveau: on construit UN SEUL gros audio concaténé pour toute la queue
   // avec les silences entre, puis audio.loop = true. Comme ça aucun switch
   // de src, aucun gap → Chrome Android ne met jamais l'app en veille.
-  const pauseSec = Math.max(0, state.settings.pauseBetween || 0);
+  const pauseSec = Math.max(0, pget('pauseBetween') || 0);
   // En mode silencieux (bips), pas de buffer concaténé possible: on repasse en mode legacy
-  if (state.settings.silentMode) { playNext(); return; }
+  if (pget('silentMode')) { playNext(); return; }
   const url = await buildQueueBuffer(affs, pauseSec);
   if (!url) { playNext(); return; }  // fallback si décodage échoue
   const firstAff = affs[0];
@@ -5268,7 +5512,7 @@ async function startPlayback() {
   // MODE MIX : Web Audio au lieu de <audio> (ne pause pas Spotify)
   if (state.settings.allowMixing) {
     if (queueBufferCtx && queueBufferCtx.state === 'suspended') await queueBufferCtx.resume();
-    const ok = startMixPlayback(queueBufferAudio, 0, state.settings.playbackRate || 1, state.settings.affVolume || 1);
+    const ok = startMixPlayback(queueBufferAudio, 0, pget('playbackRate') || 1, pget('affVolume') || 1);
     if (ok) { startQueueTick(); return; }
     // Si start web audio échoue, on retombe sur le mode normal
   }
@@ -5277,8 +5521,8 @@ async function startPlayback() {
   const audio = document.getElementById('aff-audio');
   audio.src = url;
   audio.loop = true;
-  audio.volume = state.settings.affVolume;
-  audio.playbackRate = state.settings.playbackRate;
+  audio.volume = pget('affVolume');
+  audio.playbackRate = pget('playbackRate');
   applyNightMode(state.settings.nightMode === true);
   try {
     await audio.play();
@@ -5307,6 +5551,16 @@ function pausePlayback() {
 
 async function resumePlayback() {
   logEvent('resumePlayback_called', { mix: !!state.settings.allowMixing, hasBuffer: !!queueBufferURL });
+  // v1.23.0 : si la playlist a changé depuis la pause, on ne reprend pas l'ancien audio
+  if (queueBufferURL && queueBufferKey !== queueKeyFor(getAvailableAffs(), Math.max(0, pget('pauseBetween') || 0))) {
+    logEvent('resume_stale_queue');
+    stopMixPlayback();
+    mixPausedPos = 0;
+    clearQueueBuffer();
+    playerState.currentIdx = 0;
+    await startPlayback();
+    return;
+  }
   playerState.playing = true;
   playerState.paused = false;
   startMusic();
@@ -5315,7 +5569,7 @@ async function resumePlayback() {
   // Mode MIX : on reprend via Web Audio Source Node
   if (state.settings.allowMixing && queueBufferAudio) {
     if (queueBufferCtx && queueBufferCtx.state === 'suspended') await queueBufferCtx.resume();
-    if (resumeMixPlayback(queueBufferAudio, state.settings.playbackRate || 1, state.settings.affVolume || 1)) {
+    if (resumeMixPlayback(queueBufferAudio, pget('playbackRate') || 1, pget('affVolume') || 1)) {
       startQueueTick(); renderPlayer(); return;
     }
   }
@@ -5326,8 +5580,8 @@ async function resumePlayback() {
   if (queueBufferURL && audio && audio.src && audio.src.includes(queueBufferURL.split('/').pop())) {
     try {
       // Re-applique les settings au cas où
-      audio.volume = state.settings.affVolume;
-      audio.playbackRate = state.settings.playbackRate || 1;
+      audio.volume = pget('affVolume');
+      audio.playbackRate = pget('playbackRate') || 1;
       audio.loop = true;
       await audio.play();
       // Rafraîchit Media Session pour re-lier le routing audio au casque
@@ -5350,6 +5604,7 @@ function endPlaybackSession() {
   playerState.paused = false;
   playerState.sessionStart = null;
   playerState.currentIdx = 0;
+  resetRepeatClock();
   const audio = document.getElementById('aff-audio');
   audio.pause();
   audio.loop = false;
@@ -5533,12 +5788,12 @@ function playNext() {
   // Mode silencieux : bip au lieu de la voix (côté Player)
   // Le bip reste court mais on attend la durée RÉELLE de l'aff (ajustée par la vitesse)
   // pour que le rythme corresponde à ce qu'on aurait eu avec la voix.
-  if (state.settings.silentMode) {
+  if (pget('silentMode')) {
     // Double bip SEULEMENT si plusieurs affs dans la queue ET nouvelle aff
     const isChange = (playerState.currentRepeat || 0) === 0 && (playerState.queue?.length || 0) > 1;
-    playBeep(isChange, state.settings.affVolume);
+    playBeep(isChange, pget('affVolume'));
     const affDuration = (aff.duration || 3) * 1000; // ms (fallback 3s)
-    const rate = state.settings.playbackRate || 1;
+    const rate = pget('playbackRate') || 1;
     const waitMs = Math.max(400, affDuration / rate);
     setTimeout(() => {
       if (!playerState.playing) return;
@@ -5548,8 +5803,8 @@ function playNext() {
   }
 
   audio.src = aff.recording;
-  audio.volume = state.settings.affVolume;
-  audio.playbackRate = state.settings.playbackRate;
+  audio.volume = pget('affVolume');
+  audio.playbackRate = pget('playbackRate');
   // Appliquer le mode nuit si activé
   applyNightMode(state.settings.nightMode === true);
   audio.play().catch(e => { toast(t('toast_play_error')); stopPlayback(); });
@@ -5595,13 +5850,13 @@ function handlePlayNextEnd(aff) {
   if (tc) tc.textContent = playerState.totalPlayed;
 
   const stEl2 = document.getElementById('np-state');
-  if (stEl2) stEl2.textContent = t('pause_wait', { s: state.settings.pauseBetween });
+  if (stEl2) stEl2.textContent = t('pause_wait', { s: pget('pauseBetween') });
 
   // Enchaînement : au lieu de setTimeout (throttled en background Android),
   // on joue un audio silencieux de la durée de la pause. L'audio continue
   // → Chrome ne met pas l'app en pause.
   const audio = document.getElementById('aff-audio');
-  const pauseSec = Math.max(0, state.settings.pauseBetween || 0);
+  const pauseSec = Math.max(0, pget('pauseBetween') || 0);
   playSilenceThen(pauseSec, audio, () => {
     if (!playerState.playing) return;
     playNext();
@@ -5698,7 +5953,7 @@ function playSilenceThen(seconds, audioEl, onEnd) {
     audioEl.src = makeSilenceURL(seconds);
     audioEl.volume = 0;
     audioEl.playbackRate = 1.0;
-    const done = () => { audioEl.volume = state.settings.affVolume; onEnd(); };
+    const done = () => { audioEl.volume = state.challenge.playing ? cfgFor('challenge').affVolume : pget('affVolume'); onEnd(); };
     audioEl.onended = done;
     audioEl.play().catch(() => done());
   } catch(e) { onEnd(); }
@@ -5716,6 +5971,7 @@ let queueBufferDuration = 0;      // durée totale en secondes
 let queueBufferSegments = [];     // [{affId, startSec, endSec, affDuration}, ...]
 let queueBufferCtx = null;        // AudioContext dédié pour décoder
 let lastQueueBufferTime = 0;      // suivi currentTime pour détecter fin d'aff en background
+let queueBufferKey = null;        // Empreinte de la liste qui a servi à construire le gros audio
 let queueBufferAudio = null;      // AudioBuffer gardé en RAM pour le mode "mix avec Spotify"
 // === MIX MODE : Web Audio AudioBufferSource au lieu de <audio> element ===
 let mixSourceNode = null;         // AudioBufferSourceNode courant
@@ -5843,6 +6099,7 @@ async function buildQueueBuffer(queue, pauseSec) {
       cursor += mono.length + silenceSamples;
     }
     queueBufferDuration = out.length / sampleRate;
+    queueBufferKey = queueKeyFor(queue, pauseSec);
     queueBufferAudio = out;  // Garde en RAM pour le mode mix (Web Audio Source Node)
     const blob = audioBufferToWavBlob(out);
     if (queueBufferURL) URL.revokeObjectURL(queueBufferURL);
@@ -5932,7 +6189,7 @@ let lastQueueSaveWall = 0;
 function processQueueProgress(prev, curr, wallDeltaMs) {
   if (!queueBufferSegments.length || queueBufferDuration <= 0) return;
   const dur = queueBufferDuration;
-  const rate = state.settings.playbackRate || 1;
+  const rate = pget('playbackRate') || 1;
   const expectedDelta = ((wallDeltaMs || 0) / 1000) * rate;
   // Nombre de loops complets manqués, CAPÉ pour éviter runaway (crash)
   let fullLoops = 0;
@@ -6027,8 +6284,14 @@ function getCurrentQueueAff(timeSec) {
 }
 
 // Nettoie le buffer de la queue (session terminée)
+// Empreinte d'une liste : si elle change (playlist, voix, répétitions, pause), l'ancien audio n'est plus bon
+function queueKeyFor(affs, pauseSec) {
+  return (affs || []).map(a => a.id + ':' + (a.repeatCount || 1) + ':' + (a.recording ? a.recording.length : 0)).join(',') + '|' + pauseSec;
+}
+
 function clearQueueBuffer() {
   stopQueueTick();
+  queueBufferKey = null;
   if (queueBufferURL) { try { URL.revokeObjectURL(queueBufferURL); } catch(e){} queueBufferURL = null; }
   queueBufferAudio = null;  // libère la RAM
   queueBufferSegments = [];
@@ -6153,6 +6416,11 @@ let musicFileFadeInterval = null;
 let activeAudioCtx = 'player';
 
 // Helper : récupère les paramètres audio du contexte (player ou challenge)
+// v1.23.0 : SATS a ses propres réglages (voix, vitesse, pause, silencieux), à part de Repeat
+const SATS_KEYS = { affVolume: 'satsAffVolume', playbackRate: 'satsPlaybackRate', pauseBetween: 'satsPauseBetween', silentMode: 'satsSilentMode' };
+function pkey(k) { return (state.ui.playerMode === 'sats' && SATS_KEYS[k]) ? SATS_KEYS[k] : k; }
+function pget(k) { const v = state.settings[pkey(k)]; return (v === undefined || v === null) ? state.settings[k] : v; }
+
 function cfgFor(ctx) {
   const s = state.settings;
   if (ctx === 'challenge') {
@@ -6169,13 +6437,13 @@ function cfgFor(ctx) {
     };
   }
   return {
-    affVolume: s.affVolume,
+    affVolume: pget('affVolume'),
     musicVolume: s.musicVolume,
-    playbackRate: s.playbackRate,
-    pauseBetween: s.pauseBetween,
+    playbackRate: pget('playbackRate'),
+    pauseBetween: pget('pauseBetween'),
     musicMode: s.musicMode,
     ambianceId: s.ambianceId,
-    silentMode: s.silentMode ?? false,
+    silentMode: pget('silentMode') ?? false,
     nightMode: s.nightMode ?? false,
     nightTimer: s.nightTimer ?? 60,
   };
@@ -6691,18 +6959,31 @@ function openPlayerSheet() {
   overlay.innerHTML = `
     <div class="modal">
       <div class="modal-handle"></div>
-      <div class="modal-title">${t('player_sheet_title')}</div>
+      <div class="modal-title">${state.ui.playerMode === 'sats' ? t('player_sheet_title_sats') : t('player_sheet_title')}</div>
+
+      ${state.ui.playerMode === 'sats' ? `
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🌙</span>
+          <span class="ps-label">${t('sats_timer')}</span>
+        </div>
+        <div class="music-mode-row">
+          ${[60, 120, 240, 480].map(min => `<button class="music-mode-btn ${s.nightTimer===min?'active':''}" data-ps-night-timer="${min}">${min/60}h</button>`).join('')}
+        </div>
+        <div class="ps-sub">${t('sats_timer_sub')}</div>
+      </div>
+      ` : ''}
 
       <div class="ps-row">
         <div class="ps-head">
           <span class="ps-icon">🎙️</span>
           <span class="ps-label">${t('aff_volume')}</span>
-          <span class="ps-val" id="ps-val-aff-vol">${Math.round(s.affVolume*100)}%</span>
+          <span class="ps-val" id="ps-val-aff-vol">${Math.round(pget('affVolume')*100)}%</span>
         </div>
-        <input type="range" id="ps-aff-vol" min="0" max="1" step="0.05" value="${s.affVolume}" />
+        <input type="range" id="ps-aff-vol" min="0" max="1" step="0.05" value="${pget('affVolume')}" />
       </div>
 
-      <div class="ps-row">
+      <div class="ps-row" style="display:none">
         <div class="ps-head">
           <span class="ps-icon">🎵</span>
           <span class="ps-label">${t('music_volume')}</span>
@@ -6715,21 +6996,32 @@ function openPlayerSheet() {
         <div class="ps-head">
           <span class="ps-icon">⚡</span>
           <span class="ps-label">${t('play_speed')}</span>
-          <span class="ps-val" id="ps-val-rate">${s.playbackRate.toFixed(2)}x</span>
+          <span class="ps-val" id="ps-val-rate">${pget('playbackRate').toFixed(2)}x</span>
         </div>
-        <input type="range" id="ps-rate" min="0.5" max="3" step="0.05" value="${s.playbackRate}" />
+        <input type="range" id="ps-rate" min="0.5" max="3" step="0.05" value="${pget('playbackRate')}" />
       </div>
 
       <div class="ps-row">
         <div class="ps-head">
           <span class="ps-icon">⏸️</span>
           <span class="ps-label">${t('pause_between')}</span>
-          <span class="ps-val" id="ps-val-pause">${s.pauseBetween}s</span>
+          <span class="ps-val" id="ps-val-pause">${pget('pauseBetween')}s</span>
         </div>
-        <input type="range" id="ps-pause" min="0" max="15" step="1" value="${s.pauseBetween}" />
+        <input type="range" id="ps-pause" min="0" max="15" step="1" value="${pget('pauseBetween')}" />
       </div>
 
-      <div class="ps-row">
+      <div class="ps-row" ${state.ui.playerMode === 'sats' ? 'style="display:none"' : ''}>
+        <div class="ps-head">
+          <span class="ps-icon">⏱️</span>
+          <span class="ps-label">${t('session_duration')}</span>
+        </div>
+        <div class="music-mode-row">
+          ${[0, 5, 10, 15, 20, 30].map(m => `<button class="music-mode-btn ${(s.repeatDuration || 0) === m ? 'active' : ''}" data-ps-duration="${m}">${m === 0 ? t('none') : m + ' min'}</button>`).join('')}
+        </div>
+        <div class="ps-sub">${t('session_duration_sub')}</div>
+      </div>
+
+      <div class="ps-row" style="display:none">
         <div class="ps-head">
           <span class="ps-icon">🎧</span>
           <span class="ps-label">${t('ambiance')}</span>
@@ -6755,7 +7047,7 @@ function openPlayerSheet() {
           <span class="ps-icon">🔕</span>
           <span class="ps-label">${t('silent_mode')}</span>
           <label class="ps-switch">
-            <input type="checkbox" id="ps-silent-mode" ${s.silentMode ? 'checked' : ''}>
+            <input type="checkbox" id="ps-silent-mode" ${pget('silentMode') ? 'checked' : ''}>
             <span class="ps-switch-slider"></span>
           </label>
         </div>
@@ -6783,7 +7075,7 @@ function openPlayerSheet() {
     const el = document.getElementById(id);
     el.addEventListener('input', (e) => {
       const v = parseFloat(e.target.value);
-      state.settings[key] = v;
+      state.settings[pkey(key)] = v;
       saveState();
       document.getElementById('ps-val-' + id.replace('ps-', '')).textContent = format(v);
       if (key === 'musicVolume') updateDroneVolume();
@@ -6863,7 +7155,7 @@ function openPlayerSheet() {
 
   // Silent mode toggle (PLAYER uniquement — le Challenge a son propre toggle)
   document.getElementById('ps-silent-mode')?.addEventListener('change', (e) => {
-    state.settings.silentMode = e.target.checked;
+    state.settings[pkey('silentMode')] = e.target.checked;
     saveState();
     toast(e.target.checked ? '🔕 Player en mode silencieux' : '🔔 Player en mode voix');
   });
@@ -6877,6 +7169,29 @@ function openPlayerSheet() {
     } else {
       toast('🎧 Mix désactivé. Relance pour appliquer.');
     }
+  });
+
+  // Minuteur SATS (v1.23.0, dans la roue)
+  overlay.querySelectorAll('[data-ps-night-timer]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.nightTimer = parseInt(b.dataset.psNightTimer, 10);
+      saveState();
+      overlay.querySelectorAll('[data-ps-night-timer]').forEach(x => x.classList.toggle('active', x === b));
+      if (playerState.playing && state.settings.nightMode) startNightTimer();
+      toast(t('night_timer_set', { n: state.settings.nightTimer / 60 }));
+    });
+  });
+
+  // Durée de séance Repeat (v1.23.0) : optionnelle, 0 = aucune (le temps s'affiche quand même)
+  overlay.querySelectorAll('[data-ps-duration]').forEach(b => {
+    b.addEventListener('click', () => {
+      const m = parseInt(b.dataset.psDuration, 10) || 0;
+      state.settings.repeatDuration = m;
+      saveState();
+      overlay.querySelectorAll('[data-ps-duration]').forEach(x => x.classList.toggle('active', x === b));
+      playerState.goalNotified = m > 0 && getRepeatElapsedMs() >= m * 60000;
+      renderPlayer();
+    });
   });
 
   document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
@@ -6897,33 +7212,7 @@ function openChallengeSheet() {
       <div class="modal-handle"></div>
       <div class="modal-title">${t('challenge_sheet_title')}</div>
 
-      <div class="ps-row">
-        <div class="ps-head">
-          <span class="ps-icon">🎙️</span>
-          <span class="ps-label">${t('challenge_this_aff')}</span>
-        </div>
-        <button class="btn-secondary" id="cs-change-aff" style="width:100%; margin-top:4px; display:inline-flex; align-items:center; justify-content:center; gap:6px">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-          Modifier la sélection
-        </button>
-      </div>
-
-      <div class="ps-row">
-        <div class="ps-head">
-          <span class="ps-icon">🎯</span>
-          <span class="ps-label">Objectif</span>
-          <span class="ps-val">${(state.challenge.target/1000)}K</span>
-        </div>
-        <div class="target-chips">
-          ${[10000, 20000, 30000, 40000, 50000].map(n => `
-            <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-cs-target="${n}">
-              ${(n/1000) + 'K'}
-            </button>
-          `).join('')}
-        </div>
-      </div>
+      <div class="ps-section ps-section-first">${t('sheet_section_play')}</div>
 
       <div class="ps-row">
         <div class="ps-head">
@@ -6934,7 +7223,7 @@ function openChallengeSheet() {
         <input type="range" id="cs-aff-vol" min="0" max="1" step="0.05" value="${s.chAffVolume}" />
       </div>
 
-      <div class="ps-row">
+      <div class="ps-row" style="display:none">
         <div class="ps-head">
           <span class="ps-icon">🎵</span>
           <span class="ps-label">${t('music_volume')}</span>
@@ -6961,7 +7250,7 @@ function openChallengeSheet() {
         <input type="range" id="cs-pause" min="0" max="15" step="1" value="${s.chPauseBetween}" />
       </div>
 
-      <div class="ps-row">
+      <div class="ps-row" style="display:none">
         <div class="ps-head">
           <span class="ps-icon">🎧</span>
           <span class="ps-label">${t('ambiance')}</span>
@@ -7004,6 +7293,36 @@ function openChallengeSheet() {
           </label>
         </div>
         <div class="ps-sub">Ta musique continue en parallèle. Perd les contrôles depuis l'écran verrouillé.</div>
+      </div>
+
+      <div class="ps-section">${t('sheet_section_counter')}</div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎙️</span>
+          <span class="ps-label">${t('challenge_this_aff')}</span>
+        </div>
+        <button class="btn-secondary" id="cs-change-aff" style="width:100%; margin-top:4px; display:inline-flex; align-items:center; justify-content:center; gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          Modifier la sélection
+        </button>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎯</span>
+          <span class="ps-label">Objectif</span>
+          <span class="ps-val">${(state.challenge.target/1000)}K</span>
+        </div>
+        <div class="target-chips">
+          ${[10000, 20000, 30000, 40000, 50000].map(n => `
+            <button class="target-chip ${state.challenge.target === n ? 'active' : ''}" data-cs-target="${n}">
+              ${(n/1000) + 'K'}
+            </button>
+          `).join('')}
+        </div>
       </div>
 
       <div class="ps-row">
@@ -7323,9 +7642,9 @@ function renderChallenge() {
 
           </div>
 
-          <!-- Poignée demi-ronde en bas de l'écran, juste au-dessus de la nav onglets -->
-          <button class="ch-settings-handle" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Bouton paramètres en haut à droite, comme Repeat et SATS (v1.22.0) -->
+          <button class="player-gear-btn" id="ch-settings-btn" aria-label="${t('challenge_sheet_title')}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
@@ -7494,9 +7813,8 @@ function renderChallenge() {
   });
 
   // Enregistrement direct dans l'onglet 10K
-  if (!aff) {
-    setupChallengeRecorder();
-  }
+  // (v1.23.0 : 'aff' n'existait pas ici → l'écran plantait et le Challenge ne lançait jamais la voix)
+  setupChallengeRecorder();
 }
 
 // Enregistrement intégré dans l'onglet 10K
@@ -8994,21 +9312,6 @@ function renderSettings() {
       </div>
     </div>
 
-    <div class="h3">${t('support')}</div>
-    <button class="kofi-card" id="kofi-support-btn">
-      <div class="kofi-card-bg"></div>
-      <div class="kofi-card-content">
-        <div class="kofi-icon">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </div>
-        <div class="kofi-text">
-          <div class="kofi-title">${t('support_title')}</div>
-          <div class="kofi-sub">${t('support_tagline')}</div>
-        </div>
-        <div class="kofi-arrow">→</div>
-      </div>
-    </button>
-
     <div class="h3">${t('data')}</div>
     <div class="setting-group">
       <div class="setting-row">
@@ -9050,10 +9353,6 @@ function renderSettings() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         ${CONTACT_EMAIL}
       </a>
-      <div class="contact-signature-wrap">
-        <div class="contact-bisous">${t('contact_bisous')}</div>
-        <div class="contact-signature">Perrine</div>
-      </div>
     </div>
 
     <div class="app-version-footer" id="app-version-footer">
@@ -9095,10 +9394,6 @@ function renderSettings() {
       applyLangTabs();
       render();
     });
-  });
-
-  document.getElementById('kofi-support-btn')?.addEventListener('click', () => {
-    window.open('https://ko-fi.com/getmanifestapp', '_blank');
   });
 
   document.getElementById('export').addEventListener('click', () => exportData(false));
@@ -9397,8 +9692,115 @@ initVoices();
   setTimeout(update, 500);
 })();
 
-if (!state.onboardingDone) {
-  startOnboarding();
+// ============================================================
+// VERROU : un code d'accès par acheteuse (v1.22.0)
+// L'app ne contient que les empreintes des codes (SHA-256 tronqué).
+// La liste des codes reste sur le PC (codes-acces.txt, hors GitHub).
+// Retirer une empreinte d'ici = couper ce code à la prochaine mise à jour.
+// ============================================================
+const ACCESS_KEY = 'gm_access_v1';
+const ACCESS_SALT = 'getmanifest|';
+const ACCESS_HASHES = new Set(['2762806c92d18e14','a9caa03852011779','70e50386d1ff857e','485275dbcc320c48','93fd66c1b452863b','b78d4681e2d3fa29','87803265eee8a923','aa8455498464b670','a563abe0b6a25327','6984e079073c13dc','c41519dae5adcdb2','b3e5d5269ca401f3','fbf85a523362cbb8','23fb024418839b51','2f18d5db8886d2be','1cf66f7936f53738','bbdeca39b18005dd','741194f1bd274bb5','9c86dead4ab9c802','727a44a016159b8e','3bf17f0d775d2242','eac0664a03272a39','64debcf8aca96ff1','9ef81305a76bb11a','50c664096474b3e1','8e049b40d690101d','b10cb1fb626f2de0','9b2161a4c526c641','a2de4dc52622e13d','ac17a5d64c6b4d65','47fd0f6b8c6d2c2d','320686af32225b2f','688338462d7bd61a','ae8d44a67e92cb8c','5e939c02aeed9d6f','bdb99de0d6cffa42','cea98d7d7bfb5341','a336d44b33f86d58','ebf2d548c4bd212c','8cd7394273adc018','caa4de84615c6c39','ab2e3dc141c1d6f3','90ab5d79ba0c5efe','412fbc1722677115','48fac3e4ac008585','8015bb21ad0dacfe','a8065da837217aef','f626abffbde2bff5','d819f94ef24abebd','c215a5c2b16d7602','7462a968b243b4cf','8911207a13952b40','4e0a09651f87da93','b42d3afd677070ed','2ce4bca744174f0c','23baa874263d3994','258ad4b4f67c2f32','80579bf3ef68f111','4d562c8b63872db0','f1ee7017ae0e3b0e','a4b1b45bfa784f0e','6a033cdc5e2ae62e','5dbe3d95a3ccfb1e','87d0a32de1d9d163','99e61febd42614bc','8492745d95a7c338','ee437de028705cd2','915d6e75dd6c8f15','bf760abcfb4566e1','a0595f3c50f5325a','2564e227a8e4f177','fb5a2bb53e3d2a4b','735ff1c1fa2e66a5','326393e421303a4a','e3792fe9f00324d1','3ea89243c07ad11c','419176b106b49b90','26feff2e61614f95','3f681271966ae240','ac9a45e244c3a671','bf2cd5d5ed3baeb4','a0312ecf1aa8cf67','a3a66c399f3c7df8','84e36964ef6babca','4d27635af9b3f05f','daeb71dd394e5746','5f5e1f9fc2ef2585','9408b7da48ef1b45','0dc9c2f22c2b202d','3a806a4ff9c13290','21f0ec0b7b66def6','31b5f20f29e20175','6447f7a1f16ecd2a','5b50367cc5bbd4ba','b89565f6e75f074d','aa3dc2f21f5fb493','8381f2d1ceae9f66','d84db6410834825b','b87421dcccc7b679','f358dc4d6dda3f3d','7a550fa2e4e0fcb6','d82271b5878bbd21','26ad3b62f00b4124','e6cbf6d4a1f53cfc','fa58d71f2ebecbcc','5527f1ac1021f9eb','4c068d5ff63999eb','3a4f65b0e2f19501','e73520c04486fbef','6bdf40e0c312f920','86235a4aaf1520d7','ab8126b4c7a39c26','51d88c15d4d0007a','f6f816116661e291','6435efc0a42a2914','d306638f8cf338d5','087f8d80d6bdc578','a598bae7a56f4b9c','8449141b279abacc','a0a3396f26ed0168','713c7d0458ff2b49','ca29c6ef27ca5cbf','3ff1b7735586fbfa','9691177b153c4674','de1552ba7d14b910','cd35a7c9fc47fe9e','9405ed55600d677b','d5922ac023a685e8','ea6b43550a57b854','472cb9d4a098c851','d9f4535e1118d584','6e9b3ef055ae610f','545199789f2bfca1','5567bea654459bd2','2bdd0d9a436187f4','11198c16d730c359','94985a9144c2bd3d','6b7f7b0fe0e1bc3a','09649eed42a73821','c42c15a44f356a4a','70b1cfe7e6191644','a54fe703beb7d571','81960906d1c171b4','ade8e314fdc4812a','ffe3b9ca33028e20','30b72f3a0791096c','07765d2c3533b046','08fd5b6eca4bb8eb','b2e0db05a5f5a9ff','4162b738d86b3c0c','ed7b74cc13119074','2fbe805225e87998','445a362e3e9754c2','53caa7045ed8e58e','ef29e04b281cc6ef','5327a20a4d538c80','1ceb3185d4c1aa95','f054afc053f6e14d','1547b41ed49f9b7c','dad8aa72c25d8e63','c488a8abf71b6a05','5d6951e6b8077313','6302bdebc540ad34','aa85a81c603f6f13','8851902e7bbc57e3','d7aa5ac6cd7b9b81','bcf481bf71729e0b','9fbbc2a5aa6bfe5f','578757e6d89e6c79','6e4bbaf9e5a16cfa','4c3a2f79ff8d7ef6','832f7305250ddf3e','a4ca71f69884029f','136929b24df7b211','a1eba5ccdca86680','eabc4a62f077fed7','53e4aa674e8da38b','5cb47536cf35ff98','03140fa29bbb4ffa','00a2cefc7f8dd934','202a35c966c2a4f0','4458ad11615d4a89','fe01316d893edd66','fcf14897eb63d53e','f11f30d50eab95f9','695687c06b7c36a3','23a81f197b992e0c','0fc7ed7c66a7676c','071fb9cd10b2cb9d','8e54a24f62ea715b','710bfc5bb9f33885','20ffe154f2080139','398434777bb0c9ae','8fc2f527e0080d0e','015acdaeb155559f','505dd1ceca71fdfa','7466e912ba68daa3','17d6c312bfa4cb01','03661157e6c9111d','6b7da6ba9fe6ed0e']);
+
+const LOCK_TEXTS = {
+  fr: {
+    title: 'Bienvenue',
+    text: 'Entre le code reçu après ton achat. Tu ne le taperas qu\'une fois sur cet appareil.',
+    btn: 'Ouvrir l\'app',
+    wrong: 'Ce code ne marche pas. Vérifie les lettres et réessaie.',
+    empty: 'Tape ton code d\'abord.',
+    nocrypto: 'Ton navigateur ne peut pas vérifier le code ici. Ouvre l\'app depuis son adresse en https.',
+    help: 'Pas de code ou un souci ? Écris à',
+  },
+  en: {
+    title: 'Welcome',
+    text: 'Enter the code you received after your purchase. You only type it once on this device.',
+    btn: 'Open the app',
+    wrong: 'This code doesn\'t work. Check the letters and try again.',
+    empty: 'Type your code first.',
+    nocrypto: 'Your browser can\'t check the code here. Open the app from its https address.',
+    help: 'No code or a problem? Write to',
+  },
+};
+
+function normalizeAccessCode(raw) {
+  let c = String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (c.length === 8) c = 'GM' + c;  // si on oublie le "GM" du début
+  return c;
+}
+
+async function hashAccessCode(code) {
+  const data = new TextEncoder().encode(ACCESS_SALT + code);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+function isAppUnlocked() {
+  try { return ACCESS_HASHES.has(localStorage.getItem(ACCESS_KEY) || ''); }
+  catch (e) { return false; }
+}
+
+function showLockScreen(onUnlock) {
+  const lang = (state.settings.language || detectBrowserLang()) === 'en' ? 'en' : 'fr';
+  const L = LOCK_TEXTS[lang];
+  const el = document.createElement('div');
+  el.id = 'lock-screen';
+  el.className = 'onboarding-overlay lock-overlay';
+  el.innerHTML = `
+    <div class="lock-box">
+      <div class="lock-logo">✦</div>
+      <div class="lock-brand">GetManifest</div>
+      <div class="lock-title">${L.title}</div>
+      <div class="lock-text">${L.text}</div>
+      <input id="lock-input" class="lock-input" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="GM-XXXX-XXXX" maxlength="20" />
+      <div class="lock-error" id="lock-error"></div>
+      <button class="ob-next-btn" id="lock-btn">${L.btn}</button>
+      <div class="lock-help">${L.help}<br><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></div>
+    </div>
+  `;
+  document.body.appendChild(el);
+  const input = el.querySelector('#lock-input');
+  const errEl = el.querySelector('#lock-error');
+  const btn = el.querySelector('#lock-btn');
+
+  const tryUnlock = async () => {
+    errEl.textContent = '';
+    const code = normalizeAccessCode(input.value);
+    if (!code) { errEl.textContent = L.empty; return; }
+    if (!window.crypto || !crypto.subtle) { errEl.textContent = L.nocrypto; return; }
+    btn.disabled = true;
+    try {
+      const h = await hashAccessCode(code);
+      if (ACCESS_HASHES.has(h)) {
+        try { localStorage.setItem(ACCESS_KEY, h); } catch (e) {}
+        logEvent('unlock_ok');
+        el.remove();
+        onUnlock();
+      } else {
+        errEl.textContent = L.wrong;
+        input.select();
+      }
+    } catch (e) {
+      errEl.textContent = L.nocrypto;
+    } finally {
+      btn.disabled = false;
+    }
+  };
+  btn.addEventListener('click', tryUnlock);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+  setTimeout(() => input.focus(), 300);
+}
+
+function afterUnlock() {
+  if (!state.onboardingDone) {
+    startOnboarding();
+  }
+}
+
+if (isAppUnlocked()) {
+  afterUnlock();
+} else {
+  showLockScreen(afterUnlock);
 }
 
 // === UPDATE CHECKER : scanne version.txt pour détecter une nouvelle version ===

@@ -2,3 +2,6 @@ node_modules/
 package-lock.json
 .DS_Store
 *.log
+brief-commercialisation.md
+codes-acces.txt
+guide/
