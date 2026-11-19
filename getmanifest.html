@@ -4387,7 +4387,8 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 .btn-primary.busy { opacity: 0.6; pointer-events: none; }
 
 /* Réglage « Photos à l'écoute » : le rythme */
-.music-mode-row.vision-every-row { grid-template-columns: 1.8fr 1fr 1fr 1fr; }
+.music-mode-row.vision-every-row { grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; }
+.vision-every-row [data-vision-every="aff"] { grid-column: 1 / -1; }
 .vision-every-row.off { opacity: 0.45; pointer-events: none; }
 </style>
 </head>
@@ -4458,7 +4459,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.26.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.27.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
