@@ -2428,9 +2428,17 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
   max-width: 500px;
   max-height: 88vh;
+  max-height: 88dvh;  /* v1.25.0 : hauteur réellement visible sur téléphone */
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   animation: slideUp 0.3s;
 }
+/* v1.25.0 : dans les réglages, seul le rond d'un curseur se déplace.
+   Glisser le doigt sur la barre fait défiler la fenêtre au lieu de changer la valeur. */
+.modal input[type="range"] { pointer-events: none; touch-action: pan-y; }
+.modal input[type="range"]::-webkit-slider-thumb { pointer-events: auto; }
+.modal input[type="range"]::-moz-range-thumb { pointer-events: auto; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .modal-title {
   font-size: 22px;
@@ -3847,6 +3855,20 @@ body.night-mode .orb-ring {
 .now-playing:not(.has-scroll) .now-playing-inner { overflow: visible; }
 /* Bloc Vitesse qui contient l'ETA en dessous du slider */
 .speed-eta-block { padding: 10px 14px; margin-top: 0; }
+/* v1.25.0 : bouton « Recommencer le challenge » quand l'objectif est atteint */
+.ch-restart-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 22px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--bg-solid);
+  background: linear-gradient(135deg, var(--accent-light, var(--accent)), var(--accent));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+  cursor: pointer;
+}
+.ch-restart-btn:active { transform: scale(0.97); }
 .speed-eta-block .live-speed-label { margin-bottom: 6px; }
 .speed-eta-text {
   margin-top: 6px;
@@ -4190,7 +4212,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.24.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.25.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4579,6 +4601,11 @@ Object.assign(TRANSLATIONS.fr, {
   challenge_reset: 'Reset le challenge',
   challenge_confirm_reset: 'Reset le compteur à 0 ?',
   challenge_done: 'Challenge terminé ! Objectif atteint ✨',
+  ch_goal_reached: 'Objectif atteint ✨',
+  ch_restart: '↻ Recommencer le challenge',
+  ch_restarted: "C'est reparti ✨",
+  ch_done_hint: 'Challenge terminé ✨ Touche « Recommencer » pour en refaire un',
+  toast_interrupted: 'En pause : un appel ou une autre app a pris le son. Touche ▶ pour reprendre.',
   challenge_started: 'Challenge démarré',
   challenge_select_hint: 'Toutes les répétitions sont comptées, même en Player.',
   challenge_this_aff: 'Mes affirmations du challenge',
@@ -4687,6 +4714,11 @@ Object.assign(TRANSLATIONS.en, {
   challenge_reset: 'Reset challenge',
   challenge_confirm_reset: 'Reset the counter to 0?',
   challenge_done: 'Challenge complete! Target reached ✨',
+  ch_goal_reached: 'Target reached ✨',
+  ch_restart: '↻ Restart the challenge',
+  ch_restarted: 'Here we go again ✨',
+  ch_done_hint: 'Challenge complete ✨ Tap “Restart” to do another one',
+  toast_interrupted: 'Paused: a call or another app took over the sound. Tap ▶ to resume.',
   challenge_started: 'Challenge started',
   challenge_select_hint: 'All repetitions count, even in Player mode.',
   challenge_this_aff: 'My challenge affirmations',
@@ -6129,6 +6161,7 @@ async function buildQueueBuffer(queue, pauseSec) {
       queueBufferCtx = new Ctx();
       queueBufferCtx.addEventListener('statechange', () => {
         logEvent('audioCtx_state', { state: queueBufferCtx.state, playing: playerState.playing, chPlaying: state.challenge.playing });
+        scheduleInterruptCheck('ctx_' + queueBufferCtx.state);
       });
       logEvent('audioCtx_created', { sr: queueBufferCtx.sampleRate, state: queueBufferCtx.state });
     }
@@ -7640,9 +7673,13 @@ function renderChallenge() {
       const ringOffset = REPEAT_RING_C * (1 - Math.min(100, pct) / 100);
       const countTxt = c.count.toLocaleString('fr-FR');
       const targetTxt = c.target.toLocaleString('fr-FR');
+      // v1.25.0 : challenge fini = ✓ dans le rond, plus de ▶ (on recommence avec le bouton)
+      const chDone = !c.playing && c.count >= c.target;
       const chOrbInner = c.playing
         ? `<span class="orb-inner"><span class="orb-clock ch-orb-count">${countTxt}</span><span class="ch-orb-target">/ ${targetTxt}</span><span class="orb-pause-hint">❚❚</span></span>`
-        : `<span class="orb-inner"><span class="orb-play">▶</span><span class="orb-clock orb-clock-small"><span class="ch-orb-count">${countTxt}</span> / ${targetTxt}</span></span>`;
+        : chDone
+          ? `<span class="orb-inner"><span class="orb-play">✓</span><span class="orb-clock orb-clock-small"><span class="ch-orb-count">${countTxt}</span> / ${targetTxt}</span></span>`
+          : `<span class="orb-inner"><span class="orb-play">▶</span><span class="orb-clock orb-clock-small"><span class="ch-orb-count">${countTxt}</span> / ${targetTxt}</span></span>`;
       // L'aff courante dans la rotation
       const curIdx = (c.currentIdx || 0) % selectedAffs.length;
       const currentAff = selectedAffs[curIdx] || selectedAffs[0];
@@ -7650,8 +7687,8 @@ function renderChallenge() {
         <div class="challenge-orb-wrap">
           <!-- HAUT : aff en cours (glow fade à chaque changement) -->
           <div class="ch-top">
-            <div class="orb-current-aff ${c.playing ? 'glowing' : ''}" id="orb-current-aff">
-              ${escapeHtml(currentAff ? currentAff.title : '')}
+            <div class="orb-current-aff ${c.playing || chDone ? 'glowing' : ''}" id="orb-current-aff">
+              ${chDone ? t('ch_goal_reached') : escapeHtml(currentAff ? currentAff.title : '')}
             </div>
           </div>
 
@@ -7674,7 +7711,7 @@ function renderChallenge() {
                         transform="rotate(-90 130 130)" />
               </svg>
               <button type="button" class="orb ${c.playing ? '' : 'paused'}" id="ch-toggle"
-                      aria-label="${c.playing ? t('challenge_pause') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
+                      aria-label="${c.playing ? t('challenge_pause') : chDone ? t('ch_goal_reached') : (c.count === 0 ? t('challenge_start') : t('challenge_resume'))}">
                 ${chOrbInner}
               </button>
               ${chCfg.silentMode ? `<div class="silent-tag">${t('silent_tag')}</div>` : ''}
@@ -7684,17 +7721,17 @@ function renderChallenge() {
           <!-- BAS : meta line (sous l'orbe, proche) + bloc vitesse+ETA + ajout manuel -->
           <div class="ch-bottom">
             <!-- Meta ligne juste sous l'orbe : restantes · commencé le · edit -->
-            <div class="orb-meta-line">
+            ${chDone ? `<button type="button" class="ch-restart-btn" id="ch-restart">${t('ch_restart')}</button>` : `<div class="orb-meta-line">
               <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
               <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                 </svg>
             </button>
-            </div>
+            </div>`}
 
             <!-- Bloc Vitesse + ETA : seulement pendant la lecture (v1.23.0), place gardée pour que rien ne bouge -->
-            <div class="live-speed speed-eta-block speed-compact ${c.playing ? '' : 'session-placeholder'}">
+            <div class="live-speed speed-eta-block speed-compact ${c.playing ? '' : 'session-placeholder'}" ${chDone ? 'style="display:none"' : ''}>
               <div class="live-speed-label">
                 <span>${t('play_speed')}</span>
                 <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
@@ -7785,6 +7822,7 @@ function renderChallenge() {
   });
 
   document.getElementById('ch-toggle')?.addEventListener('click', toggleChallenge);
+  document.getElementById('ch-restart')?.addEventListener('click', restartChallenge);
   document.getElementById('ch-settings-btn')?.addEventListener('click', openChallengeSheet);
   // Chips Repeat / Challenge / SATS
   bindPlayerModeChips();
@@ -7857,7 +7895,7 @@ function renderChallenge() {
     toast(t('challenge_added', { n: n }));
     // Toasts "Bravo" à chaque palier atteint (10K, 20K, 30K...)
     celebrateMilestoneIfReached(oldCount, newCount);
-    if (state.challenge.count >= state.challenge.target) {
+    if (oldCount < state.challenge.target && state.challenge.count >= state.challenge.target) {
       recordChallengeCompletion();
       stopChallenge();
       toast(t('challenge_done'));
@@ -8143,7 +8181,23 @@ function toggleChallenge() {
   }
 }
 
+// v1.25.0 : un challenge fini ne repart plus d'une affirmation à chaque ▶
+function isChallengeDone() {
+  return (state.challenge.count || 0) >= (state.challenge.target || 10000);
+}
+function restartChallenge() {
+  if (state.challenge.playing) stopChallenge();
+  state.challenge.count = 0;
+  state.challenge.currentIdx = 0;
+  state.challenge.currentRepeat = 0;
+  state.challenge.startedAt = Date.now();
+  saveState();
+  toast(t('ch_restarted'));
+  render();
+}
+
 async function startChallenge() {
+  if (isChallengeDone()) { toast(t('ch_done_hint')); render(); return; }
   const ids = state.challenge.affirmationIds || [];
   const validAffs = ids
     .map(id => state.affirmations.find(a => a.id === id && a.recording))
@@ -8223,7 +8277,10 @@ async function buildChallengeBuffer(validAffs, pauseSec) {
     if (!validAffs.length) return null;
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
-    if (!queueBufferCtx) queueBufferCtx = new Ctx();
+    if (!queueBufferCtx) {
+      queueBufferCtx = new Ctx();
+      queueBufferCtx.addEventListener('statechange', () => scheduleInterruptCheck('ctx_' + queueBufferCtx.state));
+    }
     const affSegs = [];
     for (const aff of validAffs) {
       try {
@@ -9737,6 +9794,62 @@ initVoices();
   });
   document.addEventListener('visibilitychange', () => {
     logEvent('visibility', { state: document.visibilityState, playing: playerState.playing, chPlaying: state.challenge.playing, audioPaused: a.paused });
+  });
+})();
+
+// ============================================================
+// v1.25.0 : COUPURE PAR LE TÉLÉPHONE (appel, autre app qui prend le son)
+// Le système coupe le son sans prévenir l'app : l'écran restait sur « lecture »
+// alors que plus rien ne jouait. Maintenant, si le son est vraiment coupé,
+// l'app se met en pause proprement (▶ visible) et attend qu'on touche ▶.
+// Une coupure très courte (notification) qui reprend toute seule est ignorée.
+// ============================================================
+let interruptCheckTimer = null;
+let interruptNoticePending = false;
+function isPlayingBufferSound() {
+  // Vrai si l'app joue un gros audio (Repeat, SATS ou Challenge) et que le son tourne vraiment
+  if (mixSourceNode) return !!queueBufferCtx && queueBufferCtx.state === 'running';
+  const a = document.getElementById('aff-audio');
+  return !!a && !a.paused;
+}
+function isWatchablePlayback() {
+  // Seulement la lecture « gros audio » ; le mode silencieux (bips) a sa propre mécanique
+  if (playerState.playing && queueBufferURL) return 'player';
+  if (state.challenge.playing && challengeBufferURL) return 'challenge';
+  return null;
+}
+function scheduleInterruptCheck(reason) {
+  if (!isWatchablePlayback()) return;
+  if (interruptCheckTimer) clearTimeout(interruptCheckTimer);
+  interruptCheckTimer = setTimeout(() => {
+    interruptCheckTimer = null;
+    const which = isWatchablePlayback();
+    if (!which) return;
+    if (!mixSourceNode) {
+      // En cours de changement d'audio (démarrage, playlist) : pas une coupure
+      const a = document.getElementById('aff-audio');
+      const url = which === 'player' ? queueBufferURL : challengeBufferURL;
+      if (!a || a.src !== url) return;
+    }
+    if (isPlayingBufferSound()) return;
+    handleSystemInterruption(reason, which);
+  }, 900);
+}
+function handleSystemInterruption(reason, which) {
+  logEvent('interrupted_by_system', { reason, which, visible: document.visibilityState });
+  if (which === 'player') pausePlayback();
+  else stopChallenge();  // le compteur est gardé, ▶ repart d'où on en était
+  updateMediaSessionMetadata(null, null);
+  if (document.visibilityState === 'visible') toast(t('toast_interrupted'));
+  else interruptNoticePending = true;
+}
+(function setupInterruptWatch() {
+  const a = document.getElementById('aff-audio');
+  if (a) a.addEventListener('pause', () => scheduleInterruptCheck('audio_pause'));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (interruptNoticePending) { interruptNoticePending = false; toast(t('toast_interrupted')); }
+    scheduleInterruptCheck('back_visible');
   });
 })();
 
