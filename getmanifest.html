@@ -4471,7 +4471,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.27.5';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.27.6';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5521,8 +5521,11 @@ function switchTab(tab) {
 // Met en pause tout ce qui joue avant de switcher.
 function switchPlayerMode(mode, opts = {}) {
   if (!['repeat', 'challenge', 'sats'].includes(mode)) return;
-  // Pause tout avant de changer de mode
-  if (playerState.playing) pausePlayback();
+  const prevMode = state.ui.playerMode || 'repeat';
+  // v1.27.6 : changer de mode termine la séance. Avant : une simple pause, et Repeat
+  // reprenait l'audio du SATS avec ses échos, ses voix doublées et son filtre.
+  if (mode !== prevMode && (playerState.playing || playerState.sessionStart)) endPlaybackSession();
+  else if (playerState.playing) pausePlayback();
   if (state.challenge.playing) {
     state.challenge.playing = false;
     if (challengeAudio) { challengeAudio.pause(); challengeAudio.currentTime = 0; }
@@ -5532,6 +5535,8 @@ function switchPlayerMode(mode, opts = {}) {
   }
   // SATS = mode nuit auto activé, Repeat/Challenge = mode nuit auto désactivé
   state.settings.nightMode = (mode === 'sats');
+  // v1.27.6 : en quittant le SATS, on coupe ses effets tout de suite (échos, voix doublées, filtre, fond sonore)
+  if (mode !== 'sats' && playerAudioCtx) { applyNightMode(false); stopSatsBackground(); }
   satsSubReset();
   state.ui.playerMode = mode;
   saveState();
