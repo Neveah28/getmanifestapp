@@ -2207,6 +2207,8 @@ body.player-active .mini-header { display: none; }
   padding-left: 34px;
   margin-top: -6px;
 }
+/* Sous-texte sous une rangée de boutons : pas de marge négative, sinon il chevauche les boutons */
+.music-mode-row + .ps-sub { margin-top: 10px; }
 /* Toggle switch moderne */
 .ps-switch {
   position: relative;
@@ -4503,7 +4505,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.28.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.28.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
