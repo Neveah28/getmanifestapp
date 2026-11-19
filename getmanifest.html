@@ -4471,7 +4471,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.27.3';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.27.4';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5198,7 +5198,7 @@ function defaultState() {
       nightMode: false,       // Mode SATS pour s'endormir (PLAYER)
       nightTimer: 60,         // Minutes avant arrêt auto (60, 120, 240, 480 = 1h/2h/4h/8h)
       // v1.26.0 : SATS pour dormir
-      satsBgId: 'rain',       // fond calme : none, rain, ocean, soft, waves, douceur, ciel, sousleau, contemplation
+      satsBgId: 'ocean',      // fond calme : none, rain, ocean, soft, waves, douceur, ciel, sousleau, contemplation
       satsBgVolume: 0.35,
       satsLayers: true,       // voix multiples (3 couches)
       satsSubliminal: true,   // la voix descend jusqu'au murmure en 20 min
@@ -5273,6 +5273,11 @@ function loadState() {
       settings.satsPlaybackRate = settings.playbackRate;
       settings.satsPauseBetween = settings.pauseBetween;
       settings.satsSilentMode = settings.silentMode || false;
+    }
+    // v1.27.4 : l'océan devient le fond par défaut (la pluie l'était depuis v1.26.0)
+    if (!prevSettings.satsOceanV1) {
+      if (settings.satsBgId === 'rain') settings.satsBgId = 'ocean';
+      settings.satsOceanV1 = true;
     }
     // v1.22.0 : plus de musique d'ambiance fournie (droits non vérifiés) → coupée partout
     settings.musicMode = 'none';
@@ -5855,13 +5860,13 @@ function renderPlayer() {
         <button class="session-btn end" id="end-btn" ${(playerState.playing || playerState.sessionStart) ? '' : 'aria-hidden="true"'}>${t('session_end')}</button>
       </div>
 
-      <div class="live-speed speed-eta-block speed-compact ${playerState.playing ? '' : 'session-placeholder'}">
+      ${state.ui.playerMode === 'sats' ? '' : `<div class="live-speed speed-eta-block speed-compact ${playerState.playing ? '' : 'session-placeholder'}">
         <div class="live-speed-label">
           <span>${t('play_speed_short')}</span>
           <span class="live-speed-val" id="live-speed-val">${pget('playbackRate').toFixed(2)}x</span>
         </div>
         <input type="range" id="live-speed" min="0.5" max="3" step="0.05" value="${pget('playbackRate')}" />
-      </div>
+      </div>`}
 
     </div>
 
@@ -6949,7 +6954,8 @@ let activeAudioCtx = 'player';
 // v1.23.0 : SATS a ses propres réglages (voix, vitesse, pause, silencieux), à part de Repeat
 const SATS_KEYS = { affVolume: 'satsAffVolume', playbackRate: 'satsPlaybackRate', pauseBetween: 'satsPauseBetween', silentMode: 'satsSilentMode' };
 function pkey(k) { return (state.ui.playerMode === 'sats' && SATS_KEYS[k]) ? SATS_KEYS[k] : k; }
-function pget(k) { const v = state.settings[pkey(k)]; return (v === undefined || v === null) ? state.settings[k] : v; }
+function pget(k) { if (k === 'playbackRate' && state.ui.playerMode === 'sats') return 1;  // v1.27.4 : SATS toujours à 1x
+  const v = state.settings[pkey(k)]; return (v === undefined || v === null) ? state.settings[k] : v; }
 
 function cfgFor(ctx) {
   const s = state.settings;
@@ -7009,9 +7015,9 @@ function startAmbiance(id, musicVol) {
 // mode subliminal (la voix descend jusqu'au murmure), écran de nuit.
 // ============================================================
 const SATS_SOUNDS = [
+  { id: 'ocean', icon: '🌊', key: 'sats_bg_ocean', gen: 'ocean', color: '#7fc4d8' },
   { id: 'none', icon: '', key: 'sats_bg_none', color: '#8f7680' },
   { id: 'rain', icon: '🌧️', key: 'sats_bg_rain', gen: 'rain', color: '#9fb4d9' },
-  { id: 'ocean', icon: '🌊', key: 'sats_bg_ocean', gen: 'ocean', color: '#7fc4d8' },
   { id: 'soft', icon: '🌫️', key: 'sats_bg_soft', gen: 'soft', color: '#c9b0b5' },
   { id: 'waves', icon: '🎧', key: 'sats_bg_waves', gen: 'waves', color: '#a78bfa' },
   { id: 'douceur', icon: '🌙', key: 'sats_bg_douceur', file: 'audio/douceur.wav', gain: 1, color: '#ecd29a' },
@@ -7853,14 +7859,14 @@ function openPlayerSheet() {
         <input type="range" id="ps-music-vol" min="0" max="1" step="0.05" value="${s.musicVolume}" />
       </div>
 
-      <div class="ps-row">
+      ${state.ui.playerMode === 'sats' ? '' : `<div class="ps-row">
         <div class="ps-head">
           <span class="ps-icon">⚡</span>
           <span class="ps-label">${t('play_speed')}</span>
           <span class="ps-val" id="ps-val-rate">${pget('playbackRate').toFixed(2)}x</span>
         </div>
         <input type="range" id="ps-rate" min="0.5" max="3" step="0.05" value="${pget('playbackRate')}" />
-      </div>
+      </div>`}
 
       <div class="ps-row">
         <div class="ps-head">
@@ -7936,6 +7942,7 @@ function openPlayerSheet() {
 
   const bindRange = (id, key, format) => {
     const el = document.getElementById(id);
+    if (!el) return;
     el.addEventListener('input', (e) => {
       const v = parseFloat(e.target.value);
       state.settings[pkey(key)] = v;
