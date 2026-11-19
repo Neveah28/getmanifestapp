@@ -4400,6 +4400,38 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 /* Réglage « Photos à l'écoute » : le rythme */
 .music-mode-row.vision-every-row { grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; }
+.music-mode-row.vision-style-row { margin-bottom: 4px; }
+
+/* v1.28.0 : « Par-dessus » : la photo en grand au-dessus de tout, l'affirmation en haut */
+.vision-veil { transition: opacity 0.6s ease; }
+#vision-show.front { z-index: 150; pointer-events: auto; cursor: pointer; }
+#vision-show.front .vision-veil { opacity: 0; }
+.vision-caption {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: calc(env(safe-area-inset-top) + 34px) 24px 80px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.32) 55%, transparent 100%);
+  text-align: center;
+  opacity: 0; transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+#vision-show.front .vision-caption { opacity: 1; }
+.vision-caption span {
+  display: inline-block; max-width: 440px;
+  color: #fff; font-family: 'Nunito', sans-serif; font-weight: 700;
+  font-size: 23px; line-height: 1.35;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+  transition: opacity 0.3s ease;
+}
+.vision-caption span.swap { opacity: 0; }
+.vision-hint {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 30px);
+  background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.2px;
+  padding: 8px 15px; border-radius: 100px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.6s ease; pointer-events: none;
+}
+#vision-show.front.hint .vision-hint { opacity: 1; }
 .vision-every-row [data-vision-every="aff"] { grid-column: 1 / -1; }
 .vision-every-row.off { opacity: 0.45; pointer-events: none; }
 </style>
@@ -4471,7 +4503,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.27.6';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.28.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -4654,7 +4686,11 @@ const TRANSLATIONS = {
     vision_unavailable: 'Les photos ne sont pas disponibles sur ce téléphone.',
     vision_setting: 'Photos à l\'écoute',
     vision_every_aff: 'À chaque affirmation',
-    vision_setting_sub: 'Les photos de ta playlist défilent derrière tes affirmations.',
+    vision_setting_sub: 'En fond : derrière le rond. Par-dessus : la photo en grand, ton affirmation en haut. Touche l\'écran pour retrouver les commandes.',
+    vision_style_bg: 'En fond',
+    vision_style_front: 'Par-dessus',
+    vision_style_off: 'Aucune',
+    vision_tap_hint: 'Touche l\'écran pour les commandes',
     vision_close: 'Fermer',
     toast_playlist_saved: 'Playlist enregistrée ✓',
     toast_url_cleared: 'URL effacée',
@@ -4824,7 +4860,11 @@ const TRANSLATIONS = {
     vision_unavailable: 'Photos aren\'t available on this phone.',
     vision_setting: 'Photos while listening',
     vision_every_aff: 'With each affirmation',
-    vision_setting_sub: 'Your playlist\'s photos play behind your affirmations.',
+    vision_setting_sub: 'Behind: under the play circle. On top: the photo fills the screen with your affirmation at the top. Tap the screen to bring the controls back.',
+    vision_style_bg: 'Behind',
+    vision_style_front: 'On top',
+    vision_style_off: 'None',
+    vision_tap_hint: 'Tap the screen for controls',
     vision_close: 'Close',
     toast_playlist_saved: 'Playlist saved ✓',
     toast_url_cleared: 'URL cleared',
@@ -10885,24 +10925,28 @@ function openPhotosModal(groupId) {
 }
 
 // ---------- Réglages « Photos à l'écoute » (Repeat et Challenge ont les leurs) ----------
+// v1.28.0 : 3 façons : 'bg' en fond (derrière le rond), 'front' par-dessus (photo en grand,
+// l'affirmation en haut), 'off' aucune. Ancien réglage visionOn = false → 'off'.
 function visionCfg(mode) {
   const s = state.settings;
-  const on = mode === 'challenge' ? s.chVisionOn : s.visionOn;
-  const every = mode === 'challenge' ? s.chVisionEvery : s.visionEvery;
-  return { on: on !== false, every: (every === 8 || every === 15 || every === 30) ? every : 'aff' };
+  const ch = mode === 'challenge';
+  let style = ch ? s.chVisionStyle : s.visionStyle;
+  if (style !== 'bg' && style !== 'front' && style !== 'off') style = ((ch ? s.chVisionOn : s.visionOn) === false) ? 'off' : 'bg';
+  const every = ch ? s.chVisionEvery : s.visionEvery;
+  return { style, on: style !== 'off', every: (every === 8 || every === 15 || every === 30) ? every : 'aff' };
 }
 
 function visionSettingRowHTML(mode) {
   const c = visionCfg(mode);
+  const styles = [['bg', t('vision_style_bg')], ['front', t('vision_style_front')], ['off', t('vision_style_off')]];
   return `
       <div class="ps-row" data-vision-row="${mode}">
         <div class="ps-head">
           <span class="ps-icon">🖼️</span>
           <span class="ps-label">${t('vision_setting')}</span>
-          <label class="ps-switch">
-            <input type="checkbox" data-vision-on ${c.on ? 'checked' : ''}>
-            <span class="ps-switch-slider"></span>
-          </label>
+        </div>
+        <div class="music-mode-row vision-style-row">
+          ${styles.map(([v, label]) => `<button type="button" class="music-mode-btn ${c.style === v ? 'active' : ''}" data-vision-style="${v}">${label}</button>`).join('')}
         </div>
         <div class="music-mode-row vision-every-row ${c.on ? '' : 'off'}">
           ${['aff', 8, 15, 30].map(v => `<button type="button" class="music-mode-btn ${c.every === v ? 'active' : ''}" data-vision-every="${v}">${v === 'aff' ? t('vision_every_aff') : v + ' s'}</button>`).join('')}
@@ -10914,14 +10958,16 @@ function visionSettingRowHTML(mode) {
 function bindVisionSettingRow(overlay, mode) {
   const row = overlay.querySelector(`[data-vision-row="${mode}"]`);
   if (!row) return;
-  const onKey = mode === 'challenge' ? 'chVisionOn' : 'visionOn';
+  const styleKey = mode === 'challenge' ? 'chVisionStyle' : 'visionStyle';
   const everyKey = mode === 'challenge' ? 'chVisionEvery' : 'visionEvery';
-  row.querySelector('[data-vision-on]').addEventListener('change', (e) => {
-    state.settings[onKey] = e.target.checked;
+  row.querySelectorAll('[data-vision-style]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.visionStyle;
+    state.settings[styleKey] = v;
     saveState();
-    row.querySelector('.vision-every-row').classList.toggle('off', !e.target.checked);
+    row.querySelectorAll('[data-vision-style]').forEach(x => x.classList.toggle('active', x === b));
+    row.querySelector('.vision-every-row').classList.toggle('off', v === 'off');
     visionTick();
-  });
+  }));
   row.querySelectorAll('[data-vision-every]').forEach(b => b.addEventListener('click', () => {
     const v = b.dataset.visionEvery;
     state.settings[everyKey] = v === 'aff' ? 'aff' : parseInt(v, 10);
@@ -10939,11 +10985,53 @@ function ensureVisionEl() {
   const el = document.createElement('div');
   el.id = 'vision-show';
   el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = '<div class="vision-layer"></div><div class="vision-layer"></div><div class="vision-veil"></div>';
+  el.innerHTML = '<div class="vision-layer"></div><div class="vision-layer"></div><div class="vision-veil"></div>'
+    + '<div class="vision-caption"><span></span></div><div class="vision-hint"></div>';
   document.body.insertBefore(el, document.body.firstChild);
   vision.el = el;
   vision.layers = Array.from(el.querySelectorAll('.vision-layer'));
+  vision.caption = el.querySelector('.vision-caption span');
+  // v1.28.0 : « Par-dessus » : toucher la photo montre les commandes pendant 6 s
+  el.addEventListener('pointerdown', (e) => {
+    if (!el.classList.contains('front')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    vision.peekUntil = Date.now() + 6000;
+    visionTick();
+  });
   return el;
+}
+
+// L'affirmation affichée en ce moment (celle de l'écran du Player ou du Challenge)
+function visionAffTitle(mode) {
+  const el = document.getElementById(mode === 'challenge' ? 'orb-current-aff' : 'np-text');
+  const txt = el ? el.textContent.trim() : '';
+  if (txt) return txt;
+  const id = mode === 'challenge' ? challengeShownAffId : playerState.shownAffId;
+  const a = id && state.affirmations.find(x => x.id === id);
+  return a ? a.title : '';
+}
+
+function visionSetCaption(text) {
+  const sp = vision.caption;
+  if (!sp || vision.captionText === text) return;
+  vision.captionText = text;
+  if (!sp.textContent) { sp.textContent = text; return; }
+  sp.classList.add('swap');
+  setTimeout(() => { sp.textContent = vision.captionText; sp.classList.remove('swap'); }, 300);
+}
+
+function visionSetFront(on) {
+  if (!vision.el) return;
+  if (on && !vision.el.classList.contains('front')) {
+    vision.el.querySelector('.vision-hint').textContent = t('vision_tap_hint');
+    vision.el.classList.add('hint');
+    clearTimeout(vision.hintTimer);
+    vision.hintTimer = setTimeout(() => vision.el && vision.el.classList.remove('hint'), 3500);
+  }
+  vision.el.classList.toggle('front', on);
+  vision.el.setAttribute('aria-hidden', on ? 'false' : 'true');
+  document.body.classList.toggle('vision-front', on);
 }
 
 // Les photos à montrer : la playlist choisie (Repeat) ou celles des affirmations du Challenge
@@ -11018,6 +11106,7 @@ function visionNext(pool) {
 function visionHide() {
   if (!vision.el) return;
   vision.el.classList.remove('on');
+  visionSetFront(false);
   document.body.classList.remove('vision-on', 'vision-paused');
   vision.shown = false;
 }
@@ -11061,6 +11150,10 @@ function visionTick() {
     }
   }
   document.body.classList.toggle('vision-paused', !playingNow);
+  // v1.28.0 : « Par-dessus » pendant la lecture (en pause ou quand on a touché l'écran : comme « En fond »)
+  const front = cfg.style === 'front' && playingNow && now >= (vision.peekUntil || 0);
+  if (front) visionSetCaption(visionAffTitle(mode));
+  visionSetFront(front);
 }
 
 setInterval(() => { try { visionTick(); } catch(e) {} }, 500);
