@@ -62,15 +62,15 @@
   --text-strong: #fff7f2;
   --text-dim: #c9b0b5;
   --text-faint: #8f7680;
-  --accent: #d9b571;
-  --accent-light: #ecd29a;
-  --accent-glow: rgba(240, 160, 168, 0.45);
-  --orb-grad: linear-gradient(135deg, #f1d9a0 0%, #e6b980 40%, #f0a0a8 100%);
-  --grad-text: linear-gradient(180deg, #f8e7b8 0%, #e6c27e 55%, #c99a52 100%);
+  --accent: #c9a14f;
+  --accent-light: #e3bf6e;
+  --accent-glow: rgba(201, 161, 79, 0.40);
+  --orb-grad: linear-gradient(135deg, #e3bf6e 0%, #c4964a 38%, #9e7033 66%, #b9807a 100%);
+  --grad-text: linear-gradient(180deg, #f0d08a 0%, #d2a650 55%, #a87a32 100%);
   --tab-bg: rgba(31, 4, 21, 0.96);
-  --tab-border: rgba(217, 181, 113, 0.28);
-  --tab-active-bg: rgba(217, 181, 113, 0.14);
-  --line: rgba(217, 181, 113, 0.5);
+  --tab-border: rgba(201, 161, 79, 0.30);
+  --tab-active-bg: rgba(201, 161, 79, 0.14);
+  --line: rgba(201, 161, 79, 0.5);
   --btn-text: #2c0c21;
   --danger: #f08080;
   --input-bg: rgba(255,255,255,0.05);
@@ -89,7 +89,7 @@
   --accent: #b8924a;
   --accent-light: #e478a0;
   --accent-glow: rgba(228, 120, 160, 0.35);
-  --orb-grad: linear-gradient(135deg, #f1d9a0 0%, #e6b980 40%, #f0a0a8 100%);
+  --orb-grad: linear-gradient(135deg, #e3bf6e 0%, #c4964a 38%, #9e7033 66%, #b9807a 100%);
   --grad-text: linear-gradient(90deg, #b8924a 0%, #c9a05a 45%, #e478a0 100%);
   --tab-bg: rgba(255, 255, 255, 0.95);
   --tab-border: rgba(184, 146, 74, 0.2);
@@ -2432,7 +2432,7 @@ input[type="range"]::-moz-range-thumb {
 }
 /* Light chips (par défaut) */
 .theme-chip.nuit { background: linear-gradient(135deg, #fbf5ee, #f0d9c8); color: #3a2430; border-color: rgba(184,146,74,0.45); }
-.theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #f1d9a0, #e6b980 40%, #f0a0a8); }
+.theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #e3bf6e 0%, #c4964a 38%, #9e7033 66%, #b9807a 100%); }
 .theme-chip.doux { background: linear-gradient(135deg, #fff5ef, #f5c8c3); color: #3d2a28; }
 .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
 .theme-chip.rose { background: linear-gradient(135deg, #ffeaf2, #e478a0); color: #4a1028; }
@@ -2460,8 +2460,8 @@ input[type="range"]::-moz-range-thumb {
 .theme-chip.sauge .theme-chip-orb { background: linear-gradient(135deg, #b8c998, #607848); }
 
 /* Dark chips (quand l'app est en mode sombre) */
-.theme-picker.dark-preview .theme-chip.nuit { background: linear-gradient(135deg, #1f0415, #2d0b25); color: #fff7f2; border-color: rgba(217,181,113,0.55); }
-.theme-picker.dark-preview .theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #f1d9a0, #e6b980 40%, #f0a0a8); }
+.theme-picker.dark-preview .theme-chip.nuit { background: linear-gradient(135deg, #1f0415, #2d0b25); color: #fff7f2; border-color: rgba(201,161,79,0.55); }
+.theme-picker.dark-preview .theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #e3bf6e 0%, #c4964a 38%, #9e7033 66%, #b9807a 100%); }
 .theme-picker.dark-preview .theme-chip.doux { background: linear-gradient(135deg, #1a1410, #2d1f1a); color: #faeae0; }
 .theme-picker.dark-preview .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
 .theme-picker.dark-preview .theme-chip.rose { background: linear-gradient(135deg, #1a0812, #4a1534); color: #ffeaf2; }
@@ -4459,7 +4459,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.27.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.27.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
