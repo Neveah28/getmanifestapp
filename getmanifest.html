@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GetManifest">
-<meta name="theme-color" content="#1a1410">
+<meta name="theme-color" content="#1f0415">
 <title>GetManifest ✦</title>
 
 <!-- Manifest PWA pour installation sur l'écran d'accueil -->
@@ -27,7 +27,7 @@
    THEMES — 6 ambiances
    =================================================== */
 
-/* Default : Rose Gold (couleurs exactes du logo) */
+/* Rose Gold (couleurs exactes du logo), 2e choix depuis la v1.26.0 */
 :root, [data-theme="doux"] {
   --bg-grad: linear-gradient(170deg, #fff5ef 0%, #fde8e3 60%, #f5c8c3 100%);
   --bg-solid: #fff5ef;
@@ -45,6 +45,56 @@
   --tab-border: rgba(228, 120, 160, 0.1);
   --tab-active-bg: rgba(240, 160, 168, 0.12);
   --line: rgba(228, 120, 160, 0.15);
+  --btn-text: #ffffff;
+  --danger: #d85858;
+  --input-bg: #ffffff;
+}
+
+/* v1.26.0 : « Nuit rose & or », thème principal (site, guide et app vont ensemble) */
+[data-theme="nuit-dark"] {
+  --bg-grad: radial-gradient(ellipse at 10% 0%, rgba(240,150,180,0.14) 0%, transparent 45%),
+             radial-gradient(ellipse at 95% 100%, rgba(212,175,106,0.10) 0%, transparent 45%),
+             linear-gradient(170deg, #1f0415 0%, #260820 55%, #2d0b25 100%);
+  --bg-solid: #1f0415;
+  --card-bg: #2c0c21;
+  --card-shadow: 0 4px 20px rgba(240, 160, 168, 0.12);
+  --text: #f3e4e4;
+  --text-strong: #fff7f2;
+  --text-dim: #c9b0b5;
+  --text-faint: #8f7680;
+  --accent: #d9b571;
+  --accent-light: #ecd29a;
+  --accent-glow: rgba(240, 160, 168, 0.45);
+  --orb-grad: linear-gradient(135deg, #f1d9a0 0%, #e6b980 40%, #f0a0a8 100%);
+  --grad-text: linear-gradient(180deg, #f8e7b8 0%, #e6c27e 55%, #c99a52 100%);
+  --tab-bg: rgba(31, 4, 21, 0.96);
+  --tab-border: rgba(217, 181, 113, 0.28);
+  --tab-active-bg: rgba(217, 181, 113, 0.14);
+  --line: rgba(217, 181, 113, 0.5);
+  --btn-text: #2c0c21;
+  --danger: #f08080;
+  --input-bg: rgba(255,255,255,0.05);
+}
+[data-theme="nuit"] {
+  --bg-grad: radial-gradient(ellipse at 12% 0%, rgba(228,120,160,0.14) 0%, transparent 50%),
+             radial-gradient(ellipse at 92% 35%, rgba(184,146,74,0.12) 0%, transparent 45%),
+             linear-gradient(170deg, #fbf5ee 0%, #f8ede6 60%, #f3e2dc 100%);
+  --bg-solid: #fbf5ee;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(184, 146, 74, 0.14);
+  --text: #4e3540;
+  --text-strong: #3a2430;
+  --text-dim: #8f7680;
+  --text-faint: #b8a3aa;
+  --accent: #b8924a;
+  --accent-light: #e478a0;
+  --accent-glow: rgba(228, 120, 160, 0.35);
+  --orb-grad: linear-gradient(135deg, #f1d9a0 0%, #e6b980 40%, #f0a0a8 100%);
+  --grad-text: linear-gradient(90deg, #b8924a 0%, #c9a05a 45%, #e478a0 100%);
+  --tab-bg: rgba(255, 255, 255, 0.95);
+  --tab-border: rgba(184, 146, 74, 0.2);
+  --tab-active-bg: rgba(184, 146, 74, 0.12);
+  --line: rgba(184, 146, 74, 0.28);
   --btn-text: #ffffff;
   --danger: #d85858;
   --input-bg: #ffffff;
@@ -580,6 +630,11 @@ body.player-active {
   overflow: hidden;
   height: 100vh;
 }
+/* v1.26.0 : l'écran de choix du Challenge est plus haut que le téléphone, il doit défiler au doigt */
+body.player-active:has(#page-challenge.active:not(.ch-selected)) {
+  overflow: visible;
+  height: auto;
+}
 /* Pareil pour le challenge en mode "sélection faite" */
 body.ch-active {
   overflow: hidden;
@@ -1054,7 +1109,7 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
   font-size: 44px;
   line-height: 1.3;
   padding: 4px 0;
-  background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%);
+  background: var(--grad-text, linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1082,7 +1137,7 @@ body.player-active .mini-header { display: none; }
   font-size: 44px;
   line-height: 1.3;
   padding: 4px 0;
-  background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%);
+  background: var(--grad-text, linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2060,7 +2115,7 @@ body.player-active .mini-header { display: none; }
   font-family: 'Great Vibes', 'Dancing Script', cursive;
   font-size: 32px;
   line-height: 1;
-  background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%);
+  background: var(--grad-text, linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2254,6 +2309,34 @@ input[type="range"]::-moz-range-thumb {
   margin-top: 6px;
 }
 .music-mode-row.two { grid-template-columns: 1fr 1fr; }
+/* v1.26.0 : SATS pour dormir */
+.sats-bg-grid { margin-top: 10px; }
+.sats-bg-grid .ambiance-btn { font-size: 13px; text-align: left; }
+.sats-night {
+  position: fixed; inset: 0; z-index: 180;
+  background: radial-gradient(ellipse at 50% 45%, #140b10 0%, #050306 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 34px; padding: 24px;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 1.4s ease, visibility 0s linear 1.4s;
+  touch-action: none;
+}
+.sats-night.on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 1.4s ease; }
+.sats-night.shield { pointer-events: auto; }
+.sn-orb {
+  width: 230px; height: 230px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(241,217,160,0.50) 0%, rgba(230,185,128,0.30) 28%, rgba(240,160,168,0.14) 50%, rgba(240,160,168,0.05) 62%, transparent 70%);
+  animation: sn-breathe 10s ease-in-out infinite;
+  transition: filter 3s ease;
+}
+@keyframes sn-breathe { 0%, 100% { transform: scale(0.82); opacity: 0.55; } 50% { transform: scale(1); opacity: 0.95; } }
+.sn-aff { color: rgba(243,228,228,0.42); font-size: 15px; font-weight: 600; text-align: center; max-width: 300px; min-height: 20px; transition: opacity 3s ease; }
+.sn-hint { position: absolute; bottom: calc(28px + env(safe-area-inset-bottom)); color: rgba(243,228,228,0.32); font-size: 12px; letter-spacing: 0.4px; transition: opacity 3s ease; }
+.sats-night.deep .sn-orb { filter: brightness(0.5); }
+.sats-night.deep .sn-aff { opacity: 0.45; }
+.sats-night.deep .sn-hint { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .sn-orb { animation: none; } }
+.music-mode-row.four { grid-template-columns: repeat(4, 1fr); margin-bottom: 8px; } /* v1.26.0 : 1h 2h 4h 8h sur une ligne */
 .music-mode-btn {
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
@@ -2348,6 +2431,8 @@ input[type="range"]::-moz-range-thumb {
   color: inherit;
 }
 /* Light chips (par défaut) */
+.theme-chip.nuit { background: linear-gradient(135deg, #fbf5ee, #f0d9c8); color: #3a2430; border-color: rgba(184,146,74,0.45); }
+.theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #f1d9a0, #e6b980 40%, #f0a0a8); }
 .theme-chip.doux { background: linear-gradient(135deg, #fff5ef, #f5c8c3); color: #3d2a28; }
 .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
 .theme-chip.rose { background: linear-gradient(135deg, #ffeaf2, #e478a0); color: #4a1028; }
@@ -2375,6 +2460,8 @@ input[type="range"]::-moz-range-thumb {
 .theme-chip.sauge .theme-chip-orb { background: linear-gradient(135deg, #b8c998, #607848); }
 
 /* Dark chips (quand l'app est en mode sombre) */
+.theme-picker.dark-preview .theme-chip.nuit { background: linear-gradient(135deg, #1f0415, #2d0b25); color: #fff7f2; border-color: rgba(217,181,113,0.55); }
+.theme-picker.dark-preview .theme-chip.nuit .theme-chip-orb { background: linear-gradient(135deg, #f1d9a0, #e6b980 40%, #f0a0a8); }
 .theme-picker.dark-preview .theme-chip.doux { background: linear-gradient(135deg, #1a1410, #2d1f1a); color: #faeae0; }
 .theme-picker.dark-preview .theme-chip.doux .theme-chip-orb { background: linear-gradient(135deg, #f5b593, #e478a0); }
 .theme-picker.dark-preview .theme-chip.rose { background: linear-gradient(135deg, #1a0812, #4a1534); color: #ffeaf2; }
@@ -2448,6 +2535,34 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-strong);
 }
 .modal-title .accent { color: var(--accent); }
+/* v1.26.0 : réglages Repeat, SATS et Challenge sur toute la hauteur, croix en haut */
+.modal.modal-full {
+  height: 100vh; height: 100dvh;
+  max-height: 100vh; max-height: 100dvh;
+  border-radius: 0;
+  padding-top: calc(16px + env(safe-area-inset-top));
+}
+.sheet-x-bar {
+  position: sticky; top: 0; z-index: 3;
+  height: 0;
+  display: flex; justify-content: flex-end;
+}
+.sheet-x {
+  width: 38px; height: 38px;
+  margin-top: -4px; margin-right: -6px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: var(--text-strong);
+  font-size: 17px; font-weight: 700; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 0;
+  box-shadow: var(--card-shadow);
+}
+.sheet-x:active { transform: scale(0.92); }
+.modal.modal-full .modal-title { padding: 4px 44px 0; }
+.ch-setup-targets { margin-top: 2px; }
 .modal-handle {
   width: 40px; height: 4px;
   background: var(--line);
@@ -3471,19 +3586,24 @@ body.night-mode .orb-ring {
   font-weight: 500;
 }
 .ch-edit-affs-mini {
-  background: transparent;
-  border: 1px solid var(--line);
+  /* v1.26.0 : pastille « ✏ Modifier » bien visible (avant : petit rond pâle) */
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1.5px solid var(--accent);
   color: var(--accent);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  height: 28px;
+  border-radius: 99px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: 5px;
+  padding: 0 11px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
   transition: all 0.15s;
-  margin-left: 2px;
+  margin-left: 6px;
 }
 .ch-edit-affs-mini:active {
   background: var(--accent);
@@ -4165,6 +4285,110 @@ body.night-mode .orb-ring {
   margin-top: 3px;
   font-weight: 700;
 }
+
+/* ===================================================
+   v1.27.0 : PHOTOS DES PLAYLISTS (tableau de vision)
+   =================================================== */
+/* Le calque qui défile derrière le Player (Repeat et Challenge) */
+#vision-show {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.9s ease, visibility 0s linear 0.9s;
+}
+#vision-show.on { opacity: 1; visibility: visible; transition: opacity 0.9s ease; }
+.vision-layer {
+  position: absolute; inset: -2%;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.2s ease;
+  will-change: opacity, transform;
+}
+.vision-layer.front { opacity: 1; }
+.vision-layer.kb { animation: vision-zoom 18s ease-out forwards; }
+body.vision-paused .vision-layer.kb { animation-play-state: paused; }
+@keyframes vision-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
+/* Voile : la couleur du fond du thème, plus forte en haut et en bas, pour que tout reste lisible */
+.vision-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--bg-solid) 84%, transparent) 0%,
+    color-mix(in srgb, var(--bg-solid) 58%, transparent) 30%,
+    color-mix(in srgb, var(--bg-solid) 48%, transparent) 55%,
+    color-mix(in srgb, var(--bg-solid) 78%, transparent) 82%,
+    color-mix(in srgb, var(--bg-solid) 92%, transparent) 100%);
+}
+body.vision-on .app { position: relative; z-index: 1; }
+body.vision-on .np-text,
+body.vision-on .session-counter-value,
+body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var(--bg-solid) 90%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .vision-layer.kb { animation: none; }
+}
+
+/* Bouton photos dans l'en-tête d'une playlist */
+.group-photo-btn {
+  position: relative;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+.group-photo-btn:active { background: var(--accent); color: var(--btn-text); }
+.group-photo-count {
+  position: absolute; top: -5px; right: -6px;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  border-radius: 9px;
+  background: var(--accent); color: var(--btn-text);
+  font-size: 10px; font-weight: 800; line-height: 17px; text-align: center;
+}
+
+/* Fenêtre « Mon tableau de vision » */
+.vision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+  max-height: 46vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.vision-thumb {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+}
+.vision-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vision-del {
+  position: absolute; top: 5px; right: 5px;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 13px; line-height: 26px; text-align: center;
+}
+.vision-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 26px 10px;
+  color: var(--text-dim);
+  font-size: 13px;
+  border: 1.5px dashed var(--line);
+  border-radius: 14px;
+}
+.vision-count { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.3px; }
+.vision-group-name { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+.btn-primary.busy { opacity: 0.6; pointer-events: none; }
+
+/* Réglage « Photos à l'écoute » : le rythme */
+.music-mode-row.vision-every-row { grid-template-columns: 1.8fr 1fr 1fr 1fr; }
+.vision-every-row.off { opacity: 0.45; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -4234,9 +4458,10 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.25.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.26.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
+  { id: 'nuit', name: 'Nuit rose & or' },
   { id: 'doux', name: 'Rose Gold' },
   { id: 'rose', name: 'Rose Vif' },
   { id: 'framboise', name: 'Framboise' },
@@ -4402,6 +4627,22 @@ const TRANSLATIONS = {
     toast_give_title: 'Donne un titre',
     toast_give_name: 'Donne un nom',
     toast_storage_full: 'Erreur sauvegarde (stockage plein ?)',
+    // v1.27.0 : photos des playlists
+    vision_title: 'Mon tableau de vision',
+    vision_hint: 'Enregistre tes images depuis Pinterest, puis ajoute-les ici. Elles défileront pendant ton écoute.',
+    vision_add: '+ Ajouter des photos',
+    vision_adding: 'Ajout en cours…',
+    vision_empty: 'Pas encore de photo.',
+    vision_remove: 'Enlever cette photo ?',
+    vision_remove_btn: 'Enlever',
+    vision_max: '40 photos au plus par playlist',
+    vision_some_failed: 'Certaines images n\'ont pas pu être ajoutées.',
+    vision_added: '{n} photo(s) ajoutée(s) ✓',
+    vision_unavailable: 'Les photos ne sont pas disponibles sur ce téléphone.',
+    vision_setting: 'Photos à l\'écoute',
+    vision_every_aff: 'À chaque affirmation',
+    vision_setting_sub: 'Les photos de ta playlist défilent derrière tes affirmations.',
+    vision_close: 'Fermer',
     toast_playlist_saved: 'Playlist enregistrée ✓',
     toast_url_cleared: 'URL effacée',
     toast_kofi_saved: 'Lien soutien enregistré ✓',
@@ -4556,6 +4797,22 @@ const TRANSLATIONS = {
     toast_give_title: 'Give it a title',
     toast_give_name: 'Give it a name',
     toast_storage_full: 'Save error (storage full?)',
+    // v1.27.0: playlist photos
+    vision_title: 'My vision board',
+    vision_hint: 'Save your images from Pinterest, then add them here. They\'ll play while you listen.',
+    vision_add: '+ Add photos',
+    vision_adding: 'Adding…',
+    vision_empty: 'No photos yet.',
+    vision_remove: 'Remove this photo?',
+    vision_remove_btn: 'Remove',
+    vision_max: 'Up to 40 photos per playlist',
+    vision_some_failed: 'Some images couldn\'t be added.',
+    vision_added: '{n} photo(s) added ✓',
+    vision_unavailable: 'Photos aren\'t available on this phone.',
+    vision_setting: 'Photos while listening',
+    vision_every_aff: 'With each affirmation',
+    vision_setting_sub: 'Your playlist\'s photos play behind your affirmations.',
+    vision_close: 'Close',
     toast_playlist_saved: 'Playlist saved ✓',
     toast_url_cleared: 'URL cleared',
     toast_kofi_saved: 'Support link saved ✓',
@@ -4638,6 +4895,31 @@ Object.assign(TRANSLATIONS.fr, {
   ch_goal_reached: 'Objectif atteint ✨',
   ch_restart: '↻ Recommencer le challenge',
   ch_restarted: "C'est reparti ✨",
+  ch_restart_pick: 'Choisis tes affirmations et ton objectif ✨',
+  sats_sleep_section: 'Pour dormir',
+  sats_bg: 'Fond calme',
+  sats_bg_sub: "Sons et musiques libres de droits. Touche pour écouter. Ondes lentes : avec un casque.",
+  sats_bg_vol: 'Volume du fond',
+  sats_bg_none: 'Aucun',
+  sats_bg_rain: 'Pluie',
+  sats_bg_ocean: 'Océan',
+  sats_bg_soft: 'Bruit doux',
+  sats_bg_waves: 'Ondes lentes',
+  sats_bg_douceur: 'Douceur',
+  sats_bg_ciel: 'Ciel étoilé',
+  sats_bg_sousleau: "Sous l'eau",
+  sats_bg_contemplation: 'Contemplation',
+  sats_layers: 'Voix multiples',
+  sats_layers_sub: 'Ta voix en 3 couches : au milieu, à gauche et à droite, comme des murmures. Encore mieux avec un casque.',
+  sats_sub: 'Mode subliminal',
+  sats_sub_sub: "Ta voix descend doucement pendant 20 min jusqu'au murmure, sous le fond calme.",
+  sats_night: 'Écran de nuit',
+  sats_night_sub: "Écran presque noir avec une boule qui respire. Touche-le pour revenir.",
+  sats_night_hint: "Touche l'écran pour revenir",
+  ch_start_new: 'Lancer le nouveau challenge',
+  ch_target_label: 'Ton objectif',
+  ch_edit: 'Modifier',
+  sheet_close: 'Fermer',
   ch_done_hint: 'Challenge terminé ✨ Touche « Recommencer » pour en refaire un',
   toast_interrupted: 'En pause : un appel ou une autre app a pris le son. Touche ▶ pour reprendre.',
   challenge_started: 'Challenge démarré',
@@ -4761,6 +5043,31 @@ Object.assign(TRANSLATIONS.en, {
   ch_goal_reached: 'Target reached ✨',
   ch_restart: '↻ Restart the challenge',
   ch_restarted: 'Here we go again ✨',
+  ch_restart_pick: 'Pick your affirmations and your goal ✨',
+  sats_sleep_section: 'For sleep',
+  sats_bg: 'Calm background',
+  sats_bg_sub: 'Royalty-free sounds and music. Tap to listen. Slow waves: with headphones.',
+  sats_bg_vol: 'Background volume',
+  sats_bg_none: 'None',
+  sats_bg_rain: 'Rain',
+  sats_bg_ocean: 'Ocean',
+  sats_bg_soft: 'Soft noise',
+  sats_bg_waves: 'Slow waves',
+  sats_bg_douceur: 'Gentle',
+  sats_bg_ciel: 'Starry sky',
+  sats_bg_sousleau: 'Underwater',
+  sats_bg_contemplation: 'Contemplation',
+  sats_layers: 'Layered voices',
+  sats_layers_sub: 'Your voice in 3 layers: center, left and right, like whispers. Even better with headphones.',
+  sats_sub: 'Subliminal mode',
+  sats_sub_sub: 'Your voice slowly fades over 20 min down to a whisper, under the calm background.',
+  sats_night: 'Night screen',
+  sats_night_sub: 'Almost black screen with a breathing orb. Tap it to come back.',
+  sats_night_hint: 'Tap the screen to come back',
+  ch_start_new: 'Start the new challenge',
+  ch_target_label: 'Your goal',
+  ch_edit: 'Edit',
+  sheet_close: 'Close',
   ch_done_hint: 'Challenge complete ✨ Tap “Restart” to do another one',
   toast_interrupted: 'Paused: a call or another app took over the sound. Tap ▶ to resume.',
   challenge_started: 'Challenge started',
@@ -4871,12 +5178,18 @@ function defaultState() {
       musicPlaylistUrl: '',
       pauseMode: 'silence', // deprecated, kept for backward compat
       selectedGroupId: 'all',
-      theme: 'doux',
+      theme: 'nuit',
       language: null,
       kofiUrl: 'https://ko-fi.com/getmanifestapp',
       darkMode: true,
       nightMode: false,       // Mode SATS pour s'endormir (PLAYER)
       nightTimer: 60,         // Minutes avant arrêt auto (60, 120, 240, 480 = 1h/2h/4h/8h)
+      // v1.26.0 : SATS pour dormir
+      satsBgId: 'rain',       // fond calme : none, rain, ocean, soft, waves, douceur, ciel, sousleau, contemplation
+      satsBgVolume: 0.35,
+      satsLayers: true,       // voix multiples (3 couches)
+      satsSubliminal: true,   // la voix descend jusqu'au murmure en 20 min
+      satsNightScreen: true,  // écran de nuit
       silentMode: false,      // Mode silencieux : remplace la voix par un bip (double bip au changement d'aff)
       allowMixing: false,     // Mix avec Spotify/YT Music (via Web Audio) : perd les contrôles lock screen
       // === Paramètres INDÉPENDANTS du Challenge (ch* = challenge) ===
@@ -5139,7 +5452,7 @@ async function initVoices() {
 }
 
 function applyTheme() {
-  let theme = state.settings.theme || 'doux';
+  let theme = state.settings.theme || 'nuit';
   // Migration : ancien thème 'tech' → 'ocean'
   if (theme === 'tech') { theme = 'ocean'; state.settings.theme = 'ocean'; saveState(); }
   const dark = state.settings.darkMode ? '-dark' : '';
@@ -5201,6 +5514,7 @@ function switchPlayerMode(mode, opts = {}) {
   }
   // SATS = mode nuit auto activé, Repeat/Challenge = mode nuit auto désactivé
   state.settings.nightMode = (mode === 'sats');
+  satsSubReset();
   state.ui.playerMode = mode;
   saveState();
   if (!opts.skipRender) {
@@ -5758,6 +6072,7 @@ function endPlaybackSession() {
   clearQueueBuffer();
   clearNightTimer();
   stopMusic();
+  satsSubReset();
   releaseWakeLock();
   renderPlayer();
 }
@@ -5783,6 +6098,9 @@ let playerDelay1Gain = null;
 let playerDelay2 = null;
 let playerDelay2Gain = null;
 let playerFadeGain = null;
+let playerLayerL = null;   // v1.26.0 : voix à gauche
+let playerLayerR = null;   // v1.26.0 : voix à droite
+let playerSubGain = null;  // v1.26.0 : mode subliminal
 let nightTimerHandle = null;
 let nightFadeHandle = null;
 
@@ -5850,7 +6168,40 @@ function ensurePlayerChain() {
     delay2Filter.connect(playerDelay2Gain);
     playerDelay2Gain.connect(playerFadeGain);
 
-    playerFadeGain.connect(playerAudioCtx.destination);
+    // v1.26.0 : voix multiples (SATS) : 2 copies décalées, à gauche et à droite
+    const mkLayer = (delaySec, pan, lp, hp) => {
+      const d = playerAudioCtx.createDelay(2.0);
+      d.delayTime.value = delaySec;
+      const f = playerAudioCtx.createBiquadFilter();
+      f.type = 'lowpass'; f.frequency.value = lp;
+      let last = f;
+      if (hp) {
+        const hf = playerAudioCtx.createBiquadFilter();
+        hf.type = 'highpass'; hf.frequency.value = hp;
+        f.connect(hf); last = hf;
+      }
+      const g = playerAudioCtx.createGain();
+      g.gain.value = 0;
+      last.connect(g);
+      let out = g;
+      if (playerAudioCtx.createStereoPanner) {
+        const pn = playerAudioCtx.createStereoPanner();
+        pn.pan.value = pan;
+        g.connect(pn); out = pn;
+      }
+      playerLowpass.connect(d);
+      d.connect(f);
+      out.connect(playerFadeGain);
+      return g;
+    };
+    playerLayerL = mkLayer(0.6, -0.8, 2600, 0);
+    playerLayerR = mkLayer(1.15, 0.8, 4200, 380);
+
+    // v1.26.0 : gain du mode subliminal, après tout le reste
+    playerSubGain = playerAudioCtx.createGain();
+    playerSubGain.gain.value = 1;
+    playerFadeGain.connect(playerSubGain);
+    playerSubGain.connect(playerAudioCtx.destination);
     return true;
   } catch(e) {
     console.warn('Night chain init failed', e);
@@ -5873,6 +6224,19 @@ function applyNightMode(enable) {
     playerDelay1Gain.gain.linearRampToValueAtTime(0, now + 0.3);
     playerDelay2Gain.gain.linearRampToValueAtTime(0, now + 0.3);
   }
+  // v1.26.0 : voix multiples et mode subliminal, seulement en SATS
+  const layers = enable && state.ui.playerMode === 'sats' && state.settings.satsLayers !== false;
+  [[playerLayerL, 0.42], [playerLayerR, 0.32]].forEach(([g, v]) => {
+    if (!g) return;
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(layers ? v : 0, now + 0.5);
+  });
+  if (enable) satsSubStart();
+  else if (playerSubGain) {
+    playerSubGain.gain.cancelScheduledValues(now);
+    playerSubGain.gain.setValueAtTime(1, now);
+  }
 }
 
 function startNightTimer(ctx = 'player') {
@@ -5890,6 +6254,12 @@ function startNightTimer(ctx = 'player') {
       musicMasterGain.gain.linearRampToValueAtTime(0, now + 15);
     }
     fadeOutMusicFile(15);
+    if (satsBgGain && playerAudioCtx) {
+      const n2 = playerAudioCtx.currentTime;
+      satsBgGain.gain.cancelScheduledValues(n2);
+      satsBgGain.gain.setValueAtTime(satsBgGain.gain.value, n2);
+      satsBgGain.gain.linearRampToValueAtTime(0, n2 + 15);
+    }
     nightFadeHandle = setTimeout(() => {
       // Stoppe le bon contexte selon qui a lancé le timer
       if (ctx === 'challenge') {
@@ -6267,6 +6637,7 @@ function startMixPlayback(bufferAudio, offsetSec = 0, playbackRate = 1, volume =
     mixSourceNode.loop = true;
     mixGainNode = queueBufferCtx.createGain();
     mixGainNode.gain.value = volume;
+    if (state.ui.playerMode === 'sats') satsSubApply(mixGainNode.gain, queueBufferCtx, volume);
     mixSourceNode.playbackRate.value = playbackRate;
     mixSourceNode.connect(mixGainNode);
     mixGainNode.connect(queueBufferCtx.destination);
@@ -6597,12 +6968,13 @@ function cfgFor(ctx) {
 
 function startMusic(ctx = 'player') {
   activeAudioCtx = ctx;
+  if (ctx === 'player' && state.ui.playerMode === 'sats') { satsSessionStart(); return; }
   const c = cfgFor(ctx);
   if (c.musicMode === 'none') return;
   startAmbiance(c.ambianceId || 'healing', c.musicVolume);
 }
 
-function stopMusic() { stopAmbiance(); }
+function stopMusic() { stopAmbiance(); satsSessionStop(); }
 
 function startAmbiance(id, musicVol) {
   stopAmbiance();
@@ -6616,6 +6988,268 @@ function startAmbiance(id, musicVol) {
     musicFileAudio.play().catch(e => console.warn('music file play error', e));
   } catch(e) { console.warn('ambiance error', e); }
 }
+
+
+// ============================================================
+// v1.26.0 : SATS POUR DORMIR
+// Fond calme (sons fabriqués par l'app + musiques CC0), voix multiples,
+// mode subliminal (la voix descend jusqu'au murmure), écran de nuit.
+// ============================================================
+const SATS_SOUNDS = [
+  { id: 'none', icon: '', key: 'sats_bg_none', color: '#8f7680' },
+  { id: 'rain', icon: '🌧️', key: 'sats_bg_rain', gen: 'rain', color: '#9fb4d9' },
+  { id: 'ocean', icon: '🌊', key: 'sats_bg_ocean', gen: 'ocean', color: '#7fc4d8' },
+  { id: 'soft', icon: '🌫️', key: 'sats_bg_soft', gen: 'soft', color: '#c9b0b5' },
+  { id: 'waves', icon: '🎧', key: 'sats_bg_waves', gen: 'waves', color: '#a78bfa' },
+  { id: 'douceur', icon: '🌙', key: 'sats_bg_douceur', file: 'audio/douceur.wav', gain: 1, color: '#ecd29a' },
+  { id: 'ciel', icon: '✨', key: 'sats_bg_ciel', file: 'audio/ciel-etoile.wav', gain: 1, color: '#f1d9a0' },
+  { id: 'sousleau', icon: '🫧', key: 'sats_bg_sousleau', file: 'audio/sous-l-eau.wav', gain: 1, color: '#8fd3e8' },
+  { id: 'contemplation', icon: '🕯️', key: 'sats_bg_contemplation', file: 'audio/contemplation.mp3', gain: 2.6, color: '#f0a8b0' },
+];
+
+// --- Sons fabriqués (aucun fichier, aucun droit) ---
+function satsRand(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+// Fondu de la fin dans le début : la boucle ne s'entend pas
+function satsSeam(x, n, f) {
+  const out = new Float32Array(n);
+  out.set(x.subarray(0, n));
+  for (let i = 0; i < f; i++) { const a = i / f; out[i] = x[i] * Math.sqrt(a) + x[n + i] * Math.sqrt(1 - a); }
+  return out;
+}
+function satsNormalize(x, target) {
+  let s = 0, pk = 0;
+  for (let i = 0; i < x.length; i++) { s += x[i] * x[i]; const v = Math.abs(x[i]); if (v > pk) pk = v; }
+  const g = Math.min(target / Math.sqrt(s / x.length || 1e-9), 0.9 / (pk || 1));
+  for (let i = 0; i < x.length; i++) x[i] *= g;
+  return x;
+}
+function satsGenerate(kind) {
+  const sr = 22050;
+  const rnd = satsRand(kind.length * 7919 + 17);
+  const white = () => rnd() * 2 - 1;
+  let chans;
+  if (kind === 'soft') {
+    // Bruit brun : grave et enveloppant
+    const n = sr * 30, f = sr, x = new Float32Array(n + f);
+    let b = 0;
+    for (let i = 0; i < n + f; i++) { b = (b + 0.02 * white()) / 1.02; x[i] = b; }
+    chans = [satsNormalize(satsSeam(x, n, f), 0.1)];
+  } else if (kind === 'rain') {
+    // Pluie : bruit rose adouci + gouttes
+    const n = sr * 30, f = sr, L = n + f, x = new Float32Array(L), drops = new Float32Array(L);
+    let b0 = 0, b1 = 0, b2 = 0, lp = 0, lp2 = 0;
+    for (let i = 0; i < L; i++) {
+      const w = white();
+      b0 = 0.99765 * b0 + w * 0.0990460; b1 = 0.96300 * b1 + w * 0.2965164; b2 = 0.57000 * b2 + w * 1.0526913;
+      const pink = (b0 + b1 + b2 + w * 0.1848) * 0.2;
+      lp += 0.11 * (pink - lp);           // enlève le grave (≈ 400 Hz)
+      lp2 += 0.75 * ((pink - lp) - lp2);  // adoucit l'aigu
+      x[i] = lp2;
+    }
+    const nDrops = Math.round((L / sr) * 45);
+    for (let k = 0; k < nDrops; k++) {
+      const t0 = Math.floor(rnd() * (L - 900));
+      const amp = 0.04 + Math.pow(rnd(), 3) * 0.5;
+      const tau = 40 + rnd() * 220;
+      for (let j = 0; j < 900; j++) drops[t0 + j] += amp * white() * Math.exp(-j / tau);
+    }
+    let dl = 0;
+    for (let i = 0; i < L; i++) { dl += 0.35 * (drops[i] - dl); x[i] += (drops[i] - dl) * 0.5; }
+    chans = [satsNormalize(satsSeam(x, n, f), 0.1)];
+  } else if (kind === 'ocean') {
+    // Océan : 4 vagues (10, 12, 9, 11 s), le son s'ouvre au sommet de la vague
+    const periods = [10, 12, 9, 11], n = sr * 42, f = Math.round(sr * 0.5), L = n + f;
+    const x = new Float32Array(L);
+    const waveAt = (i) => {
+      let t = (i % n) / sr;
+      for (const P of periods) { if (t < P) { const u = t / P; return u < 0.45 ? Math.pow(Math.sin(Math.PI / 2 * u / 0.45), 2) : Math.pow((1 - u) / 0.55, 1.6); } t -= P; }
+      return 0;
+    };
+    let br = 0, y = 0, hissLp = 0;
+    for (let i = 0; i < L; i++) {
+      const w = white();
+      br = (br + 0.02 * w) / 1.02;
+      const v = waveAt(i);
+      const fc = 250 + 1600 * v;
+      const a = 1 - Math.exp(-2 * Math.PI * fc / sr);
+      y += a * ((br * 3 + w * 0.15) - y);
+      hissLp += 0.5 * (w - hissLp);
+      x[i] = y * (0.2 + 0.8 * v) + (w - hissLp) * 0.05 * v * v * v;
+    }
+    chans = [satsNormalize(satsSeam(x, n, f), 0.1)];
+  } else {
+    // Ondes lentes : 180 Hz à gauche, 182 Hz à droite (battement doux de 2 Hz, au casque)
+    const n = sr * 16, Lc = new Float32Array(n), Rc = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const t = i / sr; Lc[i] = 0.14 * Math.sin(2 * Math.PI * 180 * t); Rc[i] = 0.14 * Math.sin(2 * Math.PI * 182 * t); }
+    chans = [Lc, Rc];
+  }
+  const fake = { numberOfChannels: chans.length, sampleRate: sr, length: chans[0].length, getChannelData: c => chans[c] };
+  return URL.createObjectURL(audioBufferToWavBlob(fake));
+}
+const satsGenCache = {};
+function satsSoundUrl(snd) {
+  if (snd.file) return snd.file;
+  if (!satsGenCache[snd.id]) satsGenCache[snd.id] = satsGenerate(snd.gen);
+  return satsGenCache[snd.id];
+}
+
+// --- Lecture du fond calme (passe par Web Audio : le volume marche aussi sur iPhone) ---
+let satsBgAudio = null, satsBgGain = null, satsBgCurrent = null, satsBgPreviewTimer = null;
+function satsBgLevel(snd) {
+  const v = Math.max(0, Math.min(1, state.settings.satsBgVolume ?? 0.35));
+  return v * (snd.gain || 1) * 0.9;
+}
+function ensureSatsBg() {
+  if (!ensurePlayerChain()) return false;
+  if (satsBgAudio) return true;
+  try {
+    satsBgAudio = new Audio();
+    satsBgAudio.loop = true;
+    satsBgAudio.preload = 'auto';
+    satsBgAudio.setAttribute('playsinline', '');
+    const src = playerAudioCtx.createMediaElementSource(satsBgAudio);
+    satsBgGain = playerAudioCtx.createGain();
+    satsBgGain.gain.value = 0;
+    src.connect(satsBgGain);
+    satsBgGain.connect(playerAudioCtx.destination);
+    return true;
+  } catch (e) { console.warn('sats bg init', e); satsBgAudio = null; return false; }
+}
+function startSatsBackground(idOverride) {
+  const id = idOverride || state.settings.satsBgId || 'none';
+  const snd = SATS_SOUNDS.find(x => x.id === id);
+  if (!snd || id === 'none') { stopSatsBackground(); return; }
+  if (!ensureSatsBg()) return;
+  if (satsBgCurrent !== id) { satsBgAudio.src = satsSoundUrl(snd); satsBgCurrent = id; }
+  if (playerAudioCtx.state === 'suspended') playerAudioCtx.resume().catch(() => {});
+  const g = satsBgGain.gain, now = playerAudioCtx.currentTime;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(g.value, now);
+  g.linearRampToValueAtTime(satsBgLevel(snd), now + 1.5);
+  satsBgAudio.play().catch(e => console.warn('sats bg play', e));
+}
+function stopSatsBackground() {
+  if (satsBgPreviewTimer) { clearTimeout(satsBgPreviewTimer); satsBgPreviewTimer = null; }
+  if (satsBgAudio) { try { satsBgAudio.pause(); } catch (e) {} }
+  if (satsBgGain && playerAudioCtx) { try { satsBgGain.gain.cancelScheduledValues(playerAudioCtx.currentTime); satsBgGain.gain.value = 0; } catch (e) {} }
+}
+function updateSatsBgVolume() {
+  if (!satsBgGain || !satsBgCurrent || !playerAudioCtx) return;
+  const snd = SATS_SOUNDS.find(x => x.id === satsBgCurrent);
+  if (!snd) return;
+  const now = playerAudioCtx.currentTime;
+  satsBgGain.gain.cancelScheduledValues(now);
+  satsBgGain.gain.setValueAtTime(satsBgLevel(snd), now);
+}
+// Écouter un fond depuis les réglages : en direct si ça joue, sinon 8 secondes
+function previewSatsBackground(id) {
+  if (playerState.playing && state.ui.playerMode === 'sats') { startSatsBackground(id); return; }
+  if (id === 'none') { stopSatsBackground(); return; }
+  startSatsBackground(id);
+  if (satsBgPreviewTimer) clearTimeout(satsBgPreviewTimer);
+  satsBgPreviewTimer = setTimeout(() => {
+    satsBgPreviewTimer = null;
+    if (playerState.playing && state.ui.playerMode === 'sats') return;
+    if (satsBgGain && playerAudioCtx) {
+      const now = playerAudioCtx.currentTime;
+      satsBgGain.gain.cancelScheduledValues(now);
+      satsBgGain.gain.setValueAtTime(satsBgGain.gain.value, now);
+      satsBgGain.gain.linearRampToValueAtTime(0, now + 1.5);
+    }
+    setTimeout(() => { if (!(playerState.playing && state.ui.playerMode === 'sats') && satsBgAudio) satsBgAudio.pause(); }, 1600);
+  }, 8000);
+}
+
+// --- Mode subliminal : la voix descend jusqu'à 8 % en 20 minutes (reprend où elle en était après une pause) ---
+const SATS_SUB_SEC = 20 * 60;
+const SATS_SUB_FLOOR = 0.08;
+let satsSubElapsed = 0, satsSubStartedAt = 0;
+function satsSubElapsedNow() { return satsSubElapsed + (satsSubStartedAt ? (Date.now() - satsSubStartedAt) / 1000 : 0); }
+function satsSubApply(param, ctx, base) {
+  if (!param || !ctx) return;
+  const now = ctx.currentTime;
+  param.cancelScheduledValues(now);
+  const on = state.ui.playerMode === 'sats' && state.settings.satsSubliminal !== false;
+  if (!on) { param.setValueAtTime(base, now); return; }
+  const prog = Math.min(1, satsSubElapsedNow() / SATS_SUB_SEC);
+  param.setValueAtTime(Math.max(0.0001, base * Math.pow(SATS_SUB_FLOOR, prog)), now);
+  if (prog < 1) param.exponentialRampToValueAtTime(Math.max(0.0001, base * SATS_SUB_FLOOR), now + SATS_SUB_SEC * (1 - prog));
+}
+function satsSubHold() {
+  if (satsSubStartedAt) { satsSubElapsed += (Date.now() - satsSubStartedAt) / 1000; satsSubStartedAt = 0; }
+}
+function satsSubStart() {
+  satsSubHold();
+  if (state.ui.playerMode === 'sats') satsSubStartedAt = Date.now();
+  if (playerSubGain) satsSubApply(playerSubGain.gain, playerAudioCtx, 1);
+  if (mixGainNode && queueBufferCtx && state.ui.playerMode === 'sats') satsSubApply(mixGainNode.gain, queueBufferCtx, pget('affVolume') || 1);
+}
+function satsSubReset() { satsSubHold(); satsSubElapsed = 0; }
+
+// --- Début et fin d'une séance SATS ---
+function satsSessionStart() {
+  if (satsBgPreviewTimer) { clearTimeout(satsBgPreviewTimer); satsBgPreviewTimer = null; }
+  ensurePlayerChain();
+  applyNightMode(true);
+  startSatsBackground();
+}
+function satsSessionStop() {
+  satsSubHold();
+  stopSatsBackground();
+}
+
+// --- Écran de nuit : noir, une boule qui respire ---
+let satsNightLastTouch = Date.now(), satsNightShownAt = 0;
+function ensureSatsNightEl() {
+  let el = document.getElementById('sats-night');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'sats-night';
+  el.className = 'sats-night';
+  el.innerHTML = `<div class="sn-orb"></div><div class="sn-aff"></div><div class="sn-hint"></div>`;
+  // Le toucher réveille l'écran, sans toucher au bouton qui est dessous
+  el.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    satsNightLastTouch = Date.now();
+    el.classList.add('shield');
+    el.classList.remove('on', 'deep');
+    setTimeout(() => el.classList.remove('shield'), 700);
+  });
+  el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); }, true);
+  document.body.appendChild(el);
+  return el;
+}
+function satsNightWanted() {
+  return currentTab === 'player' && state.ui.playerMode === 'sats' && playerState.playing
+    && state.settings.satsNightScreen !== false && !document.querySelector('.modal-overlay')
+    && document.visibilityState === 'visible';
+}
+function updateSatsNight() {
+  const el = ensureSatsNightEl();
+  const want = satsNightWanted() && (Date.now() - satsNightLastTouch > 8000);
+  if (want && !el.classList.contains('on')) {
+    el.querySelector('.sn-hint').textContent = t('sats_night_hint');
+    el.classList.remove('deep');
+    el.classList.add('on');
+    satsNightShownAt = Date.now();
+  } else if (!want && el.classList.contains('on')) {
+    el.classList.remove('on', 'deep');
+  }
+  if (el.classList.contains('on')) {
+    if (Date.now() - satsNightShownAt > 10000) el.classList.add('deep');
+    const np = document.getElementById('np-text');
+    const txt = np ? np.textContent.trim() : '';
+    const affEl = el.querySelector('.sn-aff');
+    if (affEl.textContent !== txt) affEl.textContent = txt;
+  }
+}
+document.addEventListener('pointerdown', () => { satsNightLastTouch = Date.now(); }, true);
+document.addEventListener('keydown', () => { satsNightLastTouch = Date.now(); }, true);
+setInterval(updateSatsNight, 1000);
 
 // === BIP (mode silencieux) ===
 // Génère un bip court. Si isChange=true, double bip (indique changement d'aff)
@@ -6788,6 +7422,10 @@ function renderList() {
               <div class="group-name">${escapeHtml(g.name)}</div>
               <div class="group-count">${affs.length} ${wordAff}</div>
             </div>
+            <button class="group-photo-btn" data-group-photos="${g.id}" aria-label="${t('vision_title')}" onclick="event.stopPropagation()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
+              ${groupPhotoIds(g).length ? `<span class="group-photo-count">${groupPhotoIds(g).length}</span>` : ''}
+            </button>
             <button class="group-add-btn" data-group-add="${g.id}" aria-label="Add" onclick="event.stopPropagation()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
@@ -6829,6 +7467,10 @@ function renderList() {
   document.querySelectorAll('[data-group-edit]').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     openEditGroupModal(b.dataset.groupEdit);
+  }));
+  document.querySelectorAll('[data-group-photos]').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPhotosModal(b.dataset.groupPhotos);
   }));
   document.querySelectorAll('[data-aff-play]').forEach(b => b.addEventListener('click', () => {
     const aff = state.affirmations.find(a => a.id === b.dataset.affPlay);
@@ -7103,8 +7745,8 @@ function openPlayerSheet() {
   overlay.className = 'modal-overlay active';
   overlay.id = 'player-sheet';
   overlay.innerHTML = `
-    <div class="modal">
-      <div class="modal-handle"></div>
+    <div class="modal modal-full">
+      <div class="sheet-x-bar"><button type="button" class="sheet-x" aria-label="${t('sheet_close')}">✕</button></div>
       <div class="modal-title">${state.ui.playerMode === 'sats' ? t('player_sheet_title_sats') : t('player_sheet_title')}</div>
 
       ${state.ui.playerMode === 'sats' ? `
@@ -7113,11 +7755,71 @@ function openPlayerSheet() {
           <span class="ps-icon">🌙</span>
           <span class="ps-label">${t('sats_timer')}</span>
         </div>
-        <div class="music-mode-row">
+        <div class="music-mode-row four">
           ${[60, 120, 240, 480].map(min => `<button class="music-mode-btn ${s.nightTimer===min?'active':''}" data-ps-night-timer="${min}">${min/60}h</button>`).join('')}
         </div>
         <div class="ps-sub">${t('sats_timer_sub')}</div>
       </div>
+
+      <div class="ps-section">🌙 ${t('sats_sleep_section')}</div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🎶</span>
+          <span class="ps-label">${t('sats_bg')}</span>
+        </div>
+        <div class="ambiance-grid sats-bg-grid">
+          ${SATS_SOUNDS.map(snd => `<button type="button" class="ambiance-btn ${(s.satsBgId || 'none') === snd.id ? 'active' : ''}" data-sats-bg="${snd.id}" style="--amb-color: ${snd.color}">${snd.icon ? snd.icon + ' ' : ''}${t(snd.key)}</button>`).join('')}
+        </div>
+        <div class="ps-sub">${t('sats_bg_sub')}</div>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🔉</span>
+          <span class="ps-label">${t('sats_bg_vol')}</span>
+          <span class="ps-val" id="ps-val-sats-bg-vol">${Math.round((s.satsBgVolume ?? 0.35) * 100)}%</span>
+        </div>
+        <input type="range" id="ps-sats-bg-vol" min="0" max="1" step="0.05" value="${s.satsBgVolume ?? 0.35}" />
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">👥</span>
+          <span class="ps-label">${t('sats_layers')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="ps-sats-layers" ${s.satsLayers !== false ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="ps-sub">${t('sats_layers_sub')}</div>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🌫️</span>
+          <span class="ps-label">${t('sats_sub')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="ps-sats-sub" ${s.satsSubliminal !== false ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="ps-sub">${t('sats_sub_sub')}</div>
+      </div>
+
+      <div class="ps-row">
+        <div class="ps-head">
+          <span class="ps-icon">🌑</span>
+          <span class="ps-label">${t('sats_night')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" id="ps-sats-night" ${s.satsNightScreen !== false ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="ps-sub">${t('sats_night_sub')}</div>
+      </div>
+
+      <div class="ps-section">🎙️ ${t('sheet_section_play')}</div>
       ` : ''}
 
       <div class="ps-row">
@@ -7199,6 +7901,8 @@ function openPlayerSheet() {
         </div>
         <div class="ps-sub">${t('silent_mode_sub')}</div>
       </div>
+
+      ${state.ui.playerMode === 'sats' ? '' : visionSettingRowHTML('repeat')}
 
       <div class="ps-row ps-row-last">
         <div class="ps-head">
@@ -7318,6 +8022,37 @@ function openPlayerSheet() {
     }
   });
 
+  // v1.26.0 : SATS pour dormir
+  overlay.querySelectorAll('[data-sats-bg]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.satsBgId = b.dataset.satsBg;
+      saveState();
+      overlay.querySelectorAll('[data-sats-bg]').forEach(x => x.classList.toggle('active', x === b));
+      previewSatsBackground(state.settings.satsBgId);
+    });
+  });
+  const satsVol = document.getElementById('ps-sats-bg-vol');
+  satsVol?.addEventListener('input', () => {
+    state.settings.satsBgVolume = parseFloat(satsVol.value);
+    document.getElementById('ps-val-sats-bg-vol').textContent = Math.round(state.settings.satsBgVolume * 100) + '%';
+    updateSatsBgVolume();
+  });
+  satsVol?.addEventListener('change', () => saveState());
+  document.getElementById('ps-sats-layers')?.addEventListener('change', (e) => {
+    state.settings.satsLayers = e.target.checked;
+    saveState();
+    if (playerState.playing && state.ui.playerMode === 'sats') applyNightMode(true);
+  });
+  document.getElementById('ps-sats-sub')?.addEventListener('change', (e) => {
+    state.settings.satsSubliminal = e.target.checked;
+    saveState();
+    if (playerState.playing && state.ui.playerMode === 'sats') satsSubStart();
+  });
+  document.getElementById('ps-sats-night')?.addEventListener('change', (e) => {
+    state.settings.satsNightScreen = e.target.checked;
+    saveState();
+  });
+
   // Minuteur SATS (v1.23.0, dans la roue)
   overlay.querySelectorAll('[data-ps-night-timer]').forEach(b => {
     b.addEventListener('click', () => {
@@ -7341,7 +8076,10 @@ function openPlayerSheet() {
     });
   });
 
+  bindVisionSettingRow(overlay, 'repeat');  // v1.27.0
+
   document.getElementById('ps-close').addEventListener('click', () => overlay.remove());
+  overlay.querySelector('.sheet-x').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
@@ -7355,8 +8093,8 @@ function openChallengeSheet() {
   overlay.className = 'modal-overlay active';
   overlay.id = 'challenge-sheet';
   overlay.innerHTML = `
-    <div class="modal">
-      <div class="modal-handle"></div>
+    <div class="modal modal-full">
+      <div class="sheet-x-bar"><button type="button" class="sheet-x" aria-label="${t('sheet_close')}">✕</button></div>
       <div class="modal-title">${t('challenge_sheet_title')}</div>
 
       <div class="ps-section ps-section-first">${t('sheet_section_play')}</div>
@@ -7471,6 +8209,8 @@ function openChallengeSheet() {
           `).join('')}
         </div>
       </div>
+
+      ${visionSettingRowHTML('challenge')}
 
       <div class="ps-row">
         <div class="ps-head">
@@ -7641,7 +8381,10 @@ function openChallengeSheet() {
     render();
   });
 
+  bindVisionSettingRow(overlay, 'challenge');  // v1.27.0
+
   document.getElementById('cs-close').addEventListener('click', () => overlay.remove());
+  overlay.querySelector('.sheet-x').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
@@ -7667,6 +8410,9 @@ function renderChallenge() {
   const TARGET_CHOICES = [10000, 20000, 30000, 40000, 50000];
   // IDs déjà sélectionnés (pour pré-cocher en mode édition)
   const preCheckedIds = new Set(c.affirmationIds || []);
+  // v1.26.0 : objectif choisi sur l'écran de départ (gardé tant qu'on n'a pas validé)
+  if (!TARGET_CHOICES.includes(window.chSetupTarget)) window.chSetupTarget = TARGET_CHOICES.includes(c.target) ? c.target : 10000;
+  const setupTarget = window.chSetupTarget;
 
   const pageEl = document.getElementById('page-challenge');
   pageEl.classList.toggle('ch-selected', hasSelection);
@@ -7680,15 +8426,19 @@ function renderChallenge() {
     ${playerModeChipsHTML()}
     ${!hasSelection ? `
       <div class="eyebrow">${t('challenge_eyebrow')}</div>
-      <h1 class="h1">${t('challenge_title_1')} <span class="dot">${t('challenge_title_2')}</span></h1>
+      <h1 class="h1"><span id="ch-title-k">${setupTarget / 1000}K</span> <span class="dot">${t('challenge_title_2')}</span></h1>
       <p class="sublabel" style="margin-bottom:14px; max-width: 440px">${t('challenge_desc')}</p>
     ` : ''}
 
     <!-- SÉLECTION DES AFFIRMATIONS (seulement en mode édition ou pas de sélection) -->
     ${!hasSelection ? `
       <div class="challenge-aff-card">
+        <div class="h3" style="margin-top:0">🎯 ${t('ch_target_label')}</div>
+        <div class="target-chips ch-setup-targets">
+          ${TARGET_CHOICES.map(n => `<button type="button" class="target-chip ${setupTarget === n ? 'active' : ''}" data-ch-setup-target="${n}">${n / 1000}K</button>`).join('')}
+        </div>
         ${available.length > 0 ? `
-          <div class="h3" style="margin-top:0">${t('challenge_select_prompt')}</div>
+          <div class="h3" style="margin-top:18px">${t('challenge_select_prompt')}</div>
           <div class="aff-check-list">
             ${available.map(a => `
               <label class="aff-check-item">
@@ -7698,7 +8448,7 @@ function renderChallenge() {
             `).join('')}
           </div>
           <div class="sublabel" style="margin-top:8px; font-size: 11px">${t('challenge_max_affs')}</div>
-          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${editing ? 'Modifier' : t('ch_use_this')}</button>
+          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${editing ? (window.chRestartSetup ? t('ch_start_new') : t('ch_edit')) : t('ch_use_this')}</button>
           <div class="challenge-divider"><span>${t('challenge_or')}</span></div>
         ` : ''}
 
@@ -7773,10 +8523,11 @@ function renderChallenge() {
             <!-- Meta ligne juste sous l'orbe : restantes · commencé le · edit -->
             ${chDone ? `<button type="button" class="ch-restart-btn" id="ch-restart">${t('ch_restart')}</button>` : `<div class="orb-meta-line">
               <strong>${fmtN(remaining)}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
-              <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="${t('ch_edit')}" title="${t('ch_edit')}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                 </svg>
+                <span>${t('ch_edit')}</span>
             </button>
             </div>`}
 
@@ -7835,6 +8586,15 @@ function renderChallenge() {
     });
   });
 
+  document.querySelectorAll('[data-ch-setup-target]').forEach(b => {
+    b.addEventListener('click', () => {
+      window.chSetupTarget = parseInt(b.dataset.chSetupTarget, 10);
+      document.querySelectorAll('[data-ch-setup-target]').forEach(x => x.classList.toggle('active', x === b));
+      const k = document.getElementById('ch-title-k');
+      if (k) k.textContent = (window.chSetupTarget / 1000) + 'K';
+    });
+  });
+
   // Au chargement : si on est en mode édition et des cases sont déjà pré-cochées,
   // activer le bouton confirmer immédiatement
   updateConfirmBtn();
@@ -7847,12 +8607,15 @@ function renderChallenge() {
     const wasEmpty = (state.challenge.affirmationIds || []).length === 0;
     state.challenge.affirmationIds = picked;
     state.challenge.currentIdx = 0;
+    state.challenge.target = window.chSetupTarget || state.challenge.target || 10000;
     // Only set startedAt if the challenge has never been started
     if (wasEmpty || !state.challenge.startedAt) {
       state.challenge.startedAt = Date.now();
     }
     // Sortir du mode édition
     window.editingChallengeSelection = false;
+    window.chRestartSetup = false;
+    window.chSetupTarget = null;
     saveState();
     toast('Sélection enregistrée ✓');
     render();
@@ -7868,6 +8631,7 @@ function renderChallenge() {
       stopMusic();
     }
     window.editingChallengeSelection = true;
+    window.chSetupTarget = state.challenge.target;
     render();
   });
 
@@ -8213,9 +8977,16 @@ function setupChallengeRecorder() {
     chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null, recording: null, duration: 0 };
 
     // Set comme affirmation du challenge
-    state.challenge.affirmationId = newAff.id;
+    state.challenge.affirmationIds = [newAff.id];
+    state.challenge.currentIdx = 0;
+    state.challenge.currentRepeat = 0;
     state.challenge.count = 0;
+    state.challenge.target = window.chSetupTarget || state.challenge.target || 10000;
     state.challenge.startedAt = Date.now();
+    challengeShownAffId = null;
+    window.editingChallengeSelection = false;
+    window.chRestartSetup = false;
+    window.chSetupTarget = null;
     saveState();
 
     toast(t('toast_created'));
@@ -8240,11 +9011,15 @@ function restartChallenge() {
   state.challenge.count = 0;
   state.challenge.currentIdx = 0;
   state.challenge.currentRepeat = 0;
-  state.challenge.startedAt = Date.now();
+  state.challenge.startedAt = null;   // la date repart quand on valide le nouveau choix
   challengeShownAffId = null;
+  window.editingChallengeSelection = true;
+  window.chRestartSetup = true;
+  window.chSetupTarget = state.challenge.target;
   saveState();
-  toast(t('ch_restarted'));
+  toast(t('ch_restart_pick'));
   render();
+  window.scrollTo(0, 0);
 }
 
 async function startChallenge() {
@@ -9512,6 +10287,7 @@ function openGroupModal(existing) {
       } else {
         if (!await confirmAsync(t('confirm_delete_group'), t('delete') || 'Supprimer')) return;
       }
+      removePhotos(groupPhotoIds(g));  // v1.27.0 : ses photos partent avec elle
       state.groups = state.groups.filter(x => x.id !== g.id);
       if (state.settings.selectedGroupId === g.id) state.settings.selectedGroupId = 'all';
       saveState();
@@ -9876,6 +10652,395 @@ function endOnboarding() {
   document.getElementById('onboarding')?.remove();
 }
 
+// ============================================================
+// PHOTOS DES PLAYLISTS (v1.27.0) : le tableau de vision
+// - Les photos (Blob JPEG réduit) vivent dans IndexedDB, base à part : getmanifest_photos.
+// - Dans state.groups[i].photos : seulement la liste des ids (rien de lourd dans localStorage).
+// - Les sauvegardes ne contiennent pas les photos : un id sans photo est simplement ignoré.
+// - Pendant Repeat et Challenge, un calque fixe (#vision-show, hors des pages qui se
+//   redessinent) fait défiler les photos en fondu derrière l'affirmation. Jamais en SATS.
+// ============================================================
+const PHOTO_DB = 'getmanifest_photos';
+const PHOTO_STORE = 'photos';
+const PHOTO_MAX_PER_GROUP = 40;
+const PHOTO_MAX_SIDE = 1280;
+const VISION_MIN_MS = 6000;   // une photo reste au moins 6 s, même si les affirmations vont vite
+let photoDb = null;
+let photosReady = false;
+const photoUrls = new Map();  // id → objectURL du Blob
+
+function openPhotoDb() {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!window.indexedDB) { reject(new Error('no indexedDB')); return; }
+      const req = indexedDB.open(PHOTO_DB, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(PHOTO_STORE)) db.createObjectStore(PHOTO_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('open error'));
+      req.onblocked = () => reject(new Error('open blocked'));
+    } catch(e) { reject(e); }
+  });
+}
+
+// Lance une transaction et attend qu'elle soit finie (fn reçoit le magasin)
+function photoTx(mode, fn) {
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = photoDb.transaction(PHOTO_STORE, mode);
+      const out = fn(tx.objectStore(PHOTO_STORE));
+      tx.oncomplete = () => resolve(out);
+      tx.onerror = () => reject(tx.error || new Error('tx error'));
+      tx.onabort = () => reject(tx.error || new Error('tx abort'));
+    } catch(e) { reject(e); }
+  });
+}
+
+async function initPhotos() {
+  try {
+    photoDb = await openPhotoDb();
+    const stored = new Map();
+    await photoTx('readonly', st => {
+      const req = st.openCursor();
+      req.onsuccess = () => {
+        const c = req.result;
+        if (c) { stored.set(c.key, c.value); c.continue(); }
+      };
+    });
+    stored.forEach((blob, id) => {
+      try { photoUrls.set(id, URL.createObjectURL(blob)); } catch(e) {}
+    });
+    photosReady = true;
+    if (currentTab === 'list') render();  // met à jour le nombre de photos sur les playlists
+  } catch(e) {
+    logEvent('photos_init_fail', { msg: String(e && e.message || e) });
+  }
+}
+
+// Les photos d'une playlist qui existent vraiment sur ce téléphone
+function groupPhotoIds(g) {
+  return (g && Array.isArray(g.photos)) ? g.photos.filter(id => photoUrls.has(id)) : [];
+}
+
+// Réduit une image (1280 px au plus grand côté, JPEG 0,82). Le navigateur redresse les photos (EXIF).
+function resizeImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const src = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w0 = img.naturalWidth, h0 = img.naturalHeight;
+        if (!w0 || !h0) throw new Error('empty image');
+        const k = Math.min(1, PHOTO_MAX_SIDE / Math.max(w0, h0));
+        const w = Math.max(1, Math.round(w0 * k)), h = Math.max(1, Math.round(h0 * k));
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);  // fond pour les PNG transparents
+        ctx.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(src);
+        cv.toBlob(b => b ? resolve(b) : reject(new Error('toBlob null')), 'image/jpeg', 0.82);
+      } catch(e) { URL.revokeObjectURL(src); reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(src); reject(new Error('decode error')); };
+    img.src = src;
+  });
+}
+
+async function addPhotosToGroup(groupId, files) {
+  const g = state.groups.find(x => x.id === groupId);
+  if (!g) return 0;
+  if (!photosReady) { toast(t('vision_unavailable')); return 0; }
+  let list = Array.from(files || []).filter(f => !f.type || /^image\//.test(f.type));
+  const room = Math.max(0, PHOTO_MAX_PER_GROUP - groupPhotoIds(g).length);
+  if (list.length > room) { toast(t('vision_max')); list = list.slice(0, room); }
+  let added = 0;
+  for (const f of list) {
+    try {
+      const blob = await resizeImageFile(f);
+      const id = 'ph_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      await photoTx('readwrite', st => { st.put(blob, id); });
+      photoUrls.set(id, URL.createObjectURL(blob));
+      if (!Array.isArray(g.photos)) g.photos = [];
+      g.photos = g.photos.filter(x => photoUrls.has(x));  // enlève au passage les ids sans photo
+      g.photos.push(id);
+      added++;
+    } catch(e) {
+      logEvent('photo_add_fail', { msg: String(e && e.message || e), type: f.type || '?' });
+    }
+  }
+  if (added) { saveState(); toast(t('vision_added', { n: added })); }
+  if (added < list.length) setTimeout(() => toast(t('vision_some_failed')), added ? 1800 : 0);
+  return added;
+}
+
+// Enlève des photos (de toutes les playlists et d'IndexedDB)
+function removePhotos(ids) {
+  if (!ids || !ids.length) return;
+  const set = new Set(ids);
+  (state.groups || []).forEach(g => {
+    if (Array.isArray(g.photos)) g.photos = g.photos.filter(id => !set.has(id));
+  });
+  ids.forEach(id => {
+    const u = photoUrls.get(id);
+    photoUrls.delete(id);
+    if (u) setTimeout(() => { try { URL.revokeObjectURL(u); } catch(e) {} }, 3000);
+  });
+  saveState();
+  if (photoDb) photoTx('readwrite', st => { ids.forEach(id => st.delete(id)); })
+    .catch(e => logEvent('photo_del_fail', { msg: String(e && e.message || e) }));
+}
+
+function openPhotosModal(groupId) {
+  const g = state.groups.find(x => x.id === groupId);
+  if (!g) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.id = 'vision-modal';
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.style.display = 'none';
+  let busy = false;
+
+  const draw = () => {
+    const ids = groupPhotoIds(g);
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">${t('vision_title')}</div>
+        <p class="sublabel vision-group-name">♪ ${escapeHtml(g.name)}</p>
+        <p class="sublabel">${t('vision_hint')}</p>
+        ${!photosReady ? `<p class="sublabel" style="margin-top:12px; color: var(--danger)">${t('vision_unavailable')}</p>` : `
+          <div class="vision-grid">
+            ${ids.length ? ids.map(id => `
+              <div class="vision-thumb">
+                <img src="${photoUrls.get(id)}" alt="" loading="lazy">
+                <button type="button" class="vision-del" data-vision-del="${id}" aria-label="${t('vision_remove_btn')}">✕</button>
+              </div>`).join('') : `<div class="vision-empty">${t('vision_empty')}</div>`}
+          </div>
+          <div class="vision-count">${ids.length} / ${PHOTO_MAX_PER_GROUP}</div>
+          <button type="button" class="btn-primary ${busy ? 'busy' : ''}" id="vision-add">${busy ? t('vision_adding') : t('vision_add')}</button>
+        `}
+        <button type="button" class="btn-secondary" id="vision-close">${t('vision_close')}</button>
+      </div>
+    `;
+    overlay.appendChild(input);
+    overlay.querySelector('#vision-add')?.addEventListener('click', () => {
+      if (busy) return;
+      if (groupPhotoIds(g).length >= PHOTO_MAX_PER_GROUP) { toast(t('vision_max')); return; }
+      input.value = '';
+      input.click();
+    });
+    overlay.querySelectorAll('[data-vision-del]').forEach(b => b.addEventListener('click', async () => {
+      if (!await confirmAsync(t('vision_remove'), t('vision_remove_btn'))) return;
+      removePhotos([b.dataset.visionDel]);
+      draw();
+      render();
+    }));
+    overlay.querySelector('#vision-close').addEventListener('click', close);
+  };
+  const close = () => { overlay.remove(); render(); };
+
+  input.addEventListener('change', async () => {
+    const files = input.files;
+    if (!files || !files.length) return;
+    busy = true; draw();
+    await addPhotosToGroup(g.id, files);
+    busy = false;
+    if (overlay.isConnected) draw();
+  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay && !busy) close(); });
+  document.body.appendChild(overlay);
+  draw();
+}
+
+// ---------- Réglages « Photos à l'écoute » (Repeat et Challenge ont les leurs) ----------
+function visionCfg(mode) {
+  const s = state.settings;
+  const on = mode === 'challenge' ? s.chVisionOn : s.visionOn;
+  const every = mode === 'challenge' ? s.chVisionEvery : s.visionEvery;
+  return { on: on !== false, every: (every === 8 || every === 15 || every === 30) ? every : 'aff' };
+}
+
+function visionSettingRowHTML(mode) {
+  const c = visionCfg(mode);
+  return `
+      <div class="ps-row" data-vision-row="${mode}">
+        <div class="ps-head">
+          <span class="ps-icon">🖼️</span>
+          <span class="ps-label">${t('vision_setting')}</span>
+          <label class="ps-switch">
+            <input type="checkbox" data-vision-on ${c.on ? 'checked' : ''}>
+            <span class="ps-switch-slider"></span>
+          </label>
+        </div>
+        <div class="music-mode-row vision-every-row ${c.on ? '' : 'off'}">
+          ${['aff', 8, 15, 30].map(v => `<button type="button" class="music-mode-btn ${c.every === v ? 'active' : ''}" data-vision-every="${v}">${v === 'aff' ? t('vision_every_aff') : v + ' s'}</button>`).join('')}
+        </div>
+        <div class="ps-sub">${t('vision_setting_sub')}</div>
+      </div>`;
+}
+
+function bindVisionSettingRow(overlay, mode) {
+  const row = overlay.querySelector(`[data-vision-row="${mode}"]`);
+  if (!row) return;
+  const onKey = mode === 'challenge' ? 'chVisionOn' : 'visionOn';
+  const everyKey = mode === 'challenge' ? 'chVisionEvery' : 'visionEvery';
+  row.querySelector('[data-vision-on]').addEventListener('change', (e) => {
+    state.settings[onKey] = e.target.checked;
+    saveState();
+    row.querySelector('.vision-every-row').classList.toggle('off', !e.target.checked);
+    visionTick();
+  });
+  row.querySelectorAll('[data-vision-every]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.visionEvery;
+    state.settings[everyKey] = v === 'aff' ? 'aff' : parseInt(v, 10);
+    saveState();
+    row.querySelectorAll('[data-vision-every]').forEach(x => x.classList.toggle('active', x === b));
+    vision.lastChange = Date.now();
+  }));
+}
+
+// ---------- Le défilement ----------
+const vision = { el: null, layers: [], front: 0, shown: false, curId: null, lastKey: null, lastChange: 0, order: [], pos: 0, poolKey: '', loading: false };
+
+function ensureVisionEl() {
+  if (vision.el) return vision.el;
+  const el = document.createElement('div');
+  el.id = 'vision-show';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = '<div class="vision-layer"></div><div class="vision-layer"></div><div class="vision-veil"></div>';
+  document.body.insertBefore(el, document.body.firstChild);
+  vision.el = el;
+  vision.layers = Array.from(el.querySelectorAll('.vision-layer'));
+  return el;
+}
+
+// Les photos à montrer : la playlist choisie (Repeat) ou celles des affirmations du Challenge
+function visionPool(mode) {
+  let groups;
+  if (mode === 'challenge') {
+    const gids = new Set();
+    (state.challenge.affirmationIds || []).forEach(id => {
+      const a = state.affirmations.find(x => x.id === id);
+      if (a && a.groupId) gids.add(a.groupId);
+    });
+    groups = state.groups.filter(g => gids.has(g.id));
+  } else {
+    const sel = state.settings.selectedGroupId;
+    groups = (!sel || sel === 'all') ? state.groups : state.groups.filter(g => g.id === sel);
+  }
+  const out = [];
+  groups.forEach(g => groupPhotoIds(g).forEach(id => { if (!out.includes(id)) out.push(id); }));
+  return out;
+}
+
+// Change à chaque affirmation jouée (y compris quand la même se répète)
+function visionAffKey(mode) {
+  if (mode === 'challenge') return (challengeShownAffId || state.challenge.currentIdx) + '|' + state.challenge.count;
+  return (playerState.shownAffId || playerState.currentIdx) + '|' + playerState.totalPlayed;
+}
+
+function visionShuffle(pool, avoidFirst) {
+  const a = pool.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  if (a.length > 1 && a[0] === avoidFirst) [a[0], a[1]] = [a[1], a[0]];
+  return a;
+}
+
+function visionShowPhoto(id) {
+  const url = photoUrls.get(id);
+  if (!url || vision.loading) return;
+  if (id === vision.curId && vision.shown) return;
+  vision.loading = true;
+  const back = vision.layers[1 - vision.front];
+  const front = vision.layers[vision.front];
+  const img = new Image();
+  const swap = () => {
+    vision.loading = false;
+    back.style.backgroundImage = `url("${url}")`;
+    // Zoom lent qui part d'un coin au hasard
+    const ox = [20, 50, 80][Math.floor(Math.random() * 3)];
+    const oy = [25, 50, 75][Math.floor(Math.random() * 3)];
+    back.style.transformOrigin = `${ox}% ${oy}%`;
+    back.classList.remove('kb');
+    void back.offsetWidth;
+    back.classList.add('kb', 'front');
+    front.classList.remove('front');
+    vision.front = 1 - vision.front;
+    vision.curId = id;
+  };
+  img.onload = swap;
+  img.onerror = () => { vision.loading = false; };
+  img.src = url;
+}
+
+function visionNext(pool) {
+  if (vision.pos >= vision.order.length) { vision.order = visionShuffle(pool, vision.curId); vision.pos = 0; }
+  const id = vision.order[vision.pos++];
+  visionShowPhoto(id);
+  vision.lastChange = Date.now();
+}
+
+function visionHide() {
+  if (!vision.el) return;
+  vision.el.classList.remove('on');
+  document.body.classList.remove('vision-on', 'vision-paused');
+  vision.shown = false;
+}
+
+function visionTick() {
+  if (document.hidden) return;
+  const mode = state.ui.playerMode || 'repeat';
+  const cfg = visionCfg(mode);
+  const isChallenge = mode === 'challenge';
+  // Repeat : visible en lecture et en pause, s'en va à « Terminer ». Challenge : pendant la lecture.
+  const inSession = isChallenge ? !!state.challenge.playing : (mode === 'repeat' && (playerState.playing || !!playerState.sessionStart));
+  const playingNow = isChallenge ? !!state.challenge.playing : !!playerState.playing;
+  const pool = (photosReady && currentTab === 'player' && mode !== 'sats' && inSession && cfg.on && !window.editingChallengeSelection)
+    ? visionPool(mode) : [];
+  if (!pool.length) { if (vision.shown) visionHide(); return; }
+
+  ensureVisionEl();
+  const poolKey = pool.join(',');
+  if (poolKey !== vision.poolKey) {
+    vision.poolKey = poolKey;
+    vision.order = visionShuffle(pool, vision.curId);
+    vision.pos = 0;
+  }
+  const now = Date.now();
+  if (!vision.shown) {
+    // On (re)part : nouvelle photo si l'ancienne n'est plus dans la playlist
+    if (!vision.curId || !pool.includes(vision.curId)) visionNext(pool);
+    vision.lastKey = visionAffKey(mode);
+    vision.el.classList.add('on');
+    document.body.classList.add('vision-on');
+    vision.shown = true;
+  } else if (!pool.includes(vision.curId) && !vision.loading) {
+    visionNext(pool);
+    vision.lastKey = visionAffKey(mode);
+  } else if (playingNow && pool.length > 1) {
+    if (cfg.every === 'aff') {
+      const k = visionAffKey(mode);
+      if (k !== vision.lastKey && now - vision.lastChange >= VISION_MIN_MS) { visionNext(pool); vision.lastKey = k; }
+    } else if (now - vision.lastChange >= cfg.every * 1000) {
+      visionNext(pool);
+    }
+  }
+  document.body.classList.toggle('vision-paused', !playingNow);
+}
+
+setInterval(() => { try { visionTick(); } catch(e) {} }, 500);
+initPhotos();
+
 // BOOT
 if (!state.settings.language) {
   state.settings.language = detectBrowserLang();
@@ -10009,7 +11174,7 @@ function handleSystemInterruption(reason, which) {
 // ============================================================
 const ACCESS_KEY = 'gm_access_v1';
 const ACCESS_SALT = 'getmanifest|';
-const ACCESS_HASHES = new Set(['2762806c92d18e14','a9caa03852011779','70e50386d1ff857e','485275dbcc320c48','93fd66c1b452863b','b78d4681e2d3fa29','87803265eee8a923','aa8455498464b670','a563abe0b6a25327','6984e079073c13dc','c41519dae5adcdb2','b3e5d5269ca401f3','fbf85a523362cbb8','23fb024418839b51','2f18d5db8886d2be','1cf66f7936f53738','bbdeca39b18005dd','741194f1bd274bb5','9c86dead4ab9c802','727a44a016159b8e','3bf17f0d775d2242','eac0664a03272a39','64debcf8aca96ff1','9ef81305a76bb11a','50c664096474b3e1','8e049b40d690101d','b10cb1fb626f2de0','9b2161a4c526c641','a2de4dc52622e13d','ac17a5d64c6b4d65','47fd0f6b8c6d2c2d','320686af32225b2f','688338462d7bd61a','ae8d44a67e92cb8c','5e939c02aeed9d6f','bdb99de0d6cffa42','cea98d7d7bfb5341','a336d44b33f86d58','ebf2d548c4bd212c','8cd7394273adc018','caa4de84615c6c39','ab2e3dc141c1d6f3','90ab5d79ba0c5efe','412fbc1722677115','48fac3e4ac008585','8015bb21ad0dacfe','a8065da837217aef','f626abffbde2bff5','d819f94ef24abebd','c215a5c2b16d7602','7462a968b243b4cf','8911207a13952b40','4e0a09651f87da93','b42d3afd677070ed','2ce4bca744174f0c','23baa874263d3994','258ad4b4f67c2f32','80579bf3ef68f111','4d562c8b63872db0','f1ee7017ae0e3b0e','a4b1b45bfa784f0e','6a033cdc5e2ae62e','5dbe3d95a3ccfb1e','87d0a32de1d9d163','99e61febd42614bc','8492745d95a7c338','ee437de028705cd2','915d6e75dd6c8f15','bf760abcfb4566e1','a0595f3c50f5325a','2564e227a8e4f177','fb5a2bb53e3d2a4b','735ff1c1fa2e66a5','326393e421303a4a','e3792fe9f00324d1','3ea89243c07ad11c','419176b106b49b90','26feff2e61614f95','3f681271966ae240','ac9a45e244c3a671','bf2cd5d5ed3baeb4','a0312ecf1aa8cf67','a3a66c399f3c7df8','84e36964ef6babca','4d27635af9b3f05f','daeb71dd394e5746','5f5e1f9fc2ef2585','9408b7da48ef1b45','0dc9c2f22c2b202d','3a806a4ff9c13290','21f0ec0b7b66def6','31b5f20f29e20175','6447f7a1f16ecd2a','5b50367cc5bbd4ba','b89565f6e75f074d','aa3dc2f21f5fb493','8381f2d1ceae9f66','d84db6410834825b','b87421dcccc7b679','f358dc4d6dda3f3d','7a550fa2e4e0fcb6','d82271b5878bbd21','26ad3b62f00b4124','e6cbf6d4a1f53cfc','fa58d71f2ebecbcc','5527f1ac1021f9eb','4c068d5ff63999eb','3a4f65b0e2f19501','e73520c04486fbef','6bdf40e0c312f920','86235a4aaf1520d7','ab8126b4c7a39c26','51d88c15d4d0007a','f6f816116661e291','6435efc0a42a2914','d306638f8cf338d5','087f8d80d6bdc578','a598bae7a56f4b9c','8449141b279abacc','a0a3396f26ed0168','713c7d0458ff2b49','ca29c6ef27ca5cbf','3ff1b7735586fbfa','9691177b153c4674','de1552ba7d14b910','cd35a7c9fc47fe9e','9405ed55600d677b','d5922ac023a685e8','ea6b43550a57b854','472cb9d4a098c851','d9f4535e1118d584','6e9b3ef055ae610f','545199789f2bfca1','5567bea654459bd2','2bdd0d9a436187f4','11198c16d730c359','94985a9144c2bd3d','6b7f7b0fe0e1bc3a','09649eed42a73821','c42c15a44f356a4a','70b1cfe7e6191644','a54fe703beb7d571','81960906d1c171b4','ade8e314fdc4812a','ffe3b9ca33028e20','30b72f3a0791096c','07765d2c3533b046','08fd5b6eca4bb8eb','b2e0db05a5f5a9ff','4162b738d86b3c0c','ed7b74cc13119074','2fbe805225e87998','445a362e3e9754c2','53caa7045ed8e58e','ef29e04b281cc6ef','5327a20a4d538c80','1ceb3185d4c1aa95','f054afc053f6e14d','1547b41ed49f9b7c','dad8aa72c25d8e63','c488a8abf71b6a05','5d6951e6b8077313','6302bdebc540ad34','aa85a81c603f6f13','8851902e7bbc57e3','d7aa5ac6cd7b9b81','bcf481bf71729e0b','9fbbc2a5aa6bfe5f','578757e6d89e6c79','6e4bbaf9e5a16cfa','4c3a2f79ff8d7ef6','832f7305250ddf3e','a4ca71f69884029f','136929b24df7b211','a1eba5ccdca86680','eabc4a62f077fed7','53e4aa674e8da38b','5cb47536cf35ff98','03140fa29bbb4ffa','00a2cefc7f8dd934','202a35c966c2a4f0','4458ad11615d4a89','fe01316d893edd66','fcf14897eb63d53e','f11f30d50eab95f9','695687c06b7c36a3','23a81f197b992e0c','0fc7ed7c66a7676c','071fb9cd10b2cb9d','8e54a24f62ea715b','710bfc5bb9f33885','20ffe154f2080139','398434777bb0c9ae','8fc2f527e0080d0e','015acdaeb155559f','505dd1ceca71fdfa','7466e912ba68daa3','17d6c312bfa4cb01','03661157e6c9111d','6b7da6ba9fe6ed0e']);
+const ACCESS_HASHES = new Set(['05a2d69431d3cbf1','a78dca5f287b306b','0b82c5ed1ab82d81','386db5b0402fefb3','28b08b52fdbd5556','eacc5e5c505ed336','6e8c3e673ed14538','06325b179e8c8574','bcf83c150e2c0e02','0b3a344c299fe54a','dc5838d38a0f0c70','204d2780cf3343fb','5d5aa0180fca7e2b','b051abbba5ec70ad','2a261962557899bd','9a1d1713852e172f','ab85319f12f04c3b','f04ebf094d65f8b1','e39273807e89bde9','247ce6e16f68d647','7bbbf0a51948a77f','8dec6990ea8e8fb5','a93ebc9d4125570c','04148d27083d133d','b0069e1d1f3e7eb0','6a1566cff0fc1f8b','4286dc6b70083d94','40db91b0c6d58cc0','e2c39a1440377d56','a4bc79e0d5499df8','d9d26ab595472075','c5055717bf9ddc6a','698c7e8c296cc936','c33bda5c919d6126','d649a8466b30f0de','794e9a4450292b98','f5dab4ea80bc3b0a','639beddbdc9f9cc0','8c169ec90d854e98','cd39b45769505876','a5fcb8bbc9bf1dba','58097a14a081cf48','ebaa8b8c94968582','f2f396ad635c0a48','644b464fbc816811','ddfb7d431be9d0c2','c44e58a5053c62cf','9d5f3484f1229361','6b2aeb1561064e87','fe3d38c10d7efa97','ce4779b175c96a84','656567d5728e9438','b654ef6ad1e24f10','8873b41e48b016ce','ca171cfdfbbc0260','1f974a471f8251fe','f87e74e34def8a61','d144d9f51365af09','7b086e2de86076d0','6a282241736ddcb6','3216ebe3fd3eb843','e9382ab2891128b7','887af88238903881','d44da8573fb28909','830bb4453304f78b','c746e899d2be8352','91cee2a83b98813a','e75f9c11b0211831','6b49b46d8151a144','8017883e854efcf6','7ae0b52b888387a5','9b1a1eb2c0347c30','43293e9a278a0d8e','43c4d14e4404caa6','7317ac36462cb197','f4c5ebfe4ca1803f','584d6766b842eae4','e6eb7b06f5da7775','aa68000c660711fa','b1ad72fb230561c1','9ccb1536a95e9e0a','035c7b8ae5d39a09','4a54d3e009401d06','b67a166116b2fb73','3b0214dc09a40e48','864c780515879cd5','3534e485575c359c','1cc344dd22124574','25928d2c9ddf7a72','d8050ddefd82b171','bfd00233e953deb1','f5c38fa74bc278dd','93560f613deb6552','6119932c2c78b62d','84bbdc680792cd80','722035f632f2d8df','1363cfd6619acd8f','3426d0b510185113','af095c887e4f7cae','f1eb5f56d8e58501','bfeae1e7fdefd0a4','d3b5c6e2dddb1886','7361ad200bceadd3','916426efe7469f5b','d0902df553e75350','461070662cd6043e','3c4a89ba5cf4f5e6','c92b81bc3b573ae4','1185a1f88e3221f9','5e842324a3ca6140','98e2a9287a4f2e64','5331af62ccaa955b','d3517f34b4ba35f5','ac2fb5e9738c2cfc','82c56ed3e105f1b9','a8664ec6e8fdf618','08393e9c49a7fac2','fbb4d092316c73a3','775b11ac09988b2d','7e3d730410db4cfd','90fea33d8b933b75','4be3d6d4fe26d87a','01a0e623ffe4fa93','c80fd8ad97c26799','8444a354a8c07a7f','ffc981c2e22d660f','07524568d8902cb1','39411b642066e7ed','d9aae4829845157d','31a1b9ee27372419','8ea7d73dd2c62265','6b0ce3dfb12892ab','65d35c0fbdcb4751','1f8f7d36de8318fe','c57b0974658972bc','e0a0da2b166602d8','2ef19cbd80a316b1','92e0e8a69b80e829','9ffc6bbd8a084726','e5010b90c27c25c4','ece382bfe053f909','5574cf469a7efd46','c3b2caafbe1c09ce','e8a278a2b5eddf3b','4a03b5043e120b7e','b5dbf6ef5555efae','eb164c43e44c30da','6276f3ca38c9cfe3','d2751c2ee48352c3','7e2e8d6c01b308ff','fb9a64dea6e15f2e','a1d9bf37fb667e1e','b6aaa9b4340a75d8','8ad19ebe614be29f','9fe3ffb63149c651','2dbd9eaf9ae01859','49bfab22c96ac169','4e13e118bcd5b7fe','a89d756ec997b0f8','4fced97e6204d713','0e10ef37e76d2122','ba501622477d9690','bad079f1d3c32064','938e4a5dd5b06d51','ed01bfab5e6c8fa7','3b2f90eee7398e24','d37538f2457484a2','0363bc1273c8fc99','0f5e2f900592558c','de911913a8f2c789','a258dbdd953d98ec','2d37ac40ec4fb3d3','9b68e9de2d107b45','9d59147c8bcbdd0d','8f95c02123cbe51a','ee683312e825df7e','f830cbda1477b133','e85d39b9dcb36e44','1f198927d81170b1','f8dae35441db67aa','410a7d2e5fc49667','739f37cea025e875','16ed5235fb9f67e6','0b7a03beea66ebdc','02416c88df72c877','cfcb9400ac131e35','5750a236c255d9be','a35517b1179563cc','51580281e47ba5d8','8ee39b2e645ff6b6','33cd32c455b764ee','11b85404d5c36ced','097d02962946b161','d44a018ebba2c841','05bda82c60b8cdd1','5217bc91bf454ae6','17ff6516ddadd659','b80db4efa690c300','32f78ae77225024f','ff05bda9f6d23246','2762806c92d18e14','a9caa03852011779','70e50386d1ff857e','485275dbcc320c48','93fd66c1b452863b','b78d4681e2d3fa29','87803265eee8a923','aa8455498464b670','a563abe0b6a25327','6984e079073c13dc','c41519dae5adcdb2','b3e5d5269ca401f3','fbf85a523362cbb8','23fb024418839b51','2f18d5db8886d2be','1cf66f7936f53738','bbdeca39b18005dd','741194f1bd274bb5','9c86dead4ab9c802','727a44a016159b8e','3bf17f0d775d2242','eac0664a03272a39','64debcf8aca96ff1','9ef81305a76bb11a','50c664096474b3e1','8e049b40d690101d','b10cb1fb626f2de0','9b2161a4c526c641','a2de4dc52622e13d','ac17a5d64c6b4d65','47fd0f6b8c6d2c2d','320686af32225b2f','688338462d7bd61a','ae8d44a67e92cb8c','5e939c02aeed9d6f','bdb99de0d6cffa42','cea98d7d7bfb5341','a336d44b33f86d58','ebf2d548c4bd212c','8cd7394273adc018','caa4de84615c6c39','ab2e3dc141c1d6f3','90ab5d79ba0c5efe','412fbc1722677115','48fac3e4ac008585','8015bb21ad0dacfe','a8065da837217aef','f626abffbde2bff5','d819f94ef24abebd','c215a5c2b16d7602','7462a968b243b4cf','8911207a13952b40','4e0a09651f87da93','b42d3afd677070ed','2ce4bca744174f0c','23baa874263d3994','258ad4b4f67c2f32','80579bf3ef68f111','4d562c8b63872db0','f1ee7017ae0e3b0e','a4b1b45bfa784f0e','6a033cdc5e2ae62e','5dbe3d95a3ccfb1e','87d0a32de1d9d163','99e61febd42614bc','8492745d95a7c338','ee437de028705cd2','915d6e75dd6c8f15','bf760abcfb4566e1','a0595f3c50f5325a','2564e227a8e4f177','fb5a2bb53e3d2a4b','735ff1c1fa2e66a5','326393e421303a4a','e3792fe9f00324d1','3ea89243c07ad11c','419176b106b49b90','26feff2e61614f95','3f681271966ae240','ac9a45e244c3a671','bf2cd5d5ed3baeb4','a0312ecf1aa8cf67','a3a66c399f3c7df8','84e36964ef6babca','4d27635af9b3f05f','daeb71dd394e5746','5f5e1f9fc2ef2585','9408b7da48ef1b45','0dc9c2f22c2b202d','3a806a4ff9c13290','21f0ec0b7b66def6','31b5f20f29e20175','6447f7a1f16ecd2a','5b50367cc5bbd4ba','b89565f6e75f074d','aa3dc2f21f5fb493','8381f2d1ceae9f66','d84db6410834825b','b87421dcccc7b679','f358dc4d6dda3f3d','7a550fa2e4e0fcb6','d82271b5878bbd21','26ad3b62f00b4124','e6cbf6d4a1f53cfc','fa58d71f2ebecbcc','5527f1ac1021f9eb','4c068d5ff63999eb','3a4f65b0e2f19501','e73520c04486fbef','6bdf40e0c312f920','86235a4aaf1520d7','ab8126b4c7a39c26','51d88c15d4d0007a','f6f816116661e291','6435efc0a42a2914','d306638f8cf338d5','087f8d80d6bdc578','a598bae7a56f4b9c','8449141b279abacc','a0a3396f26ed0168','713c7d0458ff2b49','ca29c6ef27ca5cbf','3ff1b7735586fbfa','9691177b153c4674','de1552ba7d14b910','cd35a7c9fc47fe9e','9405ed55600d677b','d5922ac023a685e8','ea6b43550a57b854','472cb9d4a098c851','d9f4535e1118d584','6e9b3ef055ae610f','545199789f2bfca1','5567bea654459bd2','2bdd0d9a436187f4','11198c16d730c359','94985a9144c2bd3d','6b7f7b0fe0e1bc3a','09649eed42a73821','c42c15a44f356a4a','70b1cfe7e6191644','a54fe703beb7d571','81960906d1c171b4','ade8e314fdc4812a','ffe3b9ca33028e20','30b72f3a0791096c','07765d2c3533b046','08fd5b6eca4bb8eb','b2e0db05a5f5a9ff','4162b738d86b3c0c','ed7b74cc13119074','2fbe805225e87998','445a362e3e9754c2','53caa7045ed8e58e','ef29e04b281cc6ef','5327a20a4d538c80','1ceb3185d4c1aa95','f054afc053f6e14d','1547b41ed49f9b7c','dad8aa72c25d8e63','c488a8abf71b6a05','5d6951e6b8077313','6302bdebc540ad34','aa85a81c603f6f13','8851902e7bbc57e3','d7aa5ac6cd7b9b81','bcf481bf71729e0b','9fbbc2a5aa6bfe5f','578757e6d89e6c79','6e4bbaf9e5a16cfa','4c3a2f79ff8d7ef6','832f7305250ddf3e','a4ca71f69884029f','136929b24df7b211','a1eba5ccdca86680','eabc4a62f077fed7','53e4aa674e8da38b','5cb47536cf35ff98','03140fa29bbb4ffa','00a2cefc7f8dd934','202a35c966c2a4f0','4458ad11615d4a89','fe01316d893edd66','fcf14897eb63d53e','f11f30d50eab95f9','695687c06b7c36a3','23a81f197b992e0c','0fc7ed7c66a7676c','071fb9cd10b2cb9d','8e54a24f62ea715b','710bfc5bb9f33885','20ffe154f2080139','398434777bb0c9ae','8fc2f527e0080d0e','015acdaeb155559f','505dd1ceca71fdfa','7466e912ba68daa3','17d6c312bfa4cb01','03661157e6c9111d','6b7da6ba9fe6ed0e']);
 
 const LOCK_TEXTS = {
   fr: {
