@@ -2789,6 +2789,14 @@ input[type="range"]::-moz-range-thumb {
 .heatmap-cell.level-3 { background: color-mix(in srgb, var(--accent) 80%, transparent); }
 .heatmap-cell.level-4 { background: var(--accent); box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent); }
 .heatmap-cell.future { background: transparent; }
+/* v1.25.1 : peu de semaines = cases de taille normale, pas étirées */
+.heatmap.heatmap-small { grid-auto-columns: 14px; grid-template-rows: repeat(7, 14px); width: fit-content; }
+/* v1.25.1 : onglets des stats et challenge en cours */
+.stats-tabs { margin-bottom: 18px; }
+.stats-empty-line { margin: 6px 4px 0; }
+.ch-progress { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--line) 70%, transparent); overflow: hidden; margin: 12px 0 4px; }
+.ch-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent-light, var(--accent)), var(--accent)); }
+.ch-stat-current { margin-top: 10px; }
 
 .heatmap-legend {
   display: flex;
@@ -3870,6 +3878,8 @@ body.night-mode .orb-ring {
 }
 .ch-restart-btn:active { transform: scale(0.97); }
 .speed-eta-block .live-speed-label { margin-bottom: 6px; }
+/* v1.25.1 : un peu d'air entre « Terminer » et le pavé vitesse */
+.session-actions + .live-speed.speed-eta-block { margin-top: 14px; }
 .speed-eta-text {
   margin-top: 6px;
   text-align: center;
@@ -4212,7 +4222,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.25.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.25.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4573,12 +4583,22 @@ Object.assign(TRANSLATIONS.fr, {
   stats_total: 'Depuis le début',
   stats_streak: 'Jours d\'affilée',
   stats_best_day: 'Record du jour',
-  stats_minutes: 'min',
+  stats_minutes: "Temps d'écoute",
   stats_affs: 'aff.',
   stats_loops: 'boucles',
   stats_active_days: 'Jours actifs',
   stats_top_affs: 'Top affirmations',
   stats_top_playlists: 'Top playlists',
+  stats_tab_summary: 'Résumé',
+  stats_tab_top: 'Top',
+  stats_tab_challenges: 'Challenges',
+  stats_ch_current: 'Challenge en cours',
+  stats_ch_done_title: 'Challenges terminés',
+  stats_ch_none: "Pas encore de challenge terminé. Ton premier t'attend ✨",
+  stats_ch_no_current: "Pas de challenge en cours. Lance-le depuis l'onglet Challenge du Player.",
+  stats_top_empty: 'Écoute tes affirmations pour voir ton top ici ✨',
+  stats_ch_started: 'Commencé',
+  stats_ch_left: 'Restantes',
   stats_7days: '7 derniers jours',
   stats_empty: 'Pas encore de stats. Lance ta première session.',
   stats_times_short: '×',
@@ -4688,12 +4708,22 @@ Object.assign(TRANSLATIONS.en, {
   stats_total: 'All time',
   stats_streak: 'Day streak',
   stats_best_day: 'Best day',
-  stats_minutes: 'min',
+  stats_minutes: 'Listening time',
   stats_affs: 'affs',
   stats_loops: 'loops',
   stats_active_days: 'Active days',
   stats_top_affs: 'Top affirmations',
   stats_top_playlists: 'Top playlists',
+  stats_tab_summary: 'Overview',
+  stats_tab_top: 'Top',
+  stats_tab_challenges: 'Challenges',
+  stats_ch_current: 'Current challenge',
+  stats_ch_done_title: 'Completed challenges',
+  stats_ch_none: 'No completed challenge yet. Your first one is waiting ✨',
+  stats_ch_no_current: 'No challenge running. Start one from the Challenge tab of the Player.',
+  stats_top_empty: 'Play your affirmations to see your top here ✨',
+  stats_ch_started: 'Started',
+  stats_ch_left: 'Left',
   stats_7days: 'Last 7 days',
   stats_empty: 'No stats yet. Start your first session.',
   stats_times_short: '×',
@@ -5377,7 +5407,9 @@ function renderPlayer() {
   const s = state.settings;
   const groups = state.groups;
   const availableAffs = getAvailableAffs();
-  const currentAff = playerState.queue[playerState.currentIdx];
+  // v1.25.1 : en pause, on garde l'affirmation qu'on entendait (avant : le numéro avait avancé, le titre changeait)
+  const heardAff = (queueBufferURL && playerState.shownAffId) ? playerState.queue.find(a => a.id === playerState.shownAffId) : null;
+  const currentAff = heardAff || playerState.queue[playerState.currentIdx];
 
   // Playlist selected label
   const selectedPlaylist = s.selectedGroupId === 'all'
@@ -5601,6 +5633,7 @@ async function startPlayback() {
   const url = await buildQueueBuffer(affs, pauseSec);
   if (!url) { playNext(); return; }  // fallback si décodage échoue
   const firstAff = affs[0];
+  playerState.shownAffId = firstAff.id;
   updateNowPlayingTitle(firstAff.title, firstAff.duration);
   const stEl = document.getElementById('np-state');
   if (stEl) stEl.textContent = t('playing');
@@ -6333,6 +6366,7 @@ function processQueueProgress(prev, curr, wallDeltaMs) {
   if (tc) tc.textContent = playerState.totalPlayed;
   // Update now-playing title
   const nowAff = getCurrentQueueAff(curr);
+  if (nowAff) playerState.shownAffId = nowAff.id;
   if (nowAff) {
     const npText = document.getElementById('np-text');
     if (npText && npText.textContent !== nowAff.title) updateNowPlayingTitle(nowAff.title, nowAff.duration);
@@ -6388,6 +6422,7 @@ function queueKeyFor(affs, pauseSec) {
 
 function clearQueueBuffer() {
   stopQueueTick();
+  playerState.shownAffId = null;
   queueBufferKey = null;
   if (queueBufferURL) { try { URL.revokeObjectURL(queueBufferURL); } catch(e){} queueBufferURL = null; }
   queueBufferAudio = null;  // libère la RAM
@@ -6613,7 +6648,7 @@ function celebrateMilestoneIfReached(oldCount, newCount) {
   const milestones = [10000, 20000, 30000, 40000, 50000];
   for (const m of milestones) {
     if (oldCount < m && newCount >= m) {
-      toast(`👏 Bravo ! ${m.toLocaleString('fr-FR')} affirmations ✨`);
+      toast(`👏 Bravo ! ${fmtN(m)} affirmations ✨`);
       break;  // Un seul milestone par incrément
     }
   }
@@ -6839,14 +6874,14 @@ function updateChallengeOrbUI() {
   const remaining = Math.max(0, c.target - c.count);
 
   const countEl = document.querySelector('.ch-orb-count');
-  if (countEl) countEl.textContent = c.count.toLocaleString('fr-FR');
+  if (countEl) countEl.textContent = fmtN(c.count);
 
   const pctEl = document.querySelector('.orb-pct');
   if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
 
   const remEl = document.querySelector('.orb-remaining');
   if (remEl) {
-    remEl.innerHTML = `<strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}`;
+    remEl.innerHTML = `<strong>${fmtN(remaining)}</strong> ${t('challenge_remaining')}`;
   }
 
   const progEl = document.getElementById('ch-ring-progress');
@@ -7671,8 +7706,8 @@ function renderChallenge() {
     ${hasSelection ? (() => {
       // v1.23.0 : même orbe que Repeat, avec le nombre d'affirmations au milieu et l'objectif en anneau
       const ringOffset = REPEAT_RING_C * (1 - Math.min(100, pct) / 100);
-      const countTxt = c.count.toLocaleString('fr-FR');
-      const targetTxt = c.target.toLocaleString('fr-FR');
+      const countTxt = fmtN(c.count);
+      const targetTxt = fmtN(c.target);
       // v1.25.0 : challenge fini = ✓ dans le rond, plus de ▶ (on recommence avec le bouton)
       const chDone = !c.playing && c.count >= c.target;
       const chOrbInner = c.playing
@@ -7682,7 +7717,8 @@ function renderChallenge() {
           : `<span class="orb-inner"><span class="orb-play">▶</span><span class="orb-clock orb-clock-small"><span class="ch-orb-count">${countTxt}</span> / ${targetTxt}</span></span>`;
       // L'aff courante dans la rotation
       const curIdx = (c.currentIdx || 0) % selectedAffs.length;
-      const currentAff = selectedAffs[curIdx] || selectedAffs[0];
+      // v1.25.1 : on garde l'affirmation qu'on entendait au moment de la pause
+      const currentAff = selectedAffs.find(a => a.id === challengeShownAffId) || selectedAffs[curIdx] || selectedAffs[0];
       return `
         <div class="challenge-orb-wrap">
           <!-- HAUT : aff en cours (glow fade à chaque changement) -->
@@ -7722,7 +7758,7 @@ function renderChallenge() {
           <div class="ch-bottom">
             <!-- Meta ligne juste sous l'orbe : restantes · commencé le · edit -->
             ${chDone ? `<button type="button" class="ch-restart-btn" id="ch-restart">${t('ch_restart')}</button>` : `<div class="orb-meta-line">
-              <strong>${remaining.toLocaleString('fr-FR')}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
+              <strong>${fmtN(remaining)}</strong> ${t('challenge_remaining')}${c.startedAt ? ` · <em>${t('challenge_started_on', { d: formatChallengeDate(c.startedAt) })}</em>` : ''}
               <button class="ch-edit-affs-mini" id="ch-change-aff" aria-label="Modifier la sélection" title="Modifier">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
@@ -8191,6 +8227,7 @@ function restartChallenge() {
   state.challenge.currentIdx = 0;
   state.challenge.currentRepeat = 0;
   state.challenge.startedAt = Date.now();
+  challengeShownAffId = null;
   saveState();
   toast(t('ch_restarted'));
   render();
@@ -8219,13 +8256,18 @@ async function startChallenge() {
   const pauseSec = Math.max(0, cfg.pauseBetween || 0);
   const url = await buildChallengeBuffer(validAffs, pauseSec);
   if (!url) { playChallenge(); return; }
+  // v1.25.1 : on repart de l'affirmation affichée à l'écran (celle de la pause)
+  const startSeg = challengeBufferSegments.find(sg => sg.affId === challengeShownAffId) || challengeBufferSegments[0];
+  const startAff = validAffs.find(a => a.id === startSeg.affId) || validAffs[0];
+  const startOffset = startSeg ? startSeg.startSec : 0;
+  challengeShownAffId = startAff.id;
 
   // MODE MIX : Web Audio au lieu de <audio>
   if (state.settings.allowMixing) {
     if (queueBufferCtx && queueBufferCtx.state === 'suspended') await queueBufferCtx.resume();
-    const ok = startMixPlayback(challengeBufferAudio, 0, cfg.playbackRate || 1, cfg.affVolume || 1);
+    const ok = startMixPlayback(challengeBufferAudio, startOffset, cfg.playbackRate || 1, cfg.affVolume || 1);
     if (ok) {
-      animateCurrentAff(validAffs[0].title);
+      animateCurrentAff(startAff.title);
       startChallengeTick(validAffs);
       return;
     }
@@ -8239,9 +8281,10 @@ async function startChallenge() {
   applyNightMode(false);
   try {
     await audio.play();
+    if (startOffset > 0) { try { audio.currentTime = startOffset; } catch(e) {} }
     challengeAudio = audio;
-    updateMediaSessionMetadata(validAffs[0], 'Challenge');
-    animateCurrentAff(validAffs[0].title);
+    updateMediaSessionMetadata(startAff, 'Challenge');
+    animateCurrentAff(startAff.title);
     startChallengeTick(validAffs);
   } catch(e) {
     toast(t('toast_play_error'));
@@ -8396,7 +8439,7 @@ function processChallengeProgress(prev, curr, validAffs, wallDeltaMs) {
   updateChallengeOrbUI();
   updateChallengeEtaLive();
   const nowAff = getCurrentChallengeAff(curr);
-  if (nowAff) animateCurrentAffIfChanged(nowAff.title);
+  if (nowAff) { challengeShownAffId = nowAff.id; animateCurrentAffIfChanged(nowAff.title); }
   // Throttle saveState : max 1 write toutes les 5s (évite freeze)
   const nowWall = Date.now();
   if (nowWall - lastChallengeSaveWall > 5000) {
@@ -8419,6 +8462,7 @@ function getCurrentChallengeAff(timeSec) {
 }
 
 let lastAnimatedTitle = null;
+let challengeShownAffId = null;  // v1.25.1 : dernière affirmation entendue dans le Challenge
 function animateCurrentAffIfChanged(title) {
   if (title === lastAnimatedTitle) return;
   lastAnimatedTitle = title;
@@ -8921,7 +8965,7 @@ function renderStats() {
     })
     .filter(Boolean)
     .sort((a, b) => b.plays - a.plays)
-    .slice(0, 5);
+    .slice(0, 10);
 
   // Top playlists
   const topPlaylists = Object.entries(s.byPlaylist || {})
@@ -8931,9 +8975,44 @@ function renderStats() {
     })
     .filter(Boolean)
     .sort((a, b) => b.plays - a.plays)
-    .slice(0, 3);
+    .slice(0, 5);
 
   const activeDays = Object.keys(s.byDay || {}).filter(k => s.byDay[k].plays > 0).length;
+
+  // v1.25.1 : onglets Résumé / Top / Challenges (le dernier ouvert est retenu)
+  const statsTab = ['resume', 'top', 'challenges'].includes(state.ui.statsTab) ? state.ui.statsTab : 'resume';
+  const statsTabsHTML = `
+    <div class="player-mode-chips stats-tabs">
+      <button class="pm-chip ${statsTab==='resume'?'active':''}" data-st="resume"><span>${t('stats_tab_summary')}</span></button>
+      <button class="pm-chip ${statsTab==='top'?'active':''}" data-st="top"><span>${t('stats_tab_top')}</span></button>
+      <button class="pm-chip ${statsTab==='challenges'?'active':''}" data-st="challenges"><span>${t('stats_tab_challenges')}</span></button>
+    </div>`;
+  const chNow = state.challenge || {};
+  const chNowAffs = (chNow.affirmationIds || []).map(id => state.affirmations.find(a => a.id === id)).filter(Boolean);
+  const chNowPct = chNow.target ? Math.min(100, Math.round((chNow.count || 0) / chNow.target * 100)) : 0;
+  const currentChallengeHTML = chNowAffs.length === 0 ? `<p class="sublabel stats-empty-line">${t('stats_ch_no_current')}</p>` : `
+    <div class="ch-stat-card ch-stat-current">
+      <div class="ch-stat-head">
+        <div class="ch-stat-trophy">🎯</div>
+        <div class="ch-stat-head-text">
+          <div class="ch-stat-target">${fmtN(chNow.count || 0)} / ${fmtN(chNow.target)}</div>
+          <div class="ch-stat-done">${(chNow.count || 0) >= chNow.target ? t('ch_goal_reached') : chNowPct + '\u00A0%'}</div>
+        </div>
+      </div>
+      <div class="ch-progress"><div class="ch-progress-fill" style="width:${chNowPct}%"></div></div>
+      <div class="ch-stat-meta">
+        ${chNow.startedAt ? `<div class="ch-stat-row"><span>📅 ${t('stats_ch_started')}</span><strong>${new Date(chNow.startedAt).toLocaleDateString('fr-FR')}</strong></div>` : ''}
+        <div class="ch-stat-row"><span>⏳ ${t('stats_ch_left')}</span><strong>${fmtN(Math.max(0, chNow.target - (chNow.count || 0)))}</strong></div>
+      </div>
+      <div class="ch-stat-affs">
+        <div class="ch-stat-affs-label">🎙️ Affirmations (${chNowAffs.length})</div>
+        ${chNowAffs.map(a => `<div class="ch-stat-aff-item">• ${escapeHtml(a.title)}</div>`).join('')}
+      </div>
+    </div>`;
+
+  // v1.25.1 : calendrier à cases de taille normale quand il y a peu de semaines
+  const heatWeeks = Math.ceil(heatmapCells.length / 7);
+  const heatSmall = heatWeeks <= 18;
 
   document.getElementById('page-stats').innerHTML = `
     <div class="eyebrow">${t('stats_eyebrow')}</div>
@@ -8947,6 +9026,8 @@ function renderStats() {
         <p>${t('stats_empty')}</p>
       </div>
     ` : `
+      ${statsTabsHTML}
+      ${statsTab === 'resume' ? `
       <div class="stats-grid">
         <div class="stats-card primary">
           <div class="stats-card-icon">🔥</div>
@@ -8955,27 +9036,27 @@ function renderStats() {
         </div>
         <div class="stats-card">
           <div class="stats-card-icon">📅</div>
-          <div class="stats-card-val">${todayStats.plays}</div>
+          <div class="stats-card-val">${fmtN(todayStats.plays)}</div>
           <div class="stats-card-label">${t('stats_today')}</div>
         </div>
         <div class="stats-card">
           <div class="stats-card-icon">📊</div>
-          <div class="stats-card-val">${weekTotal}</div>
+          <div class="stats-card-val">${fmtN(weekTotal)}</div>
           <div class="stats-card-label">${t('stats_week')}</div>
         </div>
         <div class="stats-card">
           <div class="stats-card-icon">✨</div>
-          <div class="stats-card-val">${s.totalPlays}</div>
+          <div class="stats-card-val">${fmtN(s.totalPlays)}</div>
           <div class="stats-card-label">${t('stats_total')}</div>
         </div>
         <div class="stats-card">
           <div class="stats-card-icon">🏆</div>
-          <div class="stats-card-val">${s.bestDay.plays || 0}</div>
+          <div class="stats-card-val">${fmtN(s.bestDay.plays || 0)}</div>
           <div class="stats-card-label">${t('stats_best_day')}</div>
         </div>
         <div class="stats-card">
           <div class="stats-card-icon">⏱️</div>
-          <div class="stats-card-val">${Math.round((s.totalSeconds || 0) / 60)}</div>
+          <div class="stats-card-val">${fmtListenTime(s.totalSeconds || 0)}</div>
           <div class="stats-card-label">${t('stats_minutes')}</div>
         </div>
       </div>
@@ -8992,10 +9073,10 @@ function renderStats() {
         ${chartData.map(d => `
           <div class="chart-col">
             <div class="chart-bar-wrap">
-              <div class="chart-bar ${d.isToday ? 'today' : ''}" style="height:${(d.count / maxDay) * 100}%" title="${d.label}: ${d.count} aff."></div>
+              <div class="chart-bar ${d.isToday ? 'today' : ''}" style="height:${(d.count / maxDay) * 100}%" title="${d.label}: ${fmtN(d.count)} aff."></div>
             </div>
             <div class="chart-label ${d.isToday ? 'today' : ''}">${aggMode==='day' && chartData.length<=14 ? d.shortLabel : (aggMode==='month' ? d.label : '')}</div>
-            ${chartData.length <= 14 ? `<div class="chart-count">${d.count || ''}</div>` : ''}
+            ${chartData.length <= 14 ? `<div class="chart-count">${d.count ? fmtN(d.count) : ''}</div>` : ''}
           </div>
         `).join('')}
       </div>
@@ -9003,9 +9084,9 @@ function renderStats() {
       <!-- HEATMAP (démarre au 1er jour d'usage, max 52 semaines glissantes) -->
       <div class="h3" style="margin-top:28px">${heatmapCells.length > 7 * 50 ? 'Ton année' : 'Depuis tes débuts'}</div>
       <div class="heatmap-wrap">
-        <div class="heatmap" style="aspect-ratio: ${Math.ceil(heatmapCells.length / 7)} / 7">
+        <div class="heatmap ${heatSmall ? 'heatmap-small' : ''}" ${heatSmall ? '' : `style="aspect-ratio: ${heatWeeks} / 7"`}>
           ${heatmapCells.map(c => `
-            <div class="heatmap-cell ${intensityOf(c.plays)}" title="${c.date}${c.plays !== null ? ' · '+c.plays+' aff.' : ''}"></div>
+            <div class="heatmap-cell ${intensityOf(c.plays)}" title="${c.date}${c.plays !== null ? ' · '+fmtN(c.plays)+' aff.' : ''}"></div>
           `).join('')}
         </div>
         <div class="heatmap-legend">
@@ -9018,9 +9099,12 @@ function renderStats() {
           <span>Plus</span>
         </div>
       </div>
+      ` : ''}
 
+      ${statsTab === 'top' ? `
+      ${topAffs.length === 0 && topPlaylists.length === 0 ? `<p class="sublabel stats-empty-line">${t('stats_top_empty')}</p>` : ''}
       ${topAffs.length > 0 ? `
-        <div class="h3" style="margin-top:28px">${t('stats_top_affs')}</div>
+        <div class="h3" style="margin-top:8px">${t('stats_top_affs')}</div>
         ${topAffs.map((a, i) => `
           <div class="top-row">
             <div class="top-rank">${i+1}</div>
@@ -9028,7 +9112,7 @@ function renderStats() {
               <div class="top-title">${escapeHtml(a.title)}</div>
               <div class="top-sub">${timeAgo(a.lastPlayed)}</div>
             </div>
-            <div class="top-count">${a.plays}×</div>
+            <div class="top-count">${fmtN(a.plays)}×</div>
           </div>
         `).join('')}
       ` : ''}
@@ -9041,13 +9125,19 @@ function renderStats() {
             <div class="top-content">
               <div class="top-title">${escapeHtml(p.name)}</div>
             </div>
-            <div class="top-count">${p.plays}×</div>
+            <div class="top-count">${fmtN(p.plays)}×</div>
           </div>
         `).join('')}
       ` : ''}
 
+      ` : ''}
+
+      ${statsTab === 'challenges' ? `
+      <div class="h3" style="margin-top:8px">${t('stats_ch_current')}</div>
+      ${currentChallengeHTML}
+      <div class="h3" style="margin-top:28px">🏆 ${t('stats_ch_done_title')}</div>
+      ${(s.completedChallenges || []).length === 0 ? `<p class="sublabel stats-empty-line">${t('stats_ch_none')}</p>` : ''}
       ${(s.completedChallenges || []).length > 0 ? `
-        <div class="h3" style="margin-top:28px">🏆 Challenges terminés</div>
         <div class="challenges-stats-list">
           ${[...s.completedChallenges].reverse().map((cc) => {
             const dt = new Date(cc.completedAt);
@@ -9060,7 +9150,7 @@ function renderStats() {
                 <div class="ch-stat-head">
                   <div class="ch-stat-trophy">🏆</div>
                   <div class="ch-stat-head-text">
-                    <div class="ch-stat-target">${cc.target.toLocaleString('fr-FR')} affirmations</div>
+                    <div class="ch-stat-target">${fmtN(cc.target)} affirmations</div>
                     <div class="ch-stat-done">Terminé ✨</div>
                   </div>
                 </div>
@@ -9080,8 +9170,19 @@ function renderStats() {
           }).join('')}
         </div>
       ` : ''}
+      ` : ''}
     `}
   `;
+
+  // Onglets des stats
+  document.querySelectorAll('[data-st]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.ui.statsTab = b.dataset.st;
+      saveState();
+      renderStats();
+      window.scrollTo(0, 0);
+    });
+  });
 
   // Bind des chips de plage
   document.querySelectorAll('[data-sr]').forEach(b => {
@@ -9326,6 +9427,22 @@ function openAffModal(existing, defaultGroupId) {
 
   document.getElementById('aff-cancel').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// v1.25.1 : chiffres lisibles (1 000, 10 000) avec une vraie espace qui ne se coupe pas
+function fmtN(n) {
+  n = Math.round(Number(n) || 0);
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+}
+// v1.25.1 : temps d'écoute en minutes, heures, jours (45 min, 3 h 20, 2 j 5 h)
+function fmtListenTime(sec) {
+  const min = Math.floor((Number(sec) || 0) / 60);
+  if (min < 60) return min + '\u00A0min';
+  const h = Math.floor(min / 60), m = min % 60;
+  if (h < 24) return h + '\u00A0h' + (m ? '\u00A0' + String(m).padStart(2, '0') : '');
+  const d = Math.floor(h / 24), hh = h % 24;
+  const dLabel = (state.settings.language === 'en') ? 'd' : 'j';
+  return d + '\u00A0' + dLabel + (hh ? '\u00A0' + hh + '\u00A0h' : '');
 }
 
 function formatDur(sec) {
