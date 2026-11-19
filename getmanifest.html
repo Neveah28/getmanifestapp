@@ -3879,7 +3879,19 @@ body.night-mode .orb-ring {
 .ch-restart-btn:active { transform: scale(0.97); }
 .speed-eta-block .live-speed-label { margin-bottom: 6px; }
 /* v1.25.1 : un peu d'air entre « Terminer » et le pavé vitesse */
-.session-actions + .live-speed.speed-eta-block { margin-top: 14px; }
+.session-actions + .live-speed.speed-eta-block { margin-top: 10px; }
+/* v1.25.2 : pavé vitesse sur une seule ligne (Vitesse · curseur · 1.00x), plus bas de hauteur,
+   et le bas du Player resserré : le pavé ne touche plus le bas de l'écran. Le rond ne bouge pas. */
+.live-speed.speed-compact { display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; padding: 8px 16px; }
+.live-speed.speed-compact .live-speed-label { display: contents; }
+.live-speed.speed-compact .live-speed-label > span:first-child { order: 1; letter-spacing: 1px; }
+.live-speed.speed-compact input[type="range"] { order: 2; flex: 1; min-width: 0; margin: 0; }
+.live-speed.speed-compact .live-speed-val { order: 3; font-size: 16px; min-width: 46px; text-align: right; }
+.live-speed.speed-compact .speed-eta-text { order: 4; flex-basis: 100%; margin-top: 2px; }
+#page-player .session-counter-wrap { margin-top: -8px; }
+#page-player .session-counter-value { font-size: 38px; }
+#page-player .session-actions { margin-top: 10px; }
+#page-player .session-actions .session-btn { padding-top: 9px; padding-bottom: 9px; }
 .speed-eta-text {
   margin-top: 6px;
   text-align: center;
@@ -4222,7 +4234,7 @@ body.night-mode .orb-ring {
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.25.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.25.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'doux', name: 'Rose Gold' },
@@ -4338,6 +4350,7 @@ const TRANSLATIONS = {
     music_volume: 'Volume de la musique',
     music_volume_sub: 'Fond sonore (drone synthétique)',
     play_speed: 'Vitesse de lecture',
+    play_speed_short: 'Vitesse',
     play_speed_sub: 'Plus lent = plus facile à répéter',
     pause_between: 'Pause entre deux',
     pause_between_sub: 'Temps de silence après chaque affirmation',
@@ -4492,6 +4505,7 @@ const TRANSLATIONS = {
     music_volume: 'Music volume',
     music_volume_sub: 'Background sound (synth drone)',
     play_speed: 'Playback speed',
+    play_speed_short: 'Speed',
     play_speed_sub: 'Slower = easier to repeat along',
     pause_between: 'Pause between',
     pause_between_sub: 'Silence after each affirmation',
@@ -5516,7 +5530,7 @@ function renderPlayer() {
 
       <div class="live-speed speed-eta-block speed-compact ${playerState.playing ? '' : 'session-placeholder'}">
         <div class="live-speed-label">
-          <span>${t('play_speed')}</span>
+          <span>${t('play_speed_short')}</span>
           <span class="live-speed-val" id="live-speed-val">${pget('playbackRate').toFixed(2)}x</span>
         </div>
         <input type="range" id="live-speed" min="0.5" max="3" step="0.05" value="${pget('playbackRate')}" />
@@ -7769,7 +7783,7 @@ function renderChallenge() {
             <!-- Bloc Vitesse + ETA : seulement pendant la lecture (v1.23.0), place gardée pour que rien ne bouge -->
             <div class="live-speed speed-eta-block speed-compact ${c.playing ? '' : 'session-placeholder'}" ${chDone ? 'style="display:none"' : ''}>
               <div class="live-speed-label">
-                <span>${t('play_speed')}</span>
+                <span>${t('play_speed_short')}</span>
                 <span class="live-speed-val" id="ch-live-speed-val">${chCfg.playbackRate.toFixed(2)}x</span>
               </div>
               <input type="range" id="ch-live-speed" min="0.5" max="3" step="0.05" value="${chCfg.playbackRate}" />
