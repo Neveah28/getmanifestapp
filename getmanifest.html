@@ -1993,6 +1993,37 @@ body.player-active .mini-header { display: none; }
 .aff-btn:active { transform: scale(0.9); }
 .aff-btn.danger { color: var(--danger); }
 
+/* v1.33.0 : playlists en tuiles + playlist ouverte en lignes legeres */
+.pl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.pl-head .h1 { margin: 0; }
+.pl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pl-tile { position: relative; overflow: hidden; min-height: 104px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--card-bg); box-shadow: var(--card-shadow); display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; text-align: left; cursor: pointer; font: inherit; color: var(--text-strong); transition: transform 0.12s; }
+.pl-tile:active { transform: scale(0.97); }
+.pl-tile::before { content: ''; position: absolute; top: 14px; left: 14px; width: 22px; height: 3px; border-radius: 2px; background: var(--accent); opacity: 0.8; }
+.pl-tile-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.pl-tile.has-photo::before { display: none; }
+.pl-tile.has-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%); }
+.pl-tile-name { position: relative; z-index: 1; font-size: 16px; font-weight: 700; line-height: 1.25; word-break: break-word; }
+.pl-tile-count { position: relative; z-index: 1; margin-top: 3px; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-dim); }
+.pl-tile.has-photo .pl-tile-name { color: #fff; }
+.pl-tile.has-photo .pl-tile-count { color: rgba(255,255,255,0.82); }
+.pl-open-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.pl-back { display: flex; align-items: center; gap: 4px; background: none; border: none; padding: 6px 4px 6px 0; color: var(--accent); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.pl-open-tools { display: flex; gap: 8px; }
+.pl-tool { position: relative; width: 38px; height: 38px; border-radius: 50%; background: var(--input-bg); border: 1px solid var(--line); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer; }
+.pl-tool .group-photo-count { position: absolute; top: -4px; right: -4px; }
+.pl-open-name { margin: 0; word-break: break-word; }
+.pl-open-count { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); margin: 4px 0 16px; }
+.pl-add-aff { width: 100%; padding: 13px; margin-bottom: 14px; border-radius: 14px; border: 1.5px dashed color-mix(in srgb, var(--accent) 60%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--accent); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.pl-aff-list { background: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); overflow: hidden; }
+.pl-aff { display: flex; align-items: center; gap: 12px; padding: 13px 14px 13px 16px; cursor: pointer; }
+.pl-aff + .pl-aff { border-top: 1px solid var(--line); }
+.pl-aff:active { background: var(--line); }
+.pl-aff-text { flex: 1; min-width: 0; }
+.pl-aff-title { font-size: 15.5px; font-weight: 600; line-height: 1.4; color: var(--text-strong); overflow-wrap: break-word; }
+.pl-aff-plays { font-size: 11px; font-weight: 600; color: var(--text-dim); margin-top: 2px; }
+.pl-aff-play { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; border: none; background: var(--accent); color: var(--btn-text); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding-left: 2px; }
+[data-theme^="nuit"] .pl-aff-play { background: var(--gold-metal); color: #2a0a1c; }
 .empty-state {
   text-align: center;
   padding: 50px 20px;
@@ -4570,23 +4601,18 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.32.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.33.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
   { id: 'doux', name: 'Rose Gold' },
-  { id: 'rose', name: 'Rose Vif' },
   { id: 'framboise', name: 'Framboise' },
-  { id: 'orchidee', name: 'Orchidée' },
   { id: 'lavande', name: 'Lavande' },
   { id: 'marine', name: 'Marine' },
-  { id: 'ocean', name: 'Océan' },
-  { id: 'emeraude', name: 'Émeraude' },
   { id: 'sauge', name: 'Sauge' },
-  { id: 'caramel', name: 'Caramel' },
-  { id: 'boho', name: 'Boho' },
-  { id: 'mini', name: 'Mini' },
 ];
+// v1.33.0 : 13 thèmes → 6. Les anciens thèmes passent au plus proche.
+const THEME_MIGRATION = { tech: 'marine', ocean: 'marine', emeraude: 'sauge', rose: 'framboise', orchidee: 'lavande', caramel: 'doux', boho: 'doux', mini: 'doux' };
 
 // ============================================================
 // I18N
@@ -5637,7 +5663,8 @@ async function initVoices() {
 function applyTheme() {
   let theme = state.settings.theme || 'nuit';
   // Migration : ancien thème 'tech' → 'ocean'
-  if (theme === 'tech') { theme = 'ocean'; state.settings.theme = 'ocean'; saveState(); }
+  if (THEME_MIGRATION[theme]) { theme = THEME_MIGRATION[theme]; state.settings.theme = theme; saveState(); }
+  if (!THEMES.some(th => th.id === theme)) theme = 'nuit';
   const dark = state.settings.darkMode ? '-dark' : '';
   document.documentElement.setAttribute('data-theme', theme + dark);
   // Classe body pour le mode nuit (tinte l'orbe en violet)
@@ -5650,6 +5677,7 @@ function escapeHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;
 let currentTab = 'player';
 
 function switchTab(tab) {
+  if (tab !== 'list') listOpenGroupId = null;  // v1.33.0 : on revient sur les tuiles
   // Si l'ancien onglet "challenge" est demandé (vieux lien), bascule vers Player + mode challenge
   if (tab === 'challenge') {
     switchPlayerMode('challenge', { skipRender: true });
@@ -7765,77 +7793,92 @@ function updateDroneVolume() { updateMusicVolume(); }
 // LIST
 // ============================================================
 
+// v1.33.0 : les playlists en tuiles (2 par ligne). On touche une tuile pour ouvrir la playlist.
+var listOpenGroupId = null;
 function renderList() {
   const groups = state.groups;
-  // Persistance de l'état ouvert/fermé des playlists dans state (survie au reload)
   if (!state.ui) state.ui = {};
-  if (!state.ui.collapsedPlaylists) state.ui.collapsedPlaylists = {};
-  document.getElementById('page-list').innerHTML = `
-    <div class="eyebrow">${t('list_eyebrow')}</div>
-    <h1 class="h1">${t('list_title_1')} <span class="dot">${t('list_title_2')}</span></h1>
-    <div class="list-header-row" style="margin-top: 8px">
-      <button class="icon-add-btn" id="add-group" aria-label="${t('action_new_group_title')}" style="margin-left: auto">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-    </div>
+  const page = document.getElementById('page-list');
+  const openG = listOpenGroupId ? groups.find(g => g.id === listOpenGroupId) : null;
+  if (!openG) listOpenGroupId = null;
+  const plusSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 
-    ${groups.length === 0 ? `
-      <div class="empty-state">
-        <div class="big">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  if (openG) {
+    const g = openG;
+    const affs = state.affirmations.filter(a => a.groupId === g.id);
+    const wordAff = affs.length > 1 ? t('affirmations') : t('affirmation');
+    const nPhotos = groupPhotoIds(g).length;
+    page.innerHTML = `
+      <div class="pl-open-top">
+        <button class="pl-back" id="pl-back" aria-label="${t('playlists_title')}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>${t('playlists_title')}</span>
+        </button>
+        <div class="pl-open-tools">
+          <button class="pl-tool" data-group-photos="${g.id}" aria-label="${t('vision_title')}">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
+            ${nPhotos ? `<span class="group-photo-count">${nPhotos}</span>` : ''}
+          </button>
+          <button class="pl-tool" data-group-edit="${g.id}" aria-label="Edit">⚙</button>
         </div>
-        <p>${t('empty_playlists')}<br>${t('empty_playlists_hint')}</p>
       </div>
-    ` : groups.map(g => {
-      const affs = state.affirmations.filter(a => a.groupId === g.id);
-      const wordAff = affs.length > 1 ? t('affirmations') : t('affirmation');
-      const isCollapsed = state.ui.collapsedPlaylists[g.id];
-      return `
-        <div class="group-section ${isCollapsed ? 'collapsed' : ''}">
-          <div class="group-header" data-toggle-group="${g.id}">
-            <svg class="group-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            <div class="group-info">
-              <div class="group-name">${escapeHtml(g.name)}</div>
-              <div class="group-count">${affs.length} ${wordAff}</div>
+      <h1 class="h1 pl-open-name">${escapeHtml(g.name)}</h1>
+      <div class="pl-open-count">${affs.length} ${wordAff}</div>
+      <button class="pl-add-aff" data-group-add="${g.id}">${t('add_affirmation')}</button>
+      ${affs.length === 0 ? `<div class="playlist-empty-hint">${t('empty_playlist_hint')}</div>` : `
+      <div class="pl-aff-list">
+        ${affs.map(a => {
+          const playCount = (state.stats.byAffirmation && state.stats.byAffirmation[a.id]) ? state.stats.byAffirmation[a.id].plays : 0;
+          return `
+          <div class="pl-aff" data-aff-edit="${a.id}">
+            <div class="pl-aff-text">
+              <div class="pl-aff-title">${escapeHtml(a.title)}</div>
+              ${!a.recording ? `<div class="aff-no-rec">${t('not_recorded')}</div>` : (playCount > 0 ? `<div class="pl-aff-plays">${playCount}×</div>` : '')}
             </div>
-            <button class="group-photo-btn" data-group-photos="${g.id}" aria-label="${t('vision_title')}" onclick="event.stopPropagation()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
-              ${groupPhotoIds(g).length ? `<span class="group-photo-count">${groupPhotoIds(g).length}</span>` : ''}
-            </button>
-            <button class="group-add-btn" data-group-add="${g.id}" aria-label="Add" onclick="event.stopPropagation()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-            <button class="group-settings-btn" data-group-edit="${g.id}" aria-label="Edit" onclick="event.stopPropagation()">⚙</button>
+            ${a.recording ? `<button class="pl-aff-play" data-aff-play="${a.id}" aria-label="Play">▶</button>` : ''}
+          </div>`;
+        }).join('')}
+      </div>`}
+    `;
+    document.getElementById('pl-back').addEventListener('click', () => { listOpenGroupId = null; render(); window.scrollTo(0, 0); });
+  } else {
+    page.innerHTML = `
+      <div class="eyebrow">${t('list_eyebrow')}</div>
+      <div class="pl-head">
+        <h1 class="h1">${t('list_title_1')} <span class="dot">${t('list_title_2')}</span></h1>
+        <button class="icon-add-btn" id="add-group" aria-label="${t('action_new_group_title')}">${plusSvg}</button>
+      </div>
+      ${groups.length === 0 ? `
+        <div class="empty-state">
+          <div class="big">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
           </div>
-          <div class="group-content">
-            ${affs.length === 0 ? `<div class="playlist-empty-hint">${t('empty_playlist_hint')}</div>` : affs.map(a => {
-              const playCount = (state.stats.byAffirmation && state.stats.byAffirmation[a.id]) ? state.stats.byAffirmation[a.id].plays : 0;
-              return `
-              <div class="aff-row">
-                <div class="aff-rec-dot ${a.recording ? '' : 'empty'}"></div>
-                <div class="aff-title">
-                  ${escapeHtml(a.title)}${playCount > 0 ? ` <span class="aff-play-count">${playCount}×</span>` : ''}
-                  ${!a.recording ? `<div class="aff-no-rec">${t('not_recorded')}</div>` : ''}
-                </div>
-                <button class="aff-btn" data-aff-play="${a.id}" ${!a.recording?'style="opacity:0.3"':''}>▶</button>
-                <button class="aff-btn" data-aff-edit="${a.id}">⚙</button>
-              </div>
-            `;}).join('')}
-          </div>
+          <p>${t('empty_playlists')}<br>${t('empty_playlists_hint')}</p>
         </div>
-      `;
-    }).join('')}
-  `;
-
-  document.getElementById('add-group').addEventListener('click', () => openAddGroupModal());
-  document.querySelectorAll('[data-toggle-group]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      const gid = el.dataset.toggleGroup;
-      state.ui.collapsedPlaylists[gid] = !state.ui.collapsedPlaylists[gid];
-      saveState();  // Persistance pour survivre au reload / fermeture de l'app
+      ` : `
+      <div class="pl-grid">
+        ${groups.map(g => {
+          const affs = state.affirmations.filter(a => a.groupId === g.id);
+          const wordAff = affs.length > 1 ? t('affirmations') : t('affirmation');
+          const ph = groupPhotoIds(g);
+          const bg = ph.length ? photoUrls.get(ph[0]) : '';
+          return `
+          <button class="pl-tile ${bg ? 'has-photo' : ''}" data-open-group="${g.id}">
+            ${bg ? `<span class="pl-tile-bg" style="background-image:url('${bg}')"></span>` : ''}
+            <span class="pl-tile-name">${escapeHtml(g.name)}</span>
+            <span class="pl-tile-count">${affs.length} ${wordAff}</span>
+          </button>`;
+        }).join('')}
+      </div>`}
+    `;
+    document.getElementById('add-group').addEventListener('click', () => openAddGroupModal());
+    document.querySelectorAll('[data-open-group]').forEach(el => el.addEventListener('click', () => {
+      listOpenGroupId = el.dataset.openGroup;
       render();
-    });
-  });
+      window.scrollTo(0, 0);
+    }));
+  }
+
   document.querySelectorAll('[data-group-add]').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     openAddAffModal(b.dataset.groupAdd);
@@ -7848,7 +7891,8 @@ function renderList() {
     e.stopPropagation();
     openPhotosModal(b.dataset.groupPhotos);
   }));
-  document.querySelectorAll('[data-aff-play]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-aff-play]').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
     const aff = state.affirmations.find(a => a.id === b.dataset.affPlay);
     if (aff && aff.recording) previewAff(aff);
   }));
@@ -10877,7 +10921,7 @@ function openGroupModal(existing) {
     const name = document.getElementById('g-name').value.trim();
     if (!name) { toast(t('toast_give_name')); return; }
     g.name = name;
-    if (!isEdit) state.groups.push(g);
+    if (!isEdit) { state.groups.push(g); if (currentTab === 'list') listOpenGroupId = g.id; }
     saveState();
     overlay.remove();
     render();
