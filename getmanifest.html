@@ -4505,7 +4505,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.28.1';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.28.2';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5935,6 +5935,10 @@ function renderPlayer() {
     if (playerState.playing || playerState.sessionStart) endPlaybackSession();
     playerState.lastSessionCount = 0;
     playerState.totalPlayed = 0;
+    // v1.28.2 : on vide la file de l'ancienne playlist, sinon son affirmation restait affichée au-dessus du rond
+    playerState.queue = [];
+    playerState.currentIdx = 0;
+    playerState.shownAffId = null;
     render();
   });
   document.getElementById('player-settings-btn').addEventListener('click', openPlayerSheet);
