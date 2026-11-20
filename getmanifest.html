@@ -4555,7 +4555,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.30.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.31.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -4970,7 +4970,7 @@ Object.assign(TRANSLATIONS.fr, {
   stats_tab_challenges: 'Challenges',
   stats_tab_routine: 'Routine',
   routine_title: 'Ma routine',
-  routine_sub: "Ton objectif de temps d'affirmations par jour, en Repeat. Il sert à suivre tes jours réussis dans les stats. Ta durée de séance reste libre dans les réglages de Repeat.",
+  routine_sub: "Ton temps d'affirmations par jour. En Repeat, tout ton temps d'écoute compte et le rond te montre ce qu'il te reste à faire aujourd'hui. Tes jours réussis sont dans les stats.",
   routine_minutes: 'Temps par jour',
   routine_days: 'Jours par semaine',
   routine_days_n: '{n} jours',
@@ -4990,6 +4990,7 @@ Object.assign(TRANSLATIONS.fr, {
   routine_legend_part: 'Commencée',
   routine_since: "Le temps compte depuis la mise à jour de l'app, seulement en Repeat.",
   session_done: 'Séance faite ✨',
+  routine_done: 'Routine faite ✨',
   stats_ch_current: 'Challenge en cours',
   stats_ch_done_title: 'Challenges terminés',
   stats_ch_none: "Pas encore de challenge terminé. Ton premier t'attend ✨",
@@ -5084,7 +5085,7 @@ Object.assign(TRANSLATIONS.fr, {
   silent_mode: 'Mode silencieux',
   silent_mode_sub: 'Un bip au lieu de la voix (double bip au changement d\'aff)',
   session_duration: 'Durée de séance',
-  session_duration_sub: 'Sans durée, le temps monte dans le rond. Avec une durée, il décompte jusqu\'à 0, l\'anneau se remplit et ça vibre à la fin. La lecture continue.',
+  session_duration_sub: "Avec une durée, le rond décompte jusqu'à 0, l'anneau se remplit et ça vibre à la fin. Sans durée, il décompte ta routine du jour (Profil), puis le temps monte. La lecture continue.",
   // Share
   share: 'Partager',
   share_playlist: 'Partager cette playlist',
@@ -5148,7 +5149,7 @@ Object.assign(TRANSLATIONS.en, {
   stats_tab_challenges: 'Challenges',
   stats_tab_routine: 'Routine',
   routine_title: 'My routine',
-  routine_sub: 'Your daily affirmation time goal, in Repeat. It tracks your successful days in your stats. Your session length stays free in the Repeat settings.',
+  routine_sub: "Your daily affirmation time. In Repeat, all your listening time counts and the circle shows what's left for today. Your successful days are in your stats.",
   routine_minutes: 'Time per day',
   routine_days: 'Days per week',
   routine_days_n: '{n} days',
@@ -5168,6 +5169,7 @@ Object.assign(TRANSLATIONS.en, {
   routine_legend_part: 'Started',
   routine_since: 'Time counts from this app update, in Repeat only.',
   session_done: 'Session done ✨',
+  routine_done: 'Routine done ✨',
   stats_ch_current: 'Current challenge',
   stats_ch_done_title: 'Completed challenges',
   stats_ch_none: 'No completed challenge yet. Your first one is waiting ✨',
@@ -5259,7 +5261,7 @@ Object.assign(TRANSLATIONS.en, {
   silent_mode: 'Silent mode',
   silent_mode_sub: 'A beep instead of your voice (double beep on aff change)',
   session_duration: 'Session length',
-  session_duration_sub: 'With no length, time counts up in the circle. With a length, it counts down to 0, the ring fills up and your phone vibrates at the end. Playback keeps going.',
+  session_duration_sub: "With a length, the circle counts down to 0, the ring fills up and your phone vibrates at the end. With no length, it counts down your daily routine (Profile), then time counts up. Playback keeps going.",
   share: 'Share',
   share_playlist: 'Share this playlist',
   share_sub: 'Send the file to a friend so they can import your affirmations.',
@@ -5799,9 +5801,27 @@ function resetRepeatClock() {
   playerState.elapsedMs = 0;
   playerState.runStart = null;
   playerState.goalNotified = false;
+  playerState.routineSnap = null;  // v1.31.0 : la prochaine séance repart de ce qui reste de la routine
 }
+// v1.31.0 : la durée de séance (réglages) passe en premier ; sinon, le rond décompte ce qui reste de la routine du jour
 function getRepeatGoalMs() {
-  return Math.max(0, state.settings.repeatDuration || 0) * 60000;
+  const m = Math.max(0, state.settings.repeatDuration || 0);
+  if (m > 0) return m * 60000;
+  return routineSessionGoalMs();
+}
+function routineSessionGoalMs() {
+  const g = routineGoal();
+  if (!g.ms || state.ui.playerMode === 'sats') return 0;
+  const k = todayKey();
+  if (!playerState.routineSnap || playerState.routineSnap.k !== k) {
+    // Temps déjà fait aujourd'hui AVANT cette séance (la part de la séance déjà comptée est retirée)
+    const today = (state.stats.routineDays || {})[k] || 0;
+    playerState.routineSnap = { k, base: Math.max(0, today - Math.min(today, routineLastElapsed)) };
+  }
+  return Math.max(0, g.ms - playerState.routineSnap.base);
+}
+function repeatGoalIsRoutine() {
+  return !(state.settings.repeatDuration > 0) && routineSessionGoalMs() > 0;
 }
 function formatRepeatClock(ms) {
   const secs = Math.max(0, Math.floor(ms / 1000));
@@ -5972,7 +5992,7 @@ function renderPlayer() {
   const showRepeatRing = isRepeatMode && repeatGoal > 0;
   const repeatClock = repeatClockText(repeatElapsed);  // v1.30.0 : décompte si une durée est choisie
   // v1.30.0 : « Séance faite ✨ » sous le temps, dans le rond (avant : une coche au-dessus du rond)
-  const goalBadge = `<span class="orb-goal-txt" id="orb-goal" ${repeatGoalReached ? '' : 'hidden'}>${t('session_done')}</span>`;
+  const goalBadge = `<span class="orb-goal-txt" id="orb-goal" ${repeatGoalReached ? '' : 'hidden'}>${t(repeatGoalIsRoutine() ? 'routine_done' : 'session_done')}</span>`;
   let orbInner;
   if (!isRepeatMode) {
     orbInner = playerState.playing ? '❚❚' : '▶';
