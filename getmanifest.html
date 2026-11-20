@@ -1643,6 +1643,21 @@ body.player-active .mini-header { display: none; }
 .orb-goal-txt[hidden] { display: none; }
 /* L'anneau plein brille une fois quand la durée est atteinte */
 .repeat-ring.goal-glow { animation: ringGoalGlow 1.8s ease-out 2; }
+/* v1.32.0 : fenetres de felicitations (restent jusqu'au clic) */
+.celebrate-overlay { position: fixed; inset: 0; z-index: 600; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(10,0,8,0.62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: fadeIn 0.25s; }
+.celebrate-card { position: relative; width: 100%; max-width: 360px; text-align: center; padding: 34px 24px 24px; border-radius: 28px; background: var(--bg-solid); color: var(--text); border: 1.5px solid color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent), 0 20px 60px rgba(0,0,0,0.45), 0 0 50px color-mix(in srgb, var(--accent) 35%, transparent); animation: celebratePop 0.5s cubic-bezier(.2,1.4,.4,1); }
+.celebrate-emoji { font-size: 64px; line-height: 1; margin-bottom: 14px; filter: drop-shadow(0 4px 14px color-mix(in srgb, var(--accent) 55%, transparent)); animation: celebrateBounce 1.6s ease-in-out 0.5s infinite; }
+.celebrate-title { font-size: 25px; font-weight: 700; color: var(--text-strong); margin-bottom: 10px; letter-spacing: 0.2px; }
+.celebrate-msg { font-size: 16px; line-height: 1.5; margin: 0 0 22px; color: var(--text); }
+.celebrate-ok { width: 100%; font-size: 17px; padding: 14px; }
+.celebrate-sparkles { position: absolute; left: 50%; top: 66px; width: 0; height: 0; pointer-events: none; }
+.celebrate-sparkles i { position: absolute; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: var(--accent); opacity: 0; transform: rotate(calc(var(--i) * 20deg)) translateY(0); animation: sparkBurst 1.3s ease-out calc(0.15s + (var(--i) * 0.02s)) 2; }
+.celebrate-sparkles i:nth-child(3n) { background: #f4e6c8; width: 6px; height: 6px; }
+.celebrate-sparkles i:nth-child(3n+1) { border-radius: 2px; }
+@keyframes celebratePop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes celebrateBounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.06); } }
+@keyframes sparkBurst { 0% { opacity: 0; transform: rotate(calc(var(--i) * 20deg)) translateY(0) scale(0.4); } 15% { opacity: 1; } 100% { opacity: 0; transform: rotate(calc(var(--i) * 20deg)) translateY(-150px) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .celebrate-card, .celebrate-emoji, .celebrate-sparkles i { animation: none; } }
 @keyframes ringGoalGlow {
   0%   { filter: drop-shadow(0 0 0 transparent); }
   40%  { filter: drop-shadow(0 0 12px var(--accent)) drop-shadow(0 0 22px var(--accent-glow)); }
@@ -4555,7 +4570,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.31.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.32.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5853,7 +5868,27 @@ function routineFlush(forceSave) {
   if (state.ui.playerMode === 'sats' || d <= 0) return;  // le SATS ne compte pas
   if (!state.stats.routineDays) state.stats.routineDays = {};
   const k = todayKey();
-  state.stats.routineDays[k] = (state.stats.routineDays[k] || 0) + Math.round(d);
+  const before = state.stats.routineDays[k] || 0;
+  state.stats.routineDays[k] = before + Math.round(d);
+  // v1.32.0 : félicitations quand la routine du jour est faite, puis quand la semaine est réussie
+  try {
+    const g = routineGoal();
+    if (g.ms > 0 && before < g.ms && state.stats.routineDays[k] >= g.ms && state.stats.routineCelebrated !== k) {
+      state.stats.routineCelebrated = k;
+      forceSave = true;
+      celebrate('routine', { m: g.minutes });
+      const mon = routineMonday(new Date());
+      const monKey = routineDateKey(mon);
+      let doneDays = 0;
+      for (let i = 0; i < 7; i++) {
+        if ((state.stats.routineDays[routineDateKey(routineAddDays(mon, i))] || 0) >= g.ms) doneDays++;
+      }
+      if (doneDays >= g.days && state.stats.routineWeekCelebrated !== monKey) {
+        state.stats.routineWeekCelebrated = monKey;
+        celebrate('week', { d: doneDays });
+      }
+    }
+  } catch(e) {}
   const now = Date.now();
   if (forceSave || now - routineLastSave > 15000) { routineLastSave = now; saveState(); }
 }
@@ -5888,6 +5923,8 @@ function updateRepeatClock() {
         // v1.30.0 : l'anneau plein brille une fois (plus de coche au-dessus du rond)
         const ring = prog && prog.closest('svg');
         if (ring) { ring.classList.remove('goal-glow'); void ring.getBoundingClientRect(); ring.classList.add('goal-glow'); }
+        // v1.32.0 : fenêtre de félicitations pour une séance avec durée choisie (la routine a la sienne)
+        if (!repeatGoalIsRoutine() && state.settings.repeatDuration > 0) celebrate('session', { m: state.settings.repeatDuration });
       }
     }
     const goalEl = document.getElementById('orb-goal');
@@ -7528,13 +7565,115 @@ function playBeep(isChange, affVol) {
   } catch(e) { console.warn('beep error', e); }
 }
 
-// Toast de félicitations à chaque palier (10K, 20K, 30K, 40K, 50K)
+// ============================================================
+// v1.32.0 : FENÊTRES DE FÉLICITATIONS
+// Elles restent jusqu'au clic sur le bouton. S'il y en a plusieurs, elles passent l'une après l'autre.
+// ============================================================
+const CELEBRATE_TEXTS = {
+  fr: {
+    btn: "Merci ✨",
+    routine: { emoji: "🌟", title: "Routine faite !", msgs: [
+      "Bravo ! Tu as pris ce temps pour toi aujourd'hui. C'est exactement comme ça que tout change.",
+      "Tu l'as fait ! {m} minutes rien que pour toi. Ton esprit te dit merci.",
+      "Quelle constance ! Ta routine du jour est faite. Félicite-toi, tu le mérites.",
+      "Encore une journée où tu as choisi de croire en toi. C'est magnifique, continue !"
+    ]},
+    week: { emoji: "🏆", title: "Semaine réussie !", msgs: [
+      "{d} jours de routine cette semaine : tu tiens ta promesse envers toi-même. C'est énorme !",
+      "Objectif de la semaine atteint ! Jour après jour, tu construis quelque chose de solide.",
+      "Bravo ! Ta régularité est ta plus grande force. Savoure cette belle semaine."
+    ]},
+    session: { emoji: "✨", title: "Séance terminée !", msgs: [
+      "Bravo pour ces {m} minutes ! Chaque affirmation s'ancre un peu plus en toi.",
+      "Ta séance est faite jusqu'au bout. C'est comme ça que les grandes choses arrivent.",
+      "{m} minutes de pure intention. Tu peux te féliciter !"
+    ]},
+    half: { emoji: "💫", title: "La moitié du chemin !", msgs: [
+      "{n} affirmations sur {target} ! Le plus dur est derrière toi, continue comme ça.",
+      "Déjà la moitié de ton challenge ! Ton esprit les a entendues {n} fois. Incroyable !"
+    ]},
+    milestone: { emoji: "🎉", title: "{n} affirmations !", msgs: [
+      "Incroyable ! Ton esprit a entendu tes affirmations {n} fois. Tu es sur la bonne voie.",
+      "{n} fois ! Chaque répétition te rapproche de ce que tu veux vivre. Bravo !"
+    ]},
+    challenge: { emoji: "👑", title: "Challenge réussi !", msgs: [
+      "{target} affirmations ! Tu l'as fait ! Prends un moment pour savourer : tu viens de prouver ta détermination.",
+      "Félicitations ! {target} affirmations, c'est immense. Prends le temps de te féliciter."
+    ]}
+  },
+  en: {
+    btn: "Thank you ✨",
+    routine: { emoji: "🌟", title: "Routine done!", msgs: [
+      "Well done! You made time for yourself today. That's exactly how everything changes.",
+      "You did it! {m} minutes just for you. Your mind thanks you.",
+      "Such consistency! Today's routine is done. Be proud of yourself, you've earned it.",
+      "Another day you chose to believe in yourself. That's beautiful, keep going!"
+    ]},
+    week: { emoji: "🏆", title: "Week complete!", msgs: [
+      "{d} routine days this week: you're keeping your promise to yourself. That's huge!",
+      "Weekly goal reached! Day after day, you're building something solid.",
+      "Well done! Your consistency is your greatest strength. Enjoy this lovely week."
+    ]},
+    session: { emoji: "✨", title: "Session complete!", msgs: [
+      "Well done on these {m} minutes! Every affirmation sinks in a little deeper.",
+      "You saw your session through. That's how big things happen.",
+      "{m} minutes of pure intention. You can be proud of yourself!"
+    ]},
+    half: { emoji: "💫", title: "Halfway there!", msgs: [
+      "{n} out of {target} affirmations! The hardest part is behind you, keep it up.",
+      "Already halfway through your challenge! Your mind has heard them {n} times. Amazing!"
+    ]},
+    milestone: { emoji: "🎉", title: "{n} affirmations!", msgs: [
+      "Amazing! Your mind has heard your affirmations {n} times. You're on the right track.",
+      "{n} times! Every repetition brings you closer to the life you want. Well done!"
+    ]},
+    challenge: { emoji: "👑", title: "Challenge complete!", msgs: [
+      "{target} affirmations! You did it! Take a moment to enjoy it: you just proved how determined you are.",
+      "Congratulations! {target} affirmations is huge. You can be so proud of yourself."
+    ]}
+  }
+};
+const celebrateQueue = [];
+let celebrateOpen = false;
+function celebrate(kind, vars) {
+  celebrateQueue.push({ kind, vars: vars || {} });
+  if (!celebrateOpen) celebrateNext();
+}
+function celebrateNext() {
+  const item = celebrateQueue.shift();
+  if (!item) { celebrateOpen = false; return; }
+  celebrateOpen = true;
+  const texts = CELEBRATE_TEXTS[state.settings.language === 'en' ? 'en' : 'fr'];
+  const T = texts[item.kind];
+  if (!T) { celebrateNext(); return; }
+  const fill = s => String(s).replace(/\{(\w+)\}/g, (_, k) => (item.vars[k] != null ? item.vars[k] : ''));
+  const msg = T.msgs[Math.floor(Math.random() * T.msgs.length)];
+  const el = document.createElement('div');
+  el.className = 'celebrate-overlay';
+  el.innerHTML = `
+    <div class="celebrate-card" role="dialog" aria-modal="true">
+      <div class="celebrate-sparkles" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
+      <div class="celebrate-emoji">${T.emoji}</div>
+      <div class="celebrate-title">${escapeHtml(fill(T.title))}</div>
+      <p class="celebrate-msg">${escapeHtml(fill(msg))}</p>
+      <button type="button" class="btn-primary celebrate-ok">${escapeHtml(texts.btn)}</button>
+    </div>`;
+  document.body.appendChild(el);
+  try { if (navigator.vibrate) navigator.vibrate([120, 80, 120, 80, 260]); } catch(e) {}
+  el.querySelector('.celebrate-ok').addEventListener('click', () => { el.remove(); celebrateNext(); });
+}
+
+// Félicitations du Challenge : la moitié, chaque palier de 10K, et l'objectif atteint (une seule fenêtre par ajout)
 function celebrateMilestoneIfReached(oldCount, newCount) {
+  const target = state.challenge.target || 10000;
+  if (oldCount < target && newCount >= target) { celebrate('challenge', { target: fmtN(target) }); return; }
+  const half = Math.floor(target / 2);
+  if (oldCount < half && newCount >= half) { celebrate('half', { n: fmtN(half), target: fmtN(target) }); return; }
   const milestones = [10000, 20000, 30000, 40000, 50000];
   for (const m of milestones) {
-    if (oldCount < m && newCount >= m) {
-      toast(`👏 Bravo ! ${fmtN(m)} affirmations ✨`);
-      break;  // Un seul milestone par incrément
+    if (m < target && oldCount < m && newCount >= m) {
+      celebrate('milestone', { n: fmtN(m) });
+      break;  // Un seul palier par ajout
     }
   }
 }
@@ -9038,7 +9177,6 @@ function renderChallenge() {
     if (oldCount < state.challenge.target && state.challenge.count >= state.challenge.target) {
       recordChallengeCompletion();
       stopChallenge();
-      toast(t('challenge_done'));
     }
     render();
   };
@@ -9520,7 +9658,6 @@ function processChallengeProgress(prev, curr, validAffs, wallDeltaMs) {
     if (state.challenge.count >= state.challenge.target) {
       recordChallengeCompletion();
       stopChallenge();
-      toast(t('challenge_done'));
       stopped = true;
     }
   }
@@ -9542,7 +9679,6 @@ function processChallengeProgress(prev, curr, validAffs, wallDeltaMs) {
         if (state.challenge.count >= state.challenge.target) {
           recordChallengeCompletion();
           stopChallenge();
-          toast(t('challenge_done'));
           stopped = true;
         }
       }
@@ -9701,7 +9837,6 @@ function handleChallengeEnd(aff, validAffs) {
   if (state.challenge.count >= state.challenge.target) {
     recordChallengeCompletion();
     stopChallenge();
-    toast(t('challenge_done'));
     return;
   }
 
