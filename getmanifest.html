@@ -753,7 +753,12 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 .ch-top-sel .orb-current-aff { flex: 1; min-height: 0; }
 .ch-pick-group { display: flex; justify-content: center; margin: 2px 0 6px; }
 .ch-pick-count { text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
-.ch-pick-list { max-height: 46vh; }
+/* v1.30.0 : choix du Challenge en plein écran, la liste prend toute la hauteur, Annuler + Valider sur une ligne */
+.modal.ch-pick-modal { display: flex; flex-direction: column; overflow: hidden; }
+.ch-pick-modal .modal-title { flex-shrink: 0; margin-bottom: 10px; }
+.ch-pick-modal .ch-pick-list { flex: 1 1 auto; min-height: 0; max-height: none; overflow-y: auto; }
+.ch-pick-actions { flex-shrink: 0; display: flex; gap: 10px; padding-top: 12px; }
+.ch-pick-actions .btn-primary, .ch-pick-actions .btn-secondary { flex: 1; margin-top: 0; }
 .ch-middle {
   flex-shrink: 0;  /* orb hauteur fixe */
   display: flex;
@@ -1626,15 +1631,24 @@ body.player-active .mini-header { display: none; }
   letter-spacing: 1px;
 }
 .orb-play { font-size: 44px; line-height: 1; }
-.orb-goal {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 18px;
-  font-weight: 800;
+/* v1.30.0 : « Séance faite ✨ » sous le temps, dans le rond (plus de coche au-dessus) */
+.orb-goal-txt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-top: 6px;
+  opacity: 0.9;
+  white-space: nowrap;
 }
-.orb-goal[hidden] { display: none; }
+.orb-goal-txt[hidden] { display: none; }
+/* L'anneau plein brille une fois quand la durée est atteinte */
+.repeat-ring.goal-glow { animation: ringGoalGlow 1.8s ease-out 2; }
+@keyframes ringGoalGlow {
+  0%   { filter: drop-shadow(0 0 0 transparent); }
+  40%  { filter: drop-shadow(0 0 12px var(--accent)) drop-shadow(0 0 22px var(--accent-glow)); }
+  100% { filter: drop-shadow(0 0 0 transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .repeat-ring.goal-glow { animation: none; } }
 .repeat-ring {
   position: absolute;
   inset: 0;
@@ -2934,6 +2948,34 @@ input[type="range"]::-moz-range-thumb {
 .ch-progress { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--line) 70%, transparent); overflow: hidden; margin: 12px 0 4px; }
 .ch-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent-light, var(--accent)), var(--accent)); }
 .ch-stat-current { margin-top: 10px; }
+/* v1.30.0 : onglet « Routine » des stats et « Ma routine » dans le Profil */
+.routine-goal-line { margin: 0 4px 4px; font-size: 12px; }
+.routine-of { font-size: 16px; font-weight: 700; opacity: 0.7; }
+.routine-chart .chart-bar-wrap { position: relative; }
+.routine-goal-tick { position: absolute; left: 0; right: 0; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--accent) 75%, transparent); z-index: 1; pointer-events: none; }
+.routine-chart .chart-bar.below { opacity: 0.5; }
+.routine-month-h::first-letter { text-transform: uppercase; }
+.routine-cal-wrap { background: var(--card-bg); border-radius: 16px; padding: 14px 12px 12px; box-shadow: var(--card-shadow); }
+.rcal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.rcal-head { margin-bottom: 6px; }
+.rcal-head div { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-dim); }
+.rcal-cell { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-dim); background: color-mix(in srgb, var(--line) 30%, transparent); }
+.rcal-cell.blank { background: transparent; }
+.rcal-cell.future { background: transparent; opacity: 0.5; }
+.rcal-cell.part { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text-strong); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 60%, transparent); }
+.rcal-cell.done { background: linear-gradient(135deg, var(--accent-light, var(--accent)), var(--accent)); color: var(--btn-text); font-weight: 800; box-shadow: 0 0 8px var(--accent-glow); }
+.rcal-cell.today { outline: 1.5px solid var(--text-strong); outline-offset: 2px; }
+.rcal-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 10px; color: var(--text-dim); margin-top: 12px; }
+.rcal-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 8px; }
+.rcal-dot.done { background: var(--accent); }
+.rcal-dot.part { background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 60%, transparent); }
+.routine-since { margin: 12px 4px 0; font-size: 11px; }
+.routine-empty { text-align: center; padding: 18px 8px; }
+.routine-group { padding: 12px 16px 16px; }
+.routine-sub { margin: 0 0 4px; }
+.routine-label { font-size: 12px; font-weight: 700; color: var(--text-strong); margin-top: 14px; }
+.routine-label.off, .routine-off { opacity: 0.45; }
+.routine-off { pointer-events: none; }
 
 .heatmap-legend {
   display: flex;
@@ -4513,7 +4555,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.29.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.30.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -4926,6 +4968,28 @@ Object.assign(TRANSLATIONS.fr, {
   stats_tab_summary: 'Résumé',
   stats_tab_top: 'Top',
   stats_tab_challenges: 'Challenges',
+  stats_tab_routine: 'Routine',
+  routine_title: 'Ma routine',
+  routine_sub: "Ton objectif de temps d'affirmations par jour, en Repeat. Il sert à suivre tes jours réussis dans les stats. Ta durée de séance reste libre dans les réglages de Repeat.",
+  routine_minutes: 'Temps par jour',
+  routine_days: 'Jours par semaine',
+  routine_days_n: '{n} jours',
+  routine_none_set: 'Choisis ta routine dans le Profil : un temps par jour et un nombre de jours par semaine. Ici, tu verras tes jours réussis.',
+  routine_go_profile: 'Choisir ma routine',
+  routine_goal_line: 'Objectif : {m} min par jour · {d} jours par semaine',
+  routine_streak_days: "Jours d'affilée",
+  routine_streak_weeks: "Semaines d'affilée",
+  routine_record: 'Record',
+  routine_week_done: 'Jours cette semaine',
+  routine_today: "Aujourd'hui",
+  routine_month_time: 'Ce mois-ci',
+  routine_all_time: 'Depuis le début',
+  routine_week_title: 'Cette semaine',
+  routine_month_title: 'Ce mois-ci',
+  routine_legend_done: 'Routine faite',
+  routine_legend_part: 'Commencée',
+  routine_since: "Le temps compte depuis la mise à jour de l'app, seulement en Repeat.",
+  session_done: 'Séance faite ✨',
   stats_ch_current: 'Challenge en cours',
   stats_ch_done_title: 'Challenges terminés',
   stats_ch_none: "Pas encore de challenge terminé. Ton premier t'attend ✨",
@@ -5020,7 +5084,7 @@ Object.assign(TRANSLATIONS.fr, {
   silent_mode: 'Mode silencieux',
   silent_mode_sub: 'Un bip au lieu de la voix (double bip au changement d\'aff)',
   session_duration: 'Durée de séance',
-  session_duration_sub: 'Le temps s\'affiche toujours dans le rond. Avec une durée, l\'anneau se remplit et ça vibre à la fin. La lecture continue.',
+  session_duration_sub: 'Sans durée, le temps monte dans le rond. Avec une durée, il décompte jusqu\'à 0, l\'anneau se remplit et ça vibre à la fin. La lecture continue.',
   // Share
   share: 'Partager',
   share_playlist: 'Partager cette playlist',
@@ -5082,6 +5146,28 @@ Object.assign(TRANSLATIONS.en, {
   stats_tab_summary: 'Overview',
   stats_tab_top: 'Top',
   stats_tab_challenges: 'Challenges',
+  stats_tab_routine: 'Routine',
+  routine_title: 'My routine',
+  routine_sub: 'Your daily affirmation time goal, in Repeat. It tracks your successful days in your stats. Your session length stays free in the Repeat settings.',
+  routine_minutes: 'Time per day',
+  routine_days: 'Days per week',
+  routine_days_n: '{n} days',
+  routine_none_set: 'Set your routine in your Profile: a time per day and a number of days per week. Your successful days will show up here.',
+  routine_go_profile: 'Set my routine',
+  routine_goal_line: 'Goal: {m} min a day · {d} days a week',
+  routine_streak_days: 'Days in a row',
+  routine_streak_weeks: 'Weeks in a row',
+  routine_record: 'Best',
+  routine_week_done: 'Days this week',
+  routine_today: 'Today',
+  routine_month_time: 'This month',
+  routine_all_time: 'All time',
+  routine_week_title: 'This week',
+  routine_month_title: 'This month',
+  routine_legend_done: 'Routine done',
+  routine_legend_part: 'Started',
+  routine_since: 'Time counts from this app update, in Repeat only.',
+  session_done: 'Session done ✨',
   stats_ch_current: 'Current challenge',
   stats_ch_done_title: 'Completed challenges',
   stats_ch_none: 'No completed challenge yet. Your first one is waiting ✨',
@@ -5173,7 +5259,7 @@ Object.assign(TRANSLATIONS.en, {
   silent_mode: 'Silent mode',
   silent_mode_sub: 'A beep instead of your voice (double beep on aff change)',
   session_duration: 'Session length',
-  session_duration_sub: 'Time always shows in the circle. With a length, the ring fills up and your phone vibrates at the end. Playback keeps going.',
+  session_duration_sub: 'With no length, time counts up in the circle. With a length, it counts down to 0, the ring fills up and your phone vibrates at the end. Playback keeps going.',
   share: 'Share',
   share_playlist: 'Share this playlist',
   share_sub: 'Send the file to a friend so they can import your affirmations.',
@@ -5708,6 +5794,8 @@ function getRepeatElapsedMs() {
   return playerState.elapsedMs + (playerState.runStart ? Date.now() - playerState.runStart : 0);
 }
 function resetRepeatClock() {
+  try { routineFlush(true); } catch(e) {}  // v1.30.0 : on garde le temps de la séance pour la routine
+  routineLastElapsed = 0;
   playerState.elapsedMs = 0;
   playerState.runStart = null;
   playerState.goalNotified = false;
@@ -5723,6 +5811,38 @@ function formatRepeatClock(ms) {
   if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
+// v1.30.0 : avec une durée, le temps décompte (10:00 → 00:00), puis « +01:23 » au-delà
+function repeatClockText(elapsed) {
+  const goal = getRepeatGoalMs();
+  if (goal <= 0) return formatRepeatClock(elapsed);
+  if (elapsed < goal) return formatRepeatClock(Math.ceil((goal - elapsed) / 1000) * 1000);
+  return '+' + formatRepeatClock(elapsed - goal);
+}
+
+// ============================================================
+// ROUTINE (v1.30.0) : vrai temps d'écoute en Repeat, par jour (state.stats.routineDays = { 'AAAA-MM-JJ': ms })
+// L'objectif (Profil) : settings.routineMinutes (0 = aucune) et settings.routineDays (3, 5 ou 7 jours par semaine)
+// ============================================================
+var routineLastElapsed = 0;
+var routineLastSave = 0;
+function routineFlush(forceSave) {
+  const el = getRepeatElapsedMs();
+  let d = el - routineLastElapsed;
+  if (d < 0) d = el;          // nouvelle séance (le chrono est reparti de 0)
+  routineLastElapsed = el;
+  if (state.ui.playerMode === 'sats' || d <= 0) return;  // le SATS ne compte pas
+  if (!state.stats.routineDays) state.stats.routineDays = {};
+  const k = todayKey();
+  state.stats.routineDays[k] = (state.stats.routineDays[k] || 0) + Math.round(d);
+  const now = Date.now();
+  if (forceSave || now - routineLastSave > 15000) { routineLastSave = now; saveState(); }
+}
+function routineGoal() {
+  const m = state.settings.routineMinutes || 0;
+  const d = [3, 5, 7].includes(state.settings.routineDays) ? state.settings.routineDays : 7;
+  return { minutes: m, ms: m * 60000, days: d };
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) { try { routineFlush(true); } catch(e) {} } });
 const REPEAT_RING_R = 112;
 const REPEAT_RING_C = 2 * Math.PI * REPEAT_RING_R;
 function repeatRingOffset(elapsed) {
@@ -5731,18 +5851,24 @@ function repeatRingOffset(elapsed) {
   return REPEAT_RING_C * (1 - pct);
 }
 function updateRepeatClock() {
+  try { routineFlush(false); } catch(e) {}  // v1.30.0 : temps de la routine
   if (state.ui.playerMode === 'sats') return;
   const clockEl = document.getElementById('orb-clock');
   if (!clockEl) return;
   const elapsed = getRepeatElapsedMs();
-  clockEl.textContent = formatRepeatClock(elapsed);
+  clockEl.textContent = repeatClockText(elapsed);
   const prog = document.getElementById('repeat-ring-progress');
   if (prog) prog.setAttribute('stroke-dashoffset', repeatRingOffset(elapsed).toFixed(2));
   const goal = getRepeatGoalMs();
   if (goal > 0 && elapsed >= goal) {
     if (!playerState.goalNotified) {
       playerState.goalNotified = true;
-      if (playerState.playing) { try { if (navigator.vibrate) navigator.vibrate([200, 120, 200]); } catch(e){} }
+      if (playerState.playing) {
+        try { if (navigator.vibrate) navigator.vibrate([200, 120, 200]); } catch(e){}
+        // v1.30.0 : l'anneau plein brille une fois (plus de coche au-dessus du rond)
+        const ring = prog && prog.closest('svg');
+        if (ring) { ring.classList.remove('goal-glow'); void ring.getBoundingClientRect(); ring.classList.add('goal-glow'); }
+      }
     }
     const goalEl = document.getElementById('orb-goal');
     if (goalEl) goalEl.removeAttribute('hidden');
@@ -5844,15 +5970,16 @@ function renderPlayer() {
   const repeatGoal = getRepeatGoalMs();
   const repeatGoalReached = repeatGoal > 0 && repeatElapsed >= repeatGoal;
   const showRepeatRing = isRepeatMode && repeatGoal > 0;
-  const repeatClock = formatRepeatClock(repeatElapsed);
-  const goalBadge = `<span class="orb-goal" id="orb-goal" ${repeatGoalReached ? '' : 'hidden'}>✓</span>`;
+  const repeatClock = repeatClockText(repeatElapsed);  // v1.30.0 : décompte si une durée est choisie
+  // v1.30.0 : « Séance faite ✨ » sous le temps, dans le rond (avant : une coche au-dessus du rond)
+  const goalBadge = `<span class="orb-goal-txt" id="orb-goal" ${repeatGoalReached ? '' : 'hidden'}>${t('session_done')}</span>`;
   let orbInner;
   if (!isRepeatMode) {
     orbInner = playerState.playing ? '❚❚' : '▶';
   } else if (playerState.playing) {
-    orbInner = `<span class="orb-inner">${goalBadge}<span class="orb-clock" id="orb-clock">${repeatClock}</span><span class="orb-pause-hint">❚❚</span></span>`;
+    orbInner = `<span class="orb-inner"><span class="orb-clock" id="orb-clock">${repeatClock}</span>${goalBadge}<span class="orb-pause-hint">❚❚</span></span>`;
   } else if (playerState.sessionStart) {
-    orbInner = `<span class="orb-inner">${goalBadge}<span class="orb-play">▶</span><span class="orb-clock orb-clock-small" id="orb-clock">${repeatClock}</span></span>`;
+    orbInner = `<span class="orb-inner"><span class="orb-play">▶</span><span class="orb-clock orb-clock-small" id="orb-clock">${repeatClock}</span>${goalBadge}</span>`;
   } else {
     orbInner = '▶';
   }
@@ -8499,7 +8626,7 @@ function openChallengeAffPicker() {
     const affs = state.affirmations.filter(a => a.recording && (groupId === 'all' || a.groupId === groupId));
     const groupName = groupId === 'all' ? t('all_groups') : (state.groups.find(g => g.id === groupId)?.name || t('all_groups'));
     overlay.innerHTML = `
-      <div class="modal modal-full">
+      <div class="modal modal-full ch-pick-modal">
         <div class="sheet-x-bar"><button type="button" class="sheet-x" aria-label="${t('sheet_close')}">✕</button></div>
         <div class="modal-title">${t('ch_pick_title')}</div>
         <div class="ch-pick-group">
@@ -8526,9 +8653,11 @@ function openChallengeAffPicker() {
               <span class="aff-check-name">${escapeHtml(a.title)}</span>
             </label>
           `).join('')}
-        </div>` : `<div class="sublabel" style="margin:14px 4px">${t('ch_pick_empty')}</div>`}
-        <button class="btn-primary" id="ch-pick-ok" ${picked.size ? '' : 'disabled style="opacity:0.5"'}>${t('ch_pick_ok')}</button>
-        <button class="btn-secondary" id="ch-pick-cancel">${t('cancel')}</button>
+        </div>` : `<div class="sublabel ch-pick-list" style="margin:14px 4px">${t('ch_pick_empty')}</div>`}
+        <div class="ch-pick-actions">
+          <button class="btn-secondary" id="ch-pick-cancel">${t('cancel')}</button>
+          <button class="btn-primary" id="ch-pick-ok" ${picked.size ? '' : 'disabled style="opacity:0.5"'}>${t('ch_pick_ok')}</button>
+        </div>
       </div>
     `;
     overlay.querySelector('.sheet-x').addEventListener('click', close);
@@ -9884,6 +10013,141 @@ function buildHeatmap(byDay, maxWeeks = 52) {
   return cells;
 }
 
+// v1.30.0 : onglet « Routine » des stats (série, record, semaine, mois)
+function routineDateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function routineAddDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function routineMonday(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function routineStatsHTML() {
+  const g = routineGoal();
+  if (!g.minutes) {
+    return `<div class="routine-empty">
+      <p class="sublabel">${t('routine_none_set')}</p>
+      <button class="btn-primary" id="routine-go-profile">${t('routine_go_profile')}</button>
+    </div>`;
+  }
+  const lang = state.settings.language === 'en' ? 'en-GB' : 'fr-FR';
+  const rd = state.stats.routineDays || {};
+  const msOf = k => rd[k] || 0;
+  const ok = k => msOf(k) >= g.ms;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const todayK = routineDateKey(today);
+  const keys = Object.keys(rd).filter(k => rd[k] > 0).sort();
+  const first = keys.length ? new Date(keys[0] + 'T00:00:00') : new Date(today);
+  let streak = 0, record = 0, unitLabel;
+  if (g.days === 7) {
+    // Série de jours : aujourd'hui compte s'il est fait, sinon on part d'hier (la journée n'est pas finie)
+    let d = ok(todayK) ? new Date(today) : routineAddDays(today, -1);
+    while (d >= first && ok(routineDateKey(d))) { streak++; d = routineAddDays(d, -1); }
+    let run = 0;
+    for (let d2 = new Date(first); d2 <= today; d2 = routineAddDays(d2, 1)) {
+      if (ok(routineDateKey(d2))) { run++; record = Math.max(record, run); } else run = 0;
+    }
+    unitLabel = t('routine_streak_days');
+  } else {
+    // 3 ou 5 jours par semaine : série de semaines réussies (lundi → dimanche)
+    const weekOk = (mon) => { let n = 0; for (let i = 0; i < 7; i++) if (ok(routineDateKey(routineAddDays(mon, i)))) n++; return n >= g.days; };
+    const thisMon = routineMonday(today), firstMon = routineMonday(first);
+    let w = weekOk(thisMon) ? new Date(thisMon) : routineAddDays(thisMon, -7);
+    while (w >= firstMon && weekOk(w)) { streak++; w = routineAddDays(w, -7); }
+    let run = 0;
+    for (let w2 = new Date(firstMon); w2 <= thisMon; w2 = routineAddDays(w2, 7)) {
+      if (weekOk(w2)) { run++; record = Math.max(record, run); } else run = 0;
+    }
+    unitLabel = t('routine_streak_weeks');
+  }
+  record = Math.max(record, streak);
+
+  // Cette semaine
+  const mon = routineMonday(today);
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const d = routineAddDays(mon, i), k = routineDateKey(d);
+    week.push({ ms: msOf(k), isToday: k === todayK, label: d.toLocaleDateString(lang, { weekday: 'narrow' }).toUpperCase() });
+  }
+  const weekDone = week.filter(x => x.ms >= g.ms).length;
+  const maxMs = Math.max(g.ms, ...week.map(x => x.ms)) * 1.15;
+
+  // Ce mois-ci
+  const y = today.getFullYear(), mo = today.getMonth();
+  const lead = (new Date(y, mo, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(y, mo + 1, 0).getDate();
+  let monthMs = 0;
+  const cells = [];
+  for (let i = 0; i < lead; i++) cells.push('<div class="rcal-cell blank"></div>');
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(y, mo, day), k = routineDateKey(d), ms = msOf(k);
+    monthMs += ms;
+    const cls = d > today ? 'future' : ms >= g.ms ? 'done' : ms > 0 ? 'part' : '';
+    cells.push(`<div class="rcal-cell ${cls} ${k === todayK ? 'today' : ''}"><span>${day}</span></div>`);
+  }
+  const heads = week.map(x => `<div>${x.label}</div>`).join('');
+  const allMs = Object.values(rd).reduce((a, b) => a + (b || 0), 0);
+  const monthName = today.toLocaleDateString(lang, { month: 'long', year: 'numeric' });
+
+  return `
+    <p class="sublabel routine-goal-line">${t('routine_goal_line', { m: g.minutes, d: g.days })}</p>
+    <div class="stats-grid">
+      <div class="stats-card primary">
+        <div class="stats-card-icon">🔥</div>
+        <div class="stats-card-val">${streak}</div>
+        <div class="stats-card-label">${unitLabel}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-icon">🏆</div>
+        <div class="stats-card-val">${record}</div>
+        <div class="stats-card-label">${t('routine_record')}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-icon">✅</div>
+        <div class="stats-card-val">${weekDone}<span class="routine-of"> / ${g.days}</span></div>
+        <div class="stats-card-label">${t('routine_week_done')}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-icon">⏱️</div>
+        <div class="stats-card-val">${fmtListenTime(msOf(todayK) / 1000)}</div>
+        <div class="stats-card-label">${t('routine_today')}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-icon">📅</div>
+        <div class="stats-card-val">${fmtListenTime(monthMs / 1000)}</div>
+        <div class="stats-card-label">${t('routine_month_time')}</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card-icon">✨</div>
+        <div class="stats-card-val">${fmtListenTime(allMs / 1000)}</div>
+        <div class="stats-card-label">${t('routine_all_time')}</div>
+      </div>
+    </div>
+
+    <div class="h3" style="margin-top:24px">${t('routine_week_title')}</div>
+    <div class="stats-chart routine-chart">
+      ${week.map(x => `
+        <div class="chart-col">
+          <div class="chart-bar-wrap">
+            <div class="routine-goal-tick" style="bottom:${(g.ms / maxMs * 100).toFixed(1)}%"></div>
+            <div class="chart-bar ${x.isToday ? 'today' : ''} ${x.ms >= g.ms ? '' : 'below'}" style="height:${(x.ms / maxMs * 100).toFixed(1)}%"></div>
+          </div>
+          <div class="chart-label ${x.isToday ? 'today' : ''}">${x.label}</div>
+          <div class="chart-count">${x.ms >= 60000 ? Math.floor(x.ms / 60000) + ' min' : ''}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="h3 routine-month-h" style="margin-top:24px">${escapeHtml(monthName)}</div>
+    <div class="routine-cal-wrap">
+      <div class="rcal rcal-head">${heads}</div>
+      <div class="rcal">${cells.join('')}</div>
+      <div class="rcal-legend">
+        <span class="rcal-dot done"></span>${t('routine_legend_done')}
+        <span class="rcal-dot part"></span>${t('routine_legend_part')}
+      </div>
+    </div>
+    <p class="sublabel routine-since">${t('routine_since')}</p>
+  `;
+}
+
 function renderStats() {
   const s = state.stats;
   const today = todayKey();
@@ -9946,10 +10210,11 @@ function renderStats() {
   const activeDays = Object.keys(s.byDay || {}).filter(k => s.byDay[k].plays > 0).length;
 
   // v1.25.1 : onglets Résumé / Top / Challenges (le dernier ouvert est retenu)
-  const statsTab = ['resume', 'top', 'challenges'].includes(state.ui.statsTab) ? state.ui.statsTab : 'resume';
+  const statsTab = ['resume', 'routine', 'top', 'challenges'].includes(state.ui.statsTab) ? state.ui.statsTab : 'resume';
   const statsTabsHTML = `
     <div class="player-mode-chips stats-tabs">
       <button class="pm-chip ${statsTab==='resume'?'active':''}" data-st="resume"><span>${t('stats_tab_summary')}</span></button>
+      <button class="pm-chip ${statsTab==='routine'?'active':''}" data-st="routine"><span>${t('stats_tab_routine')}</span></button>
       <button class="pm-chip ${statsTab==='top'?'active':''}" data-st="top"><span>${t('stats_tab_top')}</span></button>
       <button class="pm-chip ${statsTab==='challenges'?'active':''}" data-st="challenges"><span>${t('stats_tab_challenges')}</span></button>
     </div>`;
@@ -10098,6 +10363,8 @@ function renderStats() {
 
       ` : ''}
 
+      ${statsTab === 'routine' ? routineStatsHTML() : ''}
+
       ${statsTab === 'challenges' ? `
       <div class="h3" style="margin-top:8px">${t('stats_ch_current')}</div>
       ${currentChallengeHTML}
@@ -10148,6 +10415,11 @@ function renderStats() {
       renderStats();
       window.scrollTo(0, 0);
     });
+  });
+  // v1.30.0 : pas encore de routine → ouvre le Profil, sur « Ma routine »
+  document.getElementById('routine-go-profile')?.addEventListener('click', () => {
+    switchTab('settings');
+    setTimeout(() => document.getElementById('routine-section')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 60);
   });
 
   // Bind des chips de plage
@@ -10518,6 +10790,20 @@ function renderSettings() {
       </div>
     </div>
 
+    <!-- v1.30.0 : Ma routine (objectif pour les stats ; la durée de séance reste libre dans Repeat) -->
+    <div class="h3" id="routine-section">${t('routine_title')}</div>
+    <div class="setting-group routine-group">
+      <div class="setting-sub routine-sub">${t('routine_sub')}</div>
+      <div class="routine-label">${t('routine_minutes')}</div>
+      <div class="music-mode-row">
+        ${[0, 5, 10, 15, 20, 30].map(m => `<button class="music-mode-btn ${(s.routineMinutes || 0) === m ? 'active' : ''}" data-routine-min="${m}">${m === 0 ? t('none') : m + ' min'}</button>`).join('')}
+      </div>
+      <div class="routine-label ${(s.routineMinutes || 0) ? '' : 'off'}">${t('routine_days')}</div>
+      <div class="music-mode-row ${(s.routineMinutes || 0) ? '' : 'routine-off'}">
+        ${[3, 5, 7].map(d => `<button class="music-mode-btn ${routineGoal().days === d ? 'active' : ''}" data-routine-days="${d}">${t('routine_days_n', { n: d })}</button>`).join('')}
+      </div>
+    </div>
+
     <div class="h3">${t('data')}</div>
     <div class="setting-group">
       <div class="setting-row">
@@ -10584,6 +10870,27 @@ function renderSettings() {
     if (versionTapTimer) clearTimeout(versionTapTimer);
     if (versionTapCount >= 5) { versionTapCount = 0; openDebugLog(); return; }
     versionTapTimer = setTimeout(() => { versionTapCount = 0; }, 1500);
+  });
+
+  // v1.30.0 : Ma routine
+  document.querySelectorAll('[data-routine-min]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.routineMinutes = parseInt(b.dataset.routineMin, 10) || 0;
+      if (![3, 5, 7].includes(state.settings.routineDays)) state.settings.routineDays = 7;
+      saveState();
+      const y = window.scrollY;
+      renderSettings();
+      window.scrollTo(0, y);
+    });
+  });
+  document.querySelectorAll('[data-routine-days]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.settings.routineDays = parseInt(b.dataset.routineDays, 10) || 7;
+      saveState();
+      const y = window.scrollY;
+      renderSettings();
+      window.scrollTo(0, y);
+    });
   });
 
   document.getElementById('toggle-dark')?.addEventListener('click', () => {
