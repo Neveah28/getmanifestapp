@@ -2028,6 +2028,18 @@ html { background: var(--bg-solid); }
 body::before { content: ''; position: fixed; inset: 0; z-index: -1; background: var(--bg-grad); pointer-events: none; }
 /* v1.34.0 : Repeat, la ligne « routine ou pas » */
 .rp-mode { display: block; margin: 8px auto 0; padding: 6px 14px; border-radius: 100px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--text-strong); font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px; cursor: pointer; max-width: 92%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* v1.35.0 : Repeat, Ma routine / Écoute libre */
+.rp-switch { display: flex; gap: 4px; margin: 10px auto 0; padding: 4px; width: fit-content; max-width: 94%; border-radius: 100px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.rp-opt { border: 0; background: transparent; color: var(--text-dim); font: inherit; font-size: 12.5px; font-weight: 700; padding: 6px 13px; border-radius: 100px; cursor: pointer; white-space: nowrap; }
+.rp-opt.active { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--text-strong); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent); }
+.rp-sub { display: flex; justify-content: center; margin: 6px auto 0; min-height: 26px; }
+.rp-edit { border: 0; background: transparent; color: var(--text-dim); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 8px; }
+.rp-edit u { color: var(--accent); text-underline-offset: 3px; }
+.rp-durs { display: flex; gap: 4px; flex-wrap: nowrap; }
+.rp-dur { border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); background: transparent; color: var(--text-dim); font: inherit; font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 100px; cursor: pointer; white-space: nowrap; }
+.rp-dur.active { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--text-strong); border-color: color-mix(in srgb, var(--accent) 65%, transparent); }
+.rp-status { text-align: center; margin: 10px auto 0; font-size: 13.5px; font-weight: 700; color: var(--accent); letter-spacing: 0.2px; }
+.music-mode-row.cols4 { grid-template-columns: repeat(4, 1fr); }
 /* v1.34.0 : Ma routine, les choix conseillés */
 .routine-reco-line { margin: 2px 0 12px; padding: 8px 12px; border-radius: 12px; font-size: 12.5px; font-weight: 700; color: var(--text-strong); background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent); }
 .music-mode-btn.reco:not(.active) { border-color: color-mix(in srgb, var(--accent) 75%, transparent); color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
@@ -4619,7 +4631,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.34.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.35.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5040,6 +5052,17 @@ Object.assign(TRANSLATIONS.fr, {
   rp_mode_routine: '🌙 Ma routine · séance {n} sur {t}',
   rp_mode_routine_one: '🌙 Ma routine · {m} min',
   rp_mode_routine_done: '✓ Routine du jour faite ({t}/{t})',
+  rp_opt_routine: 'Ma routine',
+  rp_opt_free: 'Écoute libre',
+  rp_edit: 'Modifier',
+  rp_routine_choose: 'Choisir ma routine',
+  rp_status_free: 'Écoute libre',
+  rp_status_free_left: 'Écoute libre · encore {m} min',
+  rp_status_free_done: 'Écoute libre · séance faite ✨',
+  rp_status_routine: 'Séance {n} sur {t} · encore {m} min',
+  rp_status_routine_one: 'Ma routine · encore {m} min',
+  rp_status_routine_none: 'Choisis ta routine pour voir le décompte',
+  rp_sheet_ok: "C'est bon",
   ch_section_title: 'Ton challenge',
   ch_restart: 'Recommencer à 0',
   ch_restart_confirm: 'Remettre le compteur à 0 ? Tes affirmations restent les mêmes.',
@@ -5236,6 +5259,17 @@ Object.assign(TRANSLATIONS.en, {
   rp_mode_routine: '🌙 My routine · session {n} of {t}',
   rp_mode_routine_one: '🌙 My routine · {m} min',
   rp_mode_routine_done: "✓ Today's routine done ({t}/{t})",
+  rp_opt_routine: 'My routine',
+  rp_opt_free: 'Free listening',
+  rp_edit: 'Edit',
+  rp_routine_choose: 'Set my routine',
+  rp_status_free: 'Free listening',
+  rp_status_free_left: 'Free listening · {m} min left',
+  rp_status_free_done: 'Free listening · session done ✨',
+  rp_status_routine: 'Session {n} of {t} · {m} min left',
+  rp_status_routine_one: 'My routine · {m} min left',
+  rp_status_routine_none: 'Set your routine to see the countdown',
+  rp_sheet_ok: 'Done',
   ch_section_title: 'Your challenge',
   ch_restart: 'Start again from 0',
   ch_restart_confirm: 'Reset the counter to 0? Your affirmations stay the same.',
@@ -5902,9 +5936,16 @@ function resetRepeatClock() {
 }
 // v1.31.0 : la durée de séance (réglages) passe en premier ; sinon, le rond décompte ce qui reste de la routine du jour
 function getRepeatGoalMs() {
-  const m = Math.max(0, state.settings.repeatDuration || 0);
-  if (m > 0) return m * 60000;
+  // v1.35.0 : « Écoute libre » = la durée choisie sous le bouton (0 = sans fin) ; « Ma routine » = la séance en cours
+  if (!repeatModeIsRoutine()) return Math.max(0, state.settings.repeatDuration || 0) * 60000;
   return routineSessionGoalMs();
+}
+// v1.35.0 : Repeat en « Ma routine » ou en « Écoute libre » (avant 1.35 : une durée choisie passait avant la routine)
+function repeatModeIsRoutine() {
+  const m = state.settings.repeatMode;
+  if (m === 'routine') return true;
+  if (m === 'free') return false;
+  return !(state.settings.repeatDuration > 0) && (state.settings.routineMinutes || 0) > 0;
 }
 function routineSessionGoalMs() {
   const g = routineGoal();
@@ -5924,7 +5965,7 @@ function routineSessionGoalMs() {
   return boundary - base;
 }
 function repeatGoalIsRoutine() {
-  return !(state.settings.repeatDuration > 0) && routineSessionGoalMs() > 0;
+  return repeatModeIsRoutine() && routineSessionGoalMs() > 0;
 }
 function formatRepeatClock(ms) {
   const secs = Math.max(0, Math.floor(ms / 1000));
@@ -5988,11 +6029,14 @@ function routineFlush(forceSave) {
   const now = Date.now();
   if (forceSave || now - routineLastSave > 15000) { routineLastSave = now; saveState(); }
 }
+// v1.35.0 : 3 min possible, et jusqu'à 10 fois par jour (ex. 3 min × 10)
+const ROUTINE_MINUTES = [0, 3, 5, 10, 15, 20, 30];
+const ROUTINE_TIMES = [1, 2, 3, 4, 5, 6, 8, 10];
 function routineGoal() {
   const m = state.settings.routineMinutes || 0;
   const d = [3, 5, 7].includes(state.settings.routineDays) ? state.settings.routineDays : 7;
   // v1.34.0 : la routine se fait en séances (ex. 3 fois 10 min par jour)
-  const n = [1, 2, 3].includes(state.settings.routineTimes) ? state.settings.routineTimes : 1;
+  const n = ROUTINE_TIMES.includes(state.settings.routineTimes) ? state.settings.routineTimes : 1;
   return { minutes: m, ms: m * 60000, days: d, times: n, dayMs: m * 60000 * n };
 }
 // Séances faites aujourd'hui (ou un autre jour) : chaque tranche de « minutes » compte pour une séance
@@ -6003,13 +6047,110 @@ function routineSeancesOf(k) {
 }
 // v1.34.0 : ce qu'on voit en haut de Repeat (routine ou pas)
 function repeatModeText() {
-  const dur = state.settings.repeatDuration || 0;
-  if (dur > 0) return t('rp_mode_session', { m: dur });
+  // v1.35.0 : écrit en clair sous le rond (avant : une pastille qui ouvrait le Profil)
+  const left = () => Math.max(1, Math.ceil((getRepeatGoalMs() - getRepeatElapsedMs()) / 60000));
+  if (!repeatModeIsRoutine()) {
+    const dur = state.settings.repeatDuration || 0;
+    if (!dur) return t('rp_status_free');
+    return getRepeatElapsedMs() >= dur * 60000 ? t('rp_status_free_done') : t('rp_status_free_left', { m: left() });
+  }
   const g = routineGoal();
-  if (!g.ms) return t('rp_mode_free');
+  if (!g.ms) return t('rp_status_routine_none');
   const done = routineSeancesOf(todayKey());
-  if (done >= g.times) return t('rp_mode_routine_done', { t: g.times });
-  return g.times > 1 ? t('rp_mode_routine', { n: done + 1, t: g.times, m: g.minutes }) : t('rp_mode_routine_one', { m: g.minutes });
+  if (done >= g.times || getRepeatGoalMs() <= 0) return t('rp_mode_routine_done', { t: g.times });
+  return g.times > 1 ? t('rp_status_routine', { n: Math.min(g.times, done + 1), t: g.times, m: left() }) : t('rp_status_routine_one', { m: left() });
+}
+// v1.35.0 : les deux boutons sous la playlist, et ce qui va dessous
+function repeatModeBarHTML() {
+  const r = repeatModeIsRoutine();
+  const g = routineGoal();
+  const dur = state.settings.repeatDuration || 0;
+  const sub = r
+    ? `<button class="rp-edit" id="rp-edit" type="button">${g.ms ? `${g.times} × ${g.minutes} min · <u>${t('rp_edit')}</u>` : `<u>${t('rp_routine_choose')}</u>`}</button>`
+    : `<div class="rp-durs">${[0, 5, 10, 15, 20, 30].map(m => `<button class="rp-dur ${dur === m ? 'active' : ''}" data-rp-dur="${m}" type="button">${m === 0 ? '∞' : m + ' min'}</button>`).join('')}</div>`;
+  return `<div class="rp-switch">
+      <button class="rp-opt ${r ? 'active' : ''}" data-rp-mode="routine" type="button">🌙 ${t('rp_opt_routine')}</button>
+      <button class="rp-opt ${r ? '' : 'active'}" data-rp-mode="free" type="button">♪ ${t('rp_opt_free')}</button>
+    </div>
+    <div class="rp-sub">${sub}</div>`;
+}
+// v1.35.0 : changer de mode repart d'un temps à 0 (le temps déjà écouté reste compté pour la routine)
+function setRepeatMode(m) {
+  if (m !== 'routine' && m !== 'free') return;
+  if (repeatModeIsRoutine() === (m === 'routine') && state.settings.repeatMode === m) return;
+  try { routineFlush(true); } catch(e) {}
+  state.settings.repeatMode = m;
+  playerState.elapsedMs = 0;
+  playerState.runStart = playerState.playing ? Date.now() : null;
+  routineLastElapsed = 0;
+  playerState.routineSnap = null;
+  playerState.goalNotified = false;
+  saveState();
+  renderPlayer();
+  if (m === 'routine' && !routineGoal().ms) openRoutineSheet();
+}
+function setFreeDuration(m) {
+  state.settings.repeatDuration = Math.max(0, m || 0);
+  saveState();
+  playerState.goalNotified = m > 0 && getRepeatElapsedMs() >= m * 60000;
+  renderPlayer();
+}
+// v1.35.0 : les choix de « Ma routine » (Profil et fenêtre de Repeat)
+function routineChoicesHTML() {
+  const s = state.settings;
+  const on = (s.routineMinutes || 0) > 0;
+  return `<div class="routine-reco-line">✨ ${t('routine_reco')}</div>
+      <div class="routine-label">${t('routine_minutes')}</div>
+      <div class="music-mode-row cols4">
+        ${ROUTINE_MINUTES.map(m => `<button class="music-mode-btn ${(s.routineMinutes || 0) === m ? 'active' : ''} ${m === 10 ? 'reco' : ''}" data-routine-min="${m}">${m === 0 ? t('none') : m + ' min'}</button>`).join('')}
+      </div>
+      <div class="routine-label ${on ? '' : 'off'}">${t('routine_times')}</div>
+      <div class="music-mode-row cols4 ${on ? '' : 'routine-off'}">
+        ${ROUTINE_TIMES.map(n => `<button class="music-mode-btn ${routineGoal().times === n ? 'active' : ''} ${n === 3 ? 'reco' : ''}" data-routine-times="${n}">${t('routine_times_n', { n })}</button>`).join('')}
+      </div>
+      <div class="routine-label ${on ? '' : 'off'}">${t('routine_days')}</div>
+      <div class="music-mode-row ${on ? '' : 'routine-off'}">
+        ${[3, 5, 7].map(d => `<button class="music-mode-btn ${routineGoal().days === d ? 'active' : ''} ${d === 7 ? 'reco' : ''}" data-routine-days="${d}">${t('routine_days_n', { n: d })}</button>`).join('')}
+      </div>`;
+}
+function bindRoutineChoices(root, after) {
+  root.querySelectorAll('[data-routine-min]').forEach(b => b.addEventListener('click', () => {
+    state.settings.routineMinutes = parseInt(b.dataset.routineMin, 10) || 0;
+    if (![3, 5, 7].includes(state.settings.routineDays)) state.settings.routineDays = 7;
+    playerState.routineSnap = null;
+    saveState(); after();
+  }));
+  root.querySelectorAll('[data-routine-times]').forEach(b => b.addEventListener('click', () => {
+    state.settings.routineTimes = parseInt(b.dataset.routineTimes, 10) || 1;
+    playerState.routineSnap = null;
+    saveState(); after();
+  }));
+  root.querySelectorAll('[data-routine-days]').forEach(b => b.addEventListener('click', () => {
+    state.settings.routineDays = parseInt(b.dataset.routineDays, 10) || 7;
+    saveState(); after();
+  }));
+}
+// v1.35.0 : « Ma routine » par-dessus Repeat : on ne quitte pas la page, la lecture continue
+function openRoutineSheet() {
+  document.getElementById('routine-sheet')?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.id = 'routine-sheet';
+  const fill = () => {
+    overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${t('routine_title')}</div>
+      <div class="setting-sub routine-sub" style="margin-bottom:10px">${t('routine_sub')}</div>
+      ${routineChoicesHTML()}
+      <button class="btn-primary" id="routine-sheet-ok" style="margin-top:16px">${t('rp_sheet_ok')}</button>
+    </div>`;
+    bindRoutineChoices(overlay, () => { fill(); renderPlayer(); });
+    overlay.querySelector('#routine-sheet-ok').addEventListener('click', () => overlay.remove());
+  };
+  fill();
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden) { try { routineFlush(true); } catch(e) {} } });
 const REPEAT_RING_R = 112;
@@ -6045,7 +6186,7 @@ function updateRepeatClock() {
         const ring = prog && prog.closest('svg');
         if (ring) { ring.classList.remove('goal-glow'); void ring.getBoundingClientRect(); ring.classList.add('goal-glow'); }
         // v1.32.0 : fenêtre de félicitations pour une séance avec durée choisie (la routine a la sienne)
-        if (!repeatGoalIsRoutine() && state.settings.repeatDuration > 0) celebrate('session', { m: state.settings.repeatDuration });
+        if (!repeatModeIsRoutine() && state.settings.repeatDuration > 0) celebrate('session', { m: state.settings.repeatDuration });
       }
     }
     const goalEl = document.getElementById('orb-goal');
@@ -6200,7 +6341,7 @@ function renderPlayer() {
           }).join('')}
         </select>
       </div>
-      ${isRepeatMode ? `<button class="rp-mode" id="rp-mode" type="button">${escapeHtml(repeatModeText())}</button>` : ''}
+      ${isRepeatMode ? repeatModeBarHTML() : ''}
 
       <div class="player-main">
         <div class="now-playing" id="now-playing">
@@ -6218,6 +6359,7 @@ function renderPlayer() {
           ${pget('silentMode') ? `<div class="silent-tag">${t('silent_tag')}</div>` : ''}
         </div>
 
+        ${isRepeatMode ? `<div class="rp-status" id="rp-mode">${escapeHtml(repeatModeText())}</div>` : ''}
         <div class="session-counter-wrap">
           <div class="session-counter-value" id="total-counter">${sessionTotal}</div>
           <div class="session-counter-label">${t('session_affs')}</div>
@@ -6254,10 +6396,10 @@ function renderPlayer() {
 
   // Click sur orb : si en lecture = pause, sinon start/resume
   document.getElementById('play-btn').addEventListener('click', togglePlay);
-  document.getElementById('rp-mode')?.addEventListener('click', () => {
-    switchTab('settings');
-    setTimeout(() => document.getElementById('routine-section')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 60);
-  });
+  // v1.35.0 : Ma routine / Écoute libre, sans quitter Repeat
+  document.querySelectorAll('[data-rp-mode]').forEach(b => b.addEventListener('click', () => setRepeatMode(b.dataset.rpMode)));
+  document.querySelectorAll('[data-rp-dur]').forEach(b => b.addEventListener('click', () => setFreeDuration(parseInt(b.dataset.rpDur, 10) || 0)));
+  document.getElementById('rp-edit')?.addEventListener('click', openRoutineSheet);
   document.getElementById('group-select').addEventListener('change', (e) => {
     s.selectedGroupId = e.target.value;
     saveState();
@@ -8391,16 +8533,7 @@ function openPlayerSheet() {
         <input type="range" id="ps-pause" min="0" max="15" step="1" value="${pget('pauseBetween')}" />
       </div>
 
-      <div class="ps-row" ${state.ui.playerMode === 'sats' ? 'style="display:none"' : ''}>
-        <div class="ps-head">
-          <span class="ps-icon">⏱️</span>
-          <span class="ps-label">${t('session_duration')}</span>
-        </div>
-        <div class="music-mode-row">
-          ${[0, 5, 10, 15, 20, 30].map(m => `<button class="music-mode-btn ${(s.repeatDuration || 0) === m ? 'active' : ''}" data-ps-duration="${m}">${m === 0 ? t('none') : m + ' min'}</button>`).join('')}
-        </div>
-        <div class="ps-sub">${t('session_duration_sub')}</div>
-      </div>
+      <!-- v1.35.0 : la durée de séance est sous « Écoute libre », dans Repeat -->
 
       <div class="ps-row" style="display:none">
         <div class="ps-head">
@@ -11117,19 +11250,7 @@ function renderSettings() {
     <div class="h3" id="routine-section">${t('routine_title')}</div>
     <div class="setting-group routine-group">
       <div class="setting-sub routine-sub">${t('routine_sub')}</div>
-      <div class="routine-reco-line">✨ ${t('routine_reco')}</div>
-      <div class="routine-label">${t('routine_minutes')}</div>
-      <div class="music-mode-row">
-        ${[0, 5, 10, 15, 20, 30].map(m => `<button class="music-mode-btn ${(s.routineMinutes || 0) === m ? 'active' : ''} ${m === 10 ? 'reco' : ''}" data-routine-min="${m}">${m === 0 ? t('none') : m + ' min'}</button>`).join('')}
-      </div>
-      <div class="routine-label ${(s.routineMinutes || 0) ? '' : 'off'}">${t('routine_times')}</div>
-      <div class="music-mode-row ${(s.routineMinutes || 0) ? '' : 'routine-off'}">
-        ${[1, 2, 3].map(n => `<button class="music-mode-btn ${routineGoal().times === n ? 'active' : ''} ${n === 3 ? 'reco' : ''}" data-routine-times="${n}">${t('routine_times_n', { n })}</button>`).join('')}
-      </div>
-      <div class="routine-label ${(s.routineMinutes || 0) ? '' : 'off'}">${t('routine_days')}</div>
-      <div class="music-mode-row ${(s.routineMinutes || 0) ? '' : 'routine-off'}">
-        ${[3, 5, 7].map(d => `<button class="music-mode-btn ${routineGoal().days === d ? 'active' : ''} ${d === 7 ? 'reco' : ''}" data-routine-days="${d}">${t('routine_days_n', { n: d })}</button>`).join('')}
-      </div>
+      ${routineChoicesHTML()}
     </div>
 
     <div class="h3">${t('data')}</div>
@@ -11200,34 +11321,11 @@ function renderSettings() {
     versionTapTimer = setTimeout(() => { versionTapCount = 0; }, 1500);
   });
 
-  // v1.30.0 : Ma routine
-  document.querySelectorAll('[data-routine-min]').forEach(b => {
-    b.addEventListener('click', () => {
-      state.settings.routineMinutes = parseInt(b.dataset.routineMin, 10) || 0;
-      if (![3, 5, 7].includes(state.settings.routineDays)) state.settings.routineDays = 7;
-      saveState();
-      const y = window.scrollY;
-      renderSettings();
-      window.scrollTo(0, y);
-    });
-  });
-  document.querySelectorAll('[data-routine-times]').forEach(b => {
-    b.addEventListener('click', () => {
-      state.settings.routineTimes = parseInt(b.dataset.routineTimes, 10) || 1;
-      saveState();
-      const y = window.scrollY;
-      renderSettings();
-      window.scrollTo(0, y);
-    });
-  });
-  document.querySelectorAll('[data-routine-days]').forEach(b => {
-    b.addEventListener('click', () => {
-      state.settings.routineDays = parseInt(b.dataset.routineDays, 10) || 7;
-      saveState();
-      const y = window.scrollY;
-      renderSettings();
-      window.scrollTo(0, y);
-    });
+  // v1.30.0 : Ma routine (v1.35.0 : fonction commune avec la fenêtre de Repeat)
+  bindRoutineChoices(document.getElementById('page-settings') || document, () => {
+    const y = window.scrollY;
+    renderSettings();
+    window.scrollTo(0, y);
   });
 
   document.getElementById('toggle-dark')?.addEventListener('click', () => {
