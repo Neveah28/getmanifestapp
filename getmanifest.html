@@ -4282,7 +4282,10 @@ body.night-mode .orb-ring {
   margin-bottom: 20px;
 }
 /* VERROU : écran du code d'accès (au-dessus de l'onboarding) */
+/* v1.39.0 : pendant le code, l'app derriere est cachee (la frappe ramait sur iPhone) */
+body.gm-locked > *:not(#lock-screen) { display: none !important; }
 .lock-overlay {
+  background-attachment: scroll;
   z-index: 600;
   justify-content: center;
   align-items: center;
@@ -4385,6 +4388,14 @@ body.night-mode .orb-ring {
   opacity: 0;
   transform: translateY(10px);
 }
+/* v1.39.0 : l'ecran part sur le cote, comme quand on glisse */
+.ob-content.ob-fading.ob-go-left, .ob-content.ob-fading.ob-from-left { transform: translateX(-28px); }
+.ob-content.ob-fading.ob-go-right, .ob-content.ob-fading.ob-from-right { transform: translateX(28px); }
+.ob-content.ob-from-left, .ob-content.ob-from-right { transition: none; }
+.ob-svg { width: 64px; height: 64px; color: #fff; filter: drop-shadow(0 1px 3px rgba(90, 30, 30, 0.35)); }
+.ob-visual.ob-visual-app { background: none; box-shadow: none; animation: none; width: 168px; height: 168px; border-radius: 0; }
+.ob-app-icon { width: 100%; height: 100%; border-radius: 22%; box-shadow: 0 0 0 1px rgba(226, 203, 156, 0.35), 0 16px 50px var(--accent-glow); }
+.ob-brand { display: block; font-size: 52px; margin-top: 2px; }
 .ob-visual {
   width: 160px;
   height: 160px;
@@ -4399,8 +4410,8 @@ body.night-mode .orb-ring {
   animation: orbPulse 2s ease-in-out infinite;
 }
 .ob-title {
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 500;
   color: var(--text-strong);
   letter-spacing: -0.5px;
   max-width: 400px;
@@ -4677,7 +4688,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.38.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.39.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5267,20 +5278,20 @@ Object.assign(TRANSLATIONS.fr, {
   ob_step: 'Étape',
   ob_of: 'sur',
 
-  ob1_title: 'Bienvenue dans GetManifest',
-  ob1_text: 'Ta boîte à outils de manifestation. Pour commencer, tu vas découvrir le mode Repeat : écoute tes affirmations en boucle avec ta propre voix.',
+  ob1_title: 'Bienvenue dans',
+  ob1_text: 'Ta boîte à outils de manifestation. Pour commencer, tu vas découvrir le mode Repeat : écoute tes affirmations en boucle avec ta propre voix.',
 
   ob2_title: 'Enregistre tes affirmations',
-  ob2_text: 'Dans l\'onglet Affirmations, tape le titre d\'une affirmation et enregistre-la avec ta propre voix. Classe-les en playlists (Argent, Confiance, etc.)',
+  ob2_text: 'Dans l\'onglet Affs, tape le titre d\'une affirmation et enregistre-la avec ta propre voix. Classe-les en playlists (Argent, Confiance, etc.)',
 
   ob3_title: 'Lance la lecture en boucle',
   ob3_text: 'Choisis une playlist et appuie sur le gros bouton rond. Tes affirmations tournent en boucle, à la vitesse que tu veux, avec le temps de pause que tu veux.',
 
   ob4_title: 'Personnalise à ton goût',
-  ob4_text: 'Dans Réglages, change le thème de couleur, la vitesse, la pause entre deux affirmations, ou connecte ta musique de fond préférée.',
+  ob4_text: 'Dans Profil, change le thème de couleur, la vitesse, la pause entre deux affirmations ou ta musique de fond préférée.',
 
   ob5_title: 'C\'est à toi de jouer',
-  ob5_text: 'Ouvre l\'onglet Affirmations, crée tes affirmations avec ta voix, et c\'est parti.',
+  ob5_text: 'Ouvre l\'onglet Affs, crée tes affirmations avec ta voix et c\'est parti.',
 
   example_badge: 'Exemple',
   example_hint: 'Clique pour l\'enregistrer avec ta voix',
@@ -5490,20 +5501,20 @@ Object.assign(TRANSLATIONS.en, {
   ob_step: 'Step',
   ob_of: 'of',
 
-  ob1_title: 'Welcome to GetManifest',
+  ob1_title: 'Welcome to',
   ob1_text: 'Your manifestation toolkit. To start, you\'ll discover the Repeat mode: listen to your affirmations on loop, in your own voice.',
 
   ob2_title: 'Record your affirmations',
-  ob2_text: 'In the Affirmations tab, type a title and record it in your own voice. Organize them in playlists (Money, Confidence, etc.)',
+  ob2_text: 'In the Affs tab, type a title and record it in your own voice. Organize them in playlists (Money, Confidence, etc.)',
 
   ob3_title: 'Start the loop playback',
   ob3_text: 'Choose a playlist and tap the big round button. Your affirmations loop at your chosen speed, with the pause you prefer.',
 
   ob4_title: 'Make it yours',
-  ob4_text: 'In Settings, pick a color theme, adjust speed and pause times, or connect your favorite background music.',
+  ob4_text: 'In Profile, pick a color theme, adjust speed and pause times, or connect your favorite background music.',
 
   ob5_title: 'Over to you',
-  ob5_text: 'Open the Affirmations tab, create your own with your voice, and off you go.',
+  ob5_text: 'Open the Affs tab, create your own with your voice, and off you go.',
 
   example_badge: 'Example',
   example_hint: 'Tap to record with your voice',
@@ -11629,21 +11640,32 @@ function confirmAsync(message, okLabel, cancelLabel) {
 // ONBOARDING
 // ============================================================
 const ONBOARDING_STEPS = [
-  { icon: '♥', titleKey: 'ob1_title', textKey: 'ob1_text' },
-  { icon: '◈', titleKey: 'ob2_title', textKey: 'ob2_text' },
-  { icon: '◉', titleKey: 'ob3_title', textKey: 'ob3_text' },
-  { icon: '◇', titleKey: 'ob4_title', textKey: 'ob4_text' },
-  { icon: '✦', titleKey: 'ob5_title', textKey: 'ob5_text' },
+  { icon: 'app', titleKey: 'ob1_title', textKey: 'ob1_text' },
+  { icon: 'mic', titleKey: 'ob2_title', textKey: 'ob2_text' },
+  { icon: 'loop', titleKey: 'ob3_title', textKey: 'ob3_text' },
+  { icon: 'sliders', titleKey: 'ob4_title', textKey: 'ob4_text' },
+  { icon: 'sparkle', titleKey: 'ob5_title', textKey: 'ob5_text' },
 ];
 
 let obStep = 0;
+// v1.39.0 : des icones dessinees (traits fins) a la place des symboles ; l'etape 1 montre l'icone de l'app
+const OB_SVG = {
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/><path d="M8.5 21h7"/>',
+  loop: '<path d="M17 2.5l3 3-3 3"/><path d="M4 11V9.5a4 4 0 0 1 4-4h12"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 13v1.5a4 4 0 0 1-4 4H4"/>',
+  sliders: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  sparkle: '<path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M18.5 14.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+};
+function obVisualHtml(icon) {
+  if (icon === 'app') return '<img class="ob-app-icon" src="icons/icon-512.png" alt="">';
+  return '<svg class="ob-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (OB_SVG[icon] || '') + '</svg>';
+}
 
 function startOnboarding() {
   obStep = 0;
   renderOnboarding();
 }
 
-function renderOnboarding() {
+function renderOnboarding(dir) {
   const step = ONBOARDING_STEPS[obStep];
   const isLast = obStep === ONBOARDING_STEPS.length - 1;
 
@@ -11670,6 +11692,18 @@ function renderOnboarding() {
     document.body.appendChild(el);
 
     document.getElementById('ob-skip').addEventListener('click', endOnboarding);
+    // v1.39.0 : on glisse du doigt d'un ecran a l'autre
+    let sx = null, sy = 0;
+    el.addEventListener('touchstart', (e) => { const p = e.touches[0]; sx = p.clientX; sy = p.clientY; }, { passive: true });
+    el.addEventListener('touchend', (e) => {
+      if (sx === null) return;
+      const p = e.changedTouches[0];
+      const dx = p.clientX - sx, dy = p.clientY - sy;
+      sx = null;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
+      if (dx < 0 && obStep < ONBOARDING_STEPS.length - 1) { obStep++; renderOnboarding('next'); }
+      else if (dx > 0 && obStep > 0) { obStep--; renderOnboarding('prev'); }
+    }, { passive: true });
     document.getElementById('ob-next').addEventListener('click', () => {
       const isNowLast = obStep === ONBOARDING_STEPS.length - 1;
       if (isNowLast) {
@@ -11677,7 +11711,7 @@ function renderOnboarding() {
         switchTab('list');
       } else {
         obStep++;
-        renderOnboarding();
+        renderOnboarding('next');
       }
     });
   }
@@ -11691,8 +11725,10 @@ function renderOnboarding() {
   const nextBtn = document.getElementById('ob-next');
 
   const applyContent = () => {
-    visualEl.textContent = step.icon;
+    visualEl.innerHTML = obVisualHtml(step.icon);
+    visualEl.classList.toggle('ob-visual-app', step.icon === 'app');
     titleEl.textContent = t(step.titleKey);
+    if (step.icon === 'app') titleEl.insertAdjacentHTML('beforeend', '<span class="brand-logo ob-brand">getmanifest</span>');
     textEl.textContent = t(step.textKey);
     indicatorEl.textContent = `${t('ob_step')} ${obStep+1} ${t('ob_of')} ${ONBOARDING_STEPS.length}`;
     dotsEl.innerHTML = ONBOARDING_STEPS.map((_, i) => `<div class="ob-dot ${i===obStep?'active':''}"></div>`).join('');
@@ -11704,10 +11740,14 @@ function renderOnboarding() {
   } else {
     // Fade out puis fade in
     const content = el.querySelector('.ob-content');
-    content.classList.add('ob-fading');
+    const side = dir === 'prev' ? 'ob-go-right' : 'ob-go-left';
+    content.classList.add('ob-fading', side);
     setTimeout(() => {
       applyContent();
-      content.classList.remove('ob-fading');
+      content.classList.remove(side);
+      content.classList.add(side === 'ob-go-left' ? 'ob-from-right' : 'ob-from-left');
+      void content.offsetWidth;
+      content.classList.remove('ob-fading', 'ob-from-right', 'ob-from-left');
     }, 180);
   }
 }
@@ -12371,7 +12411,16 @@ function showLockScreen(onUnlock) {
     </div>
   `;
   document.body.appendChild(el);
+  document.body.classList.add('gm-locked');  // v1.39.0 : rien d'autre a redessiner derriere pendant qu'on tape
   const input = el.querySelector('#lock-input');
+  // v1.39.0 : les tirets s'ajoutent tout seuls (GM-XXXX-XXXX)
+  input.addEventListener('input', () => {
+    if (input.selectionStart !== input.value.length) return;  // on corrige au milieu : on ne touche a rien
+    const raw = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const parts = raw.startsWith('GM') ? ['GM', raw.slice(2, 6), raw.slice(6, 10)] : [raw.slice(0, 4), raw.slice(4, 8)];
+    const v = parts.filter(Boolean).join('-');
+    if (v !== input.value) input.value = v;
+  });
   const errEl = el.querySelector('#lock-error');
   const btn = el.querySelector('#lock-btn');
 
@@ -12387,6 +12436,8 @@ function showLockScreen(onUnlock) {
         try { localStorage.setItem(ACCESS_KEY, h); } catch (e) {}
         logEvent('unlock_ok');
         el.remove();
+        document.body.classList.remove('gm-locked');
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}  // les mesures (hauteur de la barre du bas) se refont
         onUnlock();
       } else {
         errEl.textContent = L.wrong;
