@@ -758,6 +758,16 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 .ch-pick-modal .ch-pick-list { flex: 1 1 auto; min-height: 0; max-height: none; overflow-y: auto; }
 .ch-pick-actions { flex-shrink: 0; display: flex; gap: 10px; padding-top: 12px; }
 .ch-pick-actions .btn-primary, .ch-pick-actions .btn-secondary { flex: 1; margin-top: 0; }
+/* v1.37.0 : Challenge pas encore réglé, une page courte */
+.ch-setup-count { color: var(--text-dim); font-weight: 600; letter-spacing: 0.5px; }
+.ch-setup-list { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 10px; }
+.ch-setup-row { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); font-size: 13.5px; font-weight: 600; color: var(--text-strong); }
+.ch-setup-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-setup-x { border: 0; background: transparent; color: var(--text-dim); font: inherit; font-size: 15px; cursor: pointer; padding: 2px 8px; }
+.ch-setup-none { font-size: 12.5px; color: var(--text-dim); margin: 6px 0 10px; }
+.btn-secondary.ch-setup-pick { width: 100%; margin: 0; }
+.ch-setup-rec { display: block; margin: 12px auto 0; border: 0; background: transparent; color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.ch-pick-list .aff-check-item { padding: 7px 10px; font-size: 13.5px; }
 .ch-middle {
   flex-shrink: 0;  /* orb hauteur fixe */
   display: flex;
@@ -4642,7 +4652,7 @@ body.vision-on #orb-current-aff { text-shadow: 0 1px 12px color-mix(in srgb, var
 
 <script>
 const STORAGE_KEY = 'repeat_v1';
-const APP_VERSION = '1.36.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
+const APP_VERSION = '1.37.0';  // Semver : bump à chaque push (feat → minor, fix → patch)
 const CONTACT_EMAIL = 'getmanifest.app@gmail.com';  // Pour les retours / suggestions / bugs
 const THEMES = [
   { id: 'nuit', name: 'Nuit rose & or' },
@@ -5165,6 +5175,15 @@ Object.assign(TRANSLATIONS.fr, {
   ch_sel_n: 'Mes {n} affirmations',
   ch_pick_title: 'Mes affirmations du Challenge',
   ch_pick_ok: 'Valider',
+  ch_setup_affs: 'Tes affirmations',
+  ch_setup_pick: '＋ Choisir mes affirmations',
+  ch_setup_change: 'Changer mes affirmations',
+  ch_setup_none: "Choisis jusqu'à 4 phrases dans tes playlists.",
+  ch_setup_none_rec: 'Enregistre ta première phrase pour commencer.',
+  ch_setup_record: '🎤 Enregistrer une nouvelle phrase',
+  ch_setup_start: 'Commencer le challenge',
+  ch_setup_remove: 'Retirer',
+  ch_add_this: 'Ajouter à mon challenge',
   ch_pick_count: '{n} / 4 choisies',
   ch_pick_empty: 'Aucune affirmation enregistrée dans cette playlist.',
   sheet_close: 'Fermer',
@@ -5374,6 +5393,15 @@ Object.assign(TRANSLATIONS.en, {
   ch_sel_n: 'My {n} affirmations',
   ch_pick_title: 'My Challenge affirmations',
   ch_pick_ok: 'Done',
+  ch_setup_affs: 'Your affirmations',
+  ch_setup_pick: '＋ Choose my affirmations',
+  ch_setup_change: 'Change my affirmations',
+  ch_setup_none: 'Pick up to 4 phrases from your playlists.',
+  ch_setup_none_rec: 'Record your first phrase to start.',
+  ch_setup_record: '🎤 Record a new phrase',
+  ch_setup_start: 'Start the challenge',
+  ch_setup_remove: 'Remove',
+  ch_add_this: 'Add to my challenge',
   ch_pick_count: '{n} / 4 picked',
   ch_pick_empty: 'No recorded affirmations in this playlist yet.',
   sheet_close: 'Close',
@@ -9071,6 +9099,7 @@ function openChallengeSheet() {
       stopMusic();
     }
     window.editingChallengeSelection = true;
+    window.chSetupPicked = null;
     overlay.remove();
     render();
   });
@@ -9126,8 +9155,39 @@ let challengeTimeout = null;
 
 // v1.29.0 : choisir les affirmations du Challenge depuis la barre du haut (comme la playlist en Repeat).
 // Le compteur est gardé. Une playlist, puis jusqu'à 4 affirmations (les cases restent cochées d'une playlist à l'autre).
-function openChallengeAffPicker() {
-  const picked = new Set((state.challenge.affirmationIds || []).filter(id => state.affirmations.some(a => a.id === id && a.recording)));
+// v1.37.0 : l'enregistrement d'une nouvelle phrase du Challenge, dans une fenêtre
+function openChallengeRecSheet() {
+  document.getElementById('ch-rec-sheet')?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.id = 'ch-rec-sheet';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">${t('challenge_record_new')}</div>
+      <input type="text" class="input-text" id="ch-new-title" placeholder="${t('ch_title_placeholder')}" style="margin-bottom: 12px" />
+      <div class="rec-wrapper" style="padding: 10px 0">
+        <div class="rec-timer" id="ch-rec-timer">${formatDur(0)}</div>
+        <button class="rec-btn" id="ch-rec-btn">●</button>
+        <p class="sublabel" style="margin-top: 10px" id="ch-rec-hint">${t('ch_rec_hint')}</p>
+        <div id="ch-rec-playback" style="display:none; margin-top:10px">
+          <button class="playback-btn" id="ch-rec-play">${t('listen')}</button>
+          <button class="playback-btn" id="ch-rec-redo" style="color: var(--danger)">${t('ch_redo')}</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="ch-create" disabled style="margin-top: 10px; opacity: 0.5">${t('ch_add_this')}</button>
+    </div>`;
+  overlay.addEventListener('click', (e) => {
+    if (e.target !== overlay) return;
+    try { if (chRecorder.mediaRecorder && chRecorder.mediaRecorder.state === 'recording') chRecorder.mediaRecorder.stop(); } catch(_) {}
+    overlay.remove();
+  });
+  document.body.appendChild(overlay);
+  setupChallengeRecorder();
+}
+function openChallengeAffPicker(opts) {
+  if (!opts || typeof opts !== 'object' || !('onPick' in opts)) opts = null;  // v1.37.0 : appelé par un clic = comme avant
+  const picked = new Set(((opts && opts.ids) || state.challenge.affirmationIds || []).filter(id => state.affirmations.some(a => a.id === id && a.recording)));
   let groupId = state.settings.selectedGroupId || 'all';
   if (groupId !== 'all' && !state.groups.some(g => g.id === groupId)) groupId = 'all';
   const overlay = document.createElement('div');
@@ -9193,6 +9253,7 @@ function openChallengeAffPicker() {
       if (!picked.size) return;
       // Dans l'ordre de la liste des affirmations
       const ids = state.affirmations.filter(a => picked.has(a.id)).map(a => a.id);
+      if (opts && opts.onPick) { close(); opts.onPick(ids); return; }  // v1.37.0 : page courte, on ne lance rien
       const same = ids.join(',') === (state.challenge.affirmationIds || []).join(',');
       close();
       if (same) return;
@@ -9231,6 +9292,9 @@ function renderChallenge() {
   // v1.26.0 : objectif choisi sur l'écran de départ (gardé tant qu'on n'a pas validé)
   if (!TARGET_CHOICES.includes(window.chSetupTarget)) window.chSetupTarget = TARGET_CHOICES.includes(c.target) ? c.target : 10000;
   const setupTarget = window.chSetupTarget;
+  // v1.37.0 : les phrases choisies sur la page courte (gardées tant qu'on n'a pas commencé)
+  if (!Array.isArray(window.chSetupPicked)) window.chSetupPicked = [...preCheckedIds];
+  const setupPicked = window.chSetupPicked.map(id => available.find(a => a.id === id)).filter(Boolean).slice(0, 4);
 
   const pageEl = document.getElementById('page-challenge');
   pageEl.classList.toggle('ch-selected', hasSelection);
@@ -9255,33 +9319,14 @@ function renderChallenge() {
         <div class="target-chips ch-setup-targets">
           ${TARGET_CHOICES.map(n => `<button type="button" class="target-chip ${setupTarget === n ? 'active' : ''}" data-ch-setup-target="${n}">${n / 1000}K</button>`).join('')}
         </div>
-        ${available.length > 0 ? `
-          <div class="h3" style="margin-top:18px">${t('challenge_select_prompt')}</div>
-          <div class="aff-check-list">
-            ${available.map(a => `
-              <label class="aff-check-item">
-                <input type="checkbox" class="aff-check" value="${a.id}" ${preCheckedIds.has(a.id) ? 'checked' : ''} />
-                <span class="aff-check-name">${escapeHtml(a.title)}</span>
-              </label>
-            `).join('')}
-          </div>
-          <div class="sublabel" style="margin-top:8px; font-size: 11px">${t('challenge_max_affs')}</div>
-          <button class="btn-primary" id="ch-confirm-affs" disabled style="margin-top:12px; opacity: 0.5">${editing ? (window.chRestartSetup ? t('ch_start_new') : t('ch_edit')) : t('ch_use_this')}</button>
-          <div class="challenge-divider"><span>${t('challenge_or')}</span></div>
-        ` : ''}
-
-        <div class="h3" style="margin-top: ${available.length > 0 ? '16px' : '0'}">${t('challenge_record_new')}</div>
-        <input type="text" class="input-text" id="ch-new-title" placeholder="${t('ch_title_placeholder')}" style="margin-bottom: 12px" />
-        <div class="rec-wrapper" style="padding: 10px 0">
-          <div class="rec-timer" id="ch-rec-timer">${formatDur(0)}</div>
-          <button class="rec-btn" id="ch-rec-btn">●</button>
-          <p class="sublabel" style="margin-top: 10px" id="ch-rec-hint">${t('ch_rec_hint')}</p>
-          <div id="ch-rec-playback" style="display:none; margin-top:10px">
-            <button class="playback-btn" id="ch-rec-play">${t('listen')}</button>
-            <button class="playback-btn" id="ch-rec-redo" style="color: var(--danger)">${t('ch_redo')}</button>
-          </div>
-        </div>
-        <button class="btn-primary" id="ch-create" disabled style="margin-top: 10px; opacity: 0.5">${t('ch_use_this')}</button>
+        <!-- v1.37.0 : page courte : les phrases choisies, puis Commencer -->
+        <div class="h3" style="margin-top:18px">${t('ch_setup_affs')} <span class="ch-setup-count">· ${setupPicked.length} / 4</span></div>
+        ${setupPicked.length
+          ? `<div class="ch-setup-list">${setupPicked.map(a => `<div class="ch-setup-row"><span>${escapeHtml(a.title)}</span><button type="button" class="ch-setup-x" data-ch-unpick="${a.id}" aria-label="${t('ch_setup_remove')}">✕</button></div>`).join('')}</div>`
+          : `<div class="ch-setup-none">${t(available.length ? 'ch_setup_none' : 'ch_setup_none_rec')}</div>`}
+        ${available.length ? `<button type="button" class="btn-secondary ch-setup-pick" id="ch-setup-pick">${t(setupPicked.length ? 'ch_setup_change' : 'ch_setup_pick')}</button>` : ''}
+        <button class="btn-primary" id="ch-confirm-affs" ${setupPicked.length ? '' : 'disabled'} style="margin-top:12px;${setupPicked.length ? '' : ' opacity:0.5'}">${editing ? (window.chRestartSetup ? t('ch_start_new') : t('ch_edit')) : t('ch_setup_start')}</button>
+        <button type="button" class="ch-setup-rec" id="ch-setup-rec">${t('ch_setup_record')}</button>
       </div>
     ` : ''}
 
@@ -9377,31 +9422,15 @@ function renderChallenge() {
 
   // ====== HANDLERS ======
 
-  // Sélection multiple des affirmations (max 4)
-  const checkboxes = document.querySelectorAll('.aff-check');
+  // v1.37.0 : page courte : la fenêtre de choix, le ✕ d'une phrase, l'enregistrement dans une fenêtre
   const confirmBtn = document.getElementById('ch-confirm-affs');
-  const updateConfirmBtn = () => {
-    const checked = Array.from(checkboxes).filter(c => c.checked);
-    if (!confirmBtn) return;
-    if (checked.length > 0 && checked.length <= 4) {
-      confirmBtn.disabled = false;
-      confirmBtn.style.opacity = '1';
-    } else {
-      confirmBtn.disabled = true;
-      confirmBtn.style.opacity = '0.5';
-    }
-  };
-  checkboxes.forEach(cb => {
-    cb.addEventListener('change', () => {
-      const checkedCount = Array.from(checkboxes).filter(c => c.checked).length;
-      // Bloque à 4 max
-      if (checkedCount > 4) {
-        cb.checked = false;
-        toast(t('challenge_max_affs'));
-      }
-      updateConfirmBtn();
-    });
-  });
+  const updateConfirmBtn = () => {};
+  document.getElementById('ch-setup-pick')?.addEventListener('click', () => openChallengeAffPicker({ ids: window.chSetupPicked || [], onPick: (ids) => { window.chSetupPicked = ids; render(); } }));
+  document.querySelectorAll('[data-ch-unpick]').forEach(b => b.addEventListener('click', () => {
+    window.chSetupPicked = (window.chSetupPicked || []).filter(id => id !== b.dataset.chUnpick);
+    render();
+  }));
+  document.getElementById('ch-setup-rec')?.addEventListener('click', openChallengeRecSheet);
 
   document.querySelectorAll('[data-ch-setup-target]').forEach(b => {
     b.addEventListener('click', () => {
@@ -9419,7 +9448,7 @@ function renderChallenge() {
   // Confirmer la sélection multiple
   // On NE reset PAS le count (préserve la progression). Pour reset : bouton "Reset le challenge"
   confirmBtn?.addEventListener('click', () => {
-    const picked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+    const picked = (window.chSetupPicked || []).filter(id => state.affirmations.some(a => a.id === id && a.recording)).slice(0, 4);
     if (picked.length === 0) return;
     const wasEmpty = (state.challenge.affirmationIds || []).length === 0;
     state.challenge.affirmationIds = picked;
@@ -9433,6 +9462,7 @@ function renderChallenge() {
     window.editingChallengeSelection = false;
     window.chRestartSetup = false;
     window.chSetupTarget = null;
+    window.chSetupPicked = null;
     saveState();
     toast('Sélection enregistrée ✓');
     render();
@@ -9449,6 +9479,7 @@ function renderChallenge() {
     }
     window.editingChallengeSelection = true;
     window.chSetupTarget = state.challenge.target;
+    window.chSetupPicked = null;
     render();
   });
 
@@ -9546,9 +9577,7 @@ function renderChallenge() {
     updateChallengeEtaLive();  // Recalcule l'ETA en temps réel
   });
 
-  // Enregistrement direct dans l'onglet 10K
-  // (v1.23.0 : 'aff' n'existait pas ici → l'écran plantait et le Challenge ne lançait jamais la voix)
-  setupChallengeRecorder();
+  // v1.37.0 : l'enregistrement d'une nouvelle phrase est dans sa fenêtre (openChallengeRecSheet)
 }
 
 // Enregistrement intégré dans l'onglet 10K
@@ -9793,6 +9822,18 @@ function setupChallengeRecorder() {
     // Reset du recorder
     chRecorder = { mediaRecorder: null, chunks: [], startTime: 0, interval: null, recording: null, duration: 0 };
 
+    // v1.37.0 : depuis la fenêtre, la phrase rejoint « Tes affirmations » ; on commence avec le bouton
+    const recSheet = document.getElementById('ch-rec-sheet');
+    if (recSheet) {
+      recSheet.remove();
+      const ids = (window.chSetupPicked || []).filter(id => id !== newAff.id);
+      if (ids.length < 4) ids.push(newAff.id);
+      window.chSetupPicked = ids;
+      saveState();
+      toast(t('toast_created'));
+      render();
+      return;
+    }
     // Set comme affirmation du challenge
     state.challenge.affirmationIds = [newAff.id];
     state.challenge.currentIdx = 0;
@@ -9833,6 +9874,7 @@ function restartChallenge() {
   window.editingChallengeSelection = true;
   window.chRestartSetup = true;
   window.chSetupTarget = state.challenge.target;
+  window.chSetupPicked = null;
   saveState();
   toast(t('ch_restart_pick'));
   render();
