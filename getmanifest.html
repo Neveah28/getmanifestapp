@@ -768,6 +768,17 @@ h1.h1 .dot { color: var(--accent); font-weight: 600; }
 .btn-secondary.ch-setup-pick { width: 100%; margin: 0; }
 .ch-setup-rec { display: block; margin: 12px auto 0; border: 0; background: transparent; color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .ch-pick-list .aff-check-item { padding: 7px 10px; font-size: 13.5px; }
+/* v1.38.0 : dans une playlist, pas de cadre ni de case : une petite etoile qui brille quand l'affirmation est choisie */
+.ch-pick-list.aff-check-list { gap: 0; }
+.ch-pick-list .aff-check-item, .ch-pick-list .aff-check-item:has(input:checked) { position: relative; background: transparent; border: 0; border-radius: 0; padding: 10px 4px; gap: 10px; }
+.ch-pick-list .aff-check { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.ch-star { width: 18px; flex-shrink: 0; text-align: center; line-height: 1; font-size: 13px; color: var(--accent); opacity: 0.45; transition: all 0.15s; }
+.ch-star::before { content: '✧'; }
+.aff-check:checked + .ch-star { font-size: 17px; opacity: 1; text-shadow: 0 0 8px var(--accent-glow); }
+.aff-check:checked + .ch-star::before { content: '✦'; }
+.ch-pick-list .aff-check-name { font-size: 14.5px; color: var(--text-dim); transition: color 0.15s; }
+.aff-check:checked ~ .aff-check-name { color: var(--text-strong); }
+.aff-check:focus-visible + .ch-star { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 /* v1.38.0 : choix du Challenge comme des dossiers : les playlists en cartes (2 par ligne), puis l'interieur d'une playlist */
 .ch-pick-modal.ch-pick-still { animation: none; }
 .ch-pick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; padding: 4px 1px 2px; }
@@ -9251,6 +9262,7 @@ function openChallengeAffPicker(opts) {
           ${affs.map(a => `
             <label class="aff-check-item">
               <input type="checkbox" class="aff-check ch-pick-check" value="${a.id}" ${picked.has(a.id) ? 'checked' : ''} />
+              <span class="ch-star" aria-hidden="true"></span>
               <span class="aff-check-name">${escapeHtml(a.title)}</span>
             </label>
           `).join('')}
