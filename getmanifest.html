@@ -12352,6 +12352,9 @@ function handleSystemInterruption(reason, which) {
 // ============================================================
 const ACCESS_KEY = 'gm_access_v1';
 const ACCESS_SALT = 'getmanifest|';
+// v1.40.0 : le controleur des codes (Cloudflare) : 3 telephones par code. Vide = pas de controle.
+const CODE_CHECK_URL = '';
+const DEVICE_KEY = 'gm_device_v1';
 const ACCESS_HASHES = new Set(['05a2d69431d3cbf1','a78dca5f287b306b','0b82c5ed1ab82d81','386db5b0402fefb3','28b08b52fdbd5556','eacc5e5c505ed336','6e8c3e673ed14538','06325b179e8c8574','bcf83c150e2c0e02','0b3a344c299fe54a','dc5838d38a0f0c70','204d2780cf3343fb','5d5aa0180fca7e2b','b051abbba5ec70ad','2a261962557899bd','9a1d1713852e172f','ab85319f12f04c3b','f04ebf094d65f8b1','e39273807e89bde9','247ce6e16f68d647','7bbbf0a51948a77f','8dec6990ea8e8fb5','a93ebc9d4125570c','04148d27083d133d','b0069e1d1f3e7eb0','6a1566cff0fc1f8b','4286dc6b70083d94','40db91b0c6d58cc0','e2c39a1440377d56','a4bc79e0d5499df8','d9d26ab595472075','c5055717bf9ddc6a','698c7e8c296cc936','c33bda5c919d6126','d649a8466b30f0de','794e9a4450292b98','f5dab4ea80bc3b0a','639beddbdc9f9cc0','8c169ec90d854e98','cd39b45769505876','a5fcb8bbc9bf1dba','58097a14a081cf48','ebaa8b8c94968582','f2f396ad635c0a48','644b464fbc816811','ddfb7d431be9d0c2','c44e58a5053c62cf','9d5f3484f1229361','6b2aeb1561064e87','fe3d38c10d7efa97','ce4779b175c96a84','656567d5728e9438','b654ef6ad1e24f10','8873b41e48b016ce','ca171cfdfbbc0260','1f974a471f8251fe','f87e74e34def8a61','d144d9f51365af09','7b086e2de86076d0','6a282241736ddcb6','3216ebe3fd3eb843','e9382ab2891128b7','887af88238903881','d44da8573fb28909','830bb4453304f78b','c746e899d2be8352','91cee2a83b98813a','e75f9c11b0211831','6b49b46d8151a144','8017883e854efcf6','7ae0b52b888387a5','9b1a1eb2c0347c30','43293e9a278a0d8e','43c4d14e4404caa6','7317ac36462cb197','f4c5ebfe4ca1803f','584d6766b842eae4','e6eb7b06f5da7775','aa68000c660711fa','b1ad72fb230561c1','9ccb1536a95e9e0a','035c7b8ae5d39a09','4a54d3e009401d06','b67a166116b2fb73','3b0214dc09a40e48','864c780515879cd5','3534e485575c359c','1cc344dd22124574','25928d2c9ddf7a72','d8050ddefd82b171','bfd00233e953deb1','f5c38fa74bc278dd','93560f613deb6552','6119932c2c78b62d','84bbdc680792cd80','722035f632f2d8df','1363cfd6619acd8f','3426d0b510185113','af095c887e4f7cae','f1eb5f56d8e58501','bfeae1e7fdefd0a4','d3b5c6e2dddb1886','7361ad200bceadd3','916426efe7469f5b','d0902df553e75350','461070662cd6043e','3c4a89ba5cf4f5e6','c92b81bc3b573ae4','1185a1f88e3221f9','5e842324a3ca6140','98e2a9287a4f2e64','5331af62ccaa955b','d3517f34b4ba35f5','ac2fb5e9738c2cfc','82c56ed3e105f1b9','a8664ec6e8fdf618','08393e9c49a7fac2','fbb4d092316c73a3','775b11ac09988b2d','7e3d730410db4cfd','90fea33d8b933b75','4be3d6d4fe26d87a','01a0e623ffe4fa93','c80fd8ad97c26799','8444a354a8c07a7f','ffc981c2e22d660f','07524568d8902cb1','39411b642066e7ed','d9aae4829845157d','31a1b9ee27372419','8ea7d73dd2c62265','6b0ce3dfb12892ab','65d35c0fbdcb4751','1f8f7d36de8318fe','c57b0974658972bc','e0a0da2b166602d8','2ef19cbd80a316b1','92e0e8a69b80e829','9ffc6bbd8a084726','e5010b90c27c25c4','ece382bfe053f909','5574cf469a7efd46','c3b2caafbe1c09ce','e8a278a2b5eddf3b','4a03b5043e120b7e','b5dbf6ef5555efae','eb164c43e44c30da','6276f3ca38c9cfe3','d2751c2ee48352c3','7e2e8d6c01b308ff','fb9a64dea6e15f2e','a1d9bf37fb667e1e','b6aaa9b4340a75d8','8ad19ebe614be29f','9fe3ffb63149c651','2dbd9eaf9ae01859','49bfab22c96ac169','4e13e118bcd5b7fe','a89d756ec997b0f8','4fced97e6204d713','0e10ef37e76d2122','ba501622477d9690','bad079f1d3c32064','938e4a5dd5b06d51','ed01bfab5e6c8fa7','3b2f90eee7398e24','d37538f2457484a2','0363bc1273c8fc99','0f5e2f900592558c','de911913a8f2c789','a258dbdd953d98ec','2d37ac40ec4fb3d3','9b68e9de2d107b45','9d59147c8bcbdd0d','8f95c02123cbe51a','ee683312e825df7e','f830cbda1477b133','e85d39b9dcb36e44','1f198927d81170b1','f8dae35441db67aa','410a7d2e5fc49667','739f37cea025e875','16ed5235fb9f67e6','0b7a03beea66ebdc','02416c88df72c877','cfcb9400ac131e35','5750a236c255d9be','a35517b1179563cc','51580281e47ba5d8','8ee39b2e645ff6b6','33cd32c455b764ee','11b85404d5c36ced','097d02962946b161','d44a018ebba2c841','05bda82c60b8cdd1','5217bc91bf454ae6','17ff6516ddadd659','b80db4efa690c300','32f78ae77225024f','ff05bda9f6d23246','2762806c92d18e14','a9caa03852011779','70e50386d1ff857e','485275dbcc320c48','93fd66c1b452863b','b78d4681e2d3fa29','87803265eee8a923','aa8455498464b670','a563abe0b6a25327','6984e079073c13dc','c41519dae5adcdb2','b3e5d5269ca401f3','fbf85a523362cbb8','23fb024418839b51','2f18d5db8886d2be','1cf66f7936f53738','bbdeca39b18005dd','741194f1bd274bb5','9c86dead4ab9c802','727a44a016159b8e','3bf17f0d775d2242','eac0664a03272a39','64debcf8aca96ff1','9ef81305a76bb11a','50c664096474b3e1','8e049b40d690101d','b10cb1fb626f2de0','9b2161a4c526c641','a2de4dc52622e13d','ac17a5d64c6b4d65','47fd0f6b8c6d2c2d','320686af32225b2f','688338462d7bd61a','ae8d44a67e92cb8c','5e939c02aeed9d6f','bdb99de0d6cffa42','cea98d7d7bfb5341','a336d44b33f86d58','ebf2d548c4bd212c','8cd7394273adc018','caa4de84615c6c39','ab2e3dc141c1d6f3','90ab5d79ba0c5efe','412fbc1722677115','48fac3e4ac008585','8015bb21ad0dacfe','a8065da837217aef','f626abffbde2bff5','d819f94ef24abebd','c215a5c2b16d7602','7462a968b243b4cf','8911207a13952b40','4e0a09651f87da93','b42d3afd677070ed','2ce4bca744174f0c','23baa874263d3994','258ad4b4f67c2f32','80579bf3ef68f111','4d562c8b63872db0','f1ee7017ae0e3b0e','a4b1b45bfa784f0e','6a033cdc5e2ae62e','5dbe3d95a3ccfb1e','87d0a32de1d9d163','99e61febd42614bc','8492745d95a7c338','ee437de028705cd2','915d6e75dd6c8f15','bf760abcfb4566e1','a0595f3c50f5325a','2564e227a8e4f177','fb5a2bb53e3d2a4b','735ff1c1fa2e66a5','326393e421303a4a','e3792fe9f00324d1','3ea89243c07ad11c','419176b106b49b90','26feff2e61614f95','3f681271966ae240','ac9a45e244c3a671','bf2cd5d5ed3baeb4','a0312ecf1aa8cf67','a3a66c399f3c7df8','84e36964ef6babca','4d27635af9b3f05f','daeb71dd394e5746','5f5e1f9fc2ef2585','9408b7da48ef1b45','0dc9c2f22c2b202d','3a806a4ff9c13290','21f0ec0b7b66def6','31b5f20f29e20175','6447f7a1f16ecd2a','5b50367cc5bbd4ba','b89565f6e75f074d','aa3dc2f21f5fb493','8381f2d1ceae9f66','d84db6410834825b','b87421dcccc7b679','f358dc4d6dda3f3d','7a550fa2e4e0fcb6','d82271b5878bbd21','26ad3b62f00b4124','e6cbf6d4a1f53cfc','fa58d71f2ebecbcc','5527f1ac1021f9eb','4c068d5ff63999eb','3a4f65b0e2f19501','e73520c04486fbef','6bdf40e0c312f920','86235a4aaf1520d7','ab8126b4c7a39c26','51d88c15d4d0007a','f6f816116661e291','6435efc0a42a2914','d306638f8cf338d5','087f8d80d6bdc578','a598bae7a56f4b9c','8449141b279abacc','a0a3396f26ed0168','713c7d0458ff2b49','ca29c6ef27ca5cbf','3ff1b7735586fbfa','9691177b153c4674','de1552ba7d14b910','cd35a7c9fc47fe9e','9405ed55600d677b','d5922ac023a685e8','ea6b43550a57b854','472cb9d4a098c851','d9f4535e1118d584','6e9b3ef055ae610f','545199789f2bfca1','5567bea654459bd2','2bdd0d9a436187f4','11198c16d730c359','94985a9144c2bd3d','6b7f7b0fe0e1bc3a','09649eed42a73821','c42c15a44f356a4a','70b1cfe7e6191644','a54fe703beb7d571','81960906d1c171b4','ade8e314fdc4812a','ffe3b9ca33028e20','30b72f3a0791096c','07765d2c3533b046','08fd5b6eca4bb8eb','b2e0db05a5f5a9ff','4162b738d86b3c0c','ed7b74cc13119074','2fbe805225e87998','445a362e3e9754c2','53caa7045ed8e58e','ef29e04b281cc6ef','5327a20a4d538c80','1ceb3185d4c1aa95','f054afc053f6e14d','1547b41ed49f9b7c','dad8aa72c25d8e63','c488a8abf71b6a05','5d6951e6b8077313','6302bdebc540ad34','aa85a81c603f6f13','8851902e7bbc57e3','d7aa5ac6cd7b9b81','bcf481bf71729e0b','9fbbc2a5aa6bfe5f','578757e6d89e6c79','6e4bbaf9e5a16cfa','4c3a2f79ff8d7ef6','832f7305250ddf3e','a4ca71f69884029f','136929b24df7b211','a1eba5ccdca86680','eabc4a62f077fed7','53e4aa674e8da38b','5cb47536cf35ff98','03140fa29bbb4ffa','00a2cefc7f8dd934','202a35c966c2a4f0','4458ad11615d4a89','fe01316d893edd66','fcf14897eb63d53e','f11f30d50eab95f9','695687c06b7c36a3','23a81f197b992e0c','0fc7ed7c66a7676c','071fb9cd10b2cb9d','8e54a24f62ea715b','710bfc5bb9f33885','20ffe154f2080139','398434777bb0c9ae','8fc2f527e0080d0e','015acdaeb155559f','505dd1ceca71fdfa','7466e912ba68daa3','17d6c312bfa4cb01','03661157e6c9111d','6b7da6ba9fe6ed0e']);
 
 const LOCK_TEXTS = {
@@ -12363,6 +12366,10 @@ const LOCK_TEXTS = {
     empty: 'Tape ton code d\'abord.',
     nocrypto: 'Ton navigateur ne peut pas vérifier le code ici. Ouvre l\'app depuis son adresse en https.',
     help: 'Pas de code ou un souci ? Écris à',
+    checking: 'Vérification…',
+    full: 'Ce code sert déjà sur {n} téléphones. Écris-nous à l\'adresse ci-dessous, on t\'aide.',
+    blocked: 'Ce code ne marche plus. Écris-nous à l\'adresse ci-dessous.',
+    offline: 'Il faut Internet pour cette première ouverture. Connecte-toi et réessaie.',
   },
   en: {
     title: 'Welcome',
@@ -12372,6 +12379,10 @@ const LOCK_TEXTS = {
     empty: 'Type your code first.',
     nocrypto: 'Your browser can\'t check the code here. Open the app from its https address.',
     help: 'No code or a problem? Write to',
+    checking: 'Checking…',
+    full: 'This code is already used on {n} phones. Write to us at the address below, we\'ll help.',
+    blocked: 'This code no longer works. Write to us at the address below.',
+    offline: 'You need the internet for this first opening. Connect and try again.',
   },
 };
 
@@ -12385,6 +12396,39 @@ async function hashAccessCode(code) {
   const data = new TextEncoder().encode(ACCESS_SALT + code);
   const buf = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+function getDeviceId() {
+  try {
+    let id = localStorage.getItem(DEVICE_KEY) || '';
+    if (/^[a-f0-9]{24}$/.test(id)) return id;
+    id = Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b => b.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem(DEVICE_KEY, id);
+    return id;
+  } catch (e) {
+    return Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+}
+
+// Demande au controleur si ce telephone peut utiliser le code. Jamais de nom ni de mail : le code et un numero au hasard.
+async function checkCodeOnline(code) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const r = await fetch(CODE_CHECK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, appareil: getDeviceId() }),
+      signal: ctrl.signal,
+      cache: 'no-store',
+    });
+    if (r.status !== 200) return { ok: false, raison: 'reseau' };
+    return await r.json();
+  } catch (e) {
+    return { ok: false, raison: 'reseau' };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function isAppUnlocked() {
@@ -12433,6 +12477,21 @@ function showLockScreen(onUnlock) {
     try {
       const h = await hashAccessCode(code);
       if (ACCESS_HASHES.has(h)) {
+        if (CODE_CHECK_URL) {
+          const btnText = btn.textContent;
+          btn.textContent = L.checking;
+          const v = await checkCodeOnline(code);
+          btn.textContent = btnText;
+          if (!v || !v.ok) {
+            const why = v && v.raison;
+            errEl.textContent = why === 'plein' ? L.full.replace('{n}', String((v && v.max) || 3))
+              : why === 'bloque' ? L.blocked
+              : why === 'inconnu' ? L.wrong
+              : L.offline;
+            input.select();
+            return;
+          }
+        }
         try { localStorage.setItem(ACCESS_KEY, h); } catch (e) {}
         logEvent('unlock_ok');
         el.remove();
